@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b4a20">
+<meta name="description" content="Pizarra para entrenadores de fútbol base: crea ejercicios dibujándolos en el campo y organízalos en sesiones. Gratis, sin cuentas y sin conexión.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Pizarra del Entrenador</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700&display=swap">
+<style>
+/* Layout: cabecera fija con pestañas; vista de lista en una columna en móvil y dos en escritorio; editor a pantalla completa. */
+:root{
+  --bg:#f3f4ee; --surface:#ffffff; --ink:#15261b; --muted:#5b6e60; --line:#d6ded4;
+  --club:#0b4a20; --club-ink:#ffffff; --crema:#c79a12; --rojo:#d22f28; --pitch:#1f7a3c; --chip:#e8efe6;
+  --display:"Bebas Neue",Impact,"Arial Narrow",sans-serif;
+  --body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --label:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1610; --surface:#152219; --ink:#e7efe6; --muted:#9db3a2; --line:#2a3b2f;
+  --club:#1b6a33; --club-ink:#ffffff; --crema:#f3e7a4; --rojo:#ff5a50; --pitch:#1d6e37; --chip:#1e3024; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1610; --surface:#152219; --ink:#e7efe6; --muted:#9db3a2; --line:#2a3b2f;
+  --club:#1b6a33; --club-ink:#ffffff; --crema:#f3e7a4; --rojo:#ff5a50; --pitch:#1d6e37; --chip:#1e3024; color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}img{max-width:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.4;margin:0}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--club)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--crema);outline-offset:2px}
+.wrap{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--club);color:var(--club-ink)}
+.hd{display:flex;align-items:center;gap:12px;padding-block:10px}
+.hd img{width:40px;height:40px;object-fit:contain;background:#fff;border-radius:50%;padding:3px}
+.hd h1{font-family:var(--display);font-weight:400;font-size:30px;letter-spacing:1px;margin:0;line-height:1}
+.hd .sub{font-family:var(--label);font-size:13px;letter-spacing:1.5px;opacity:.85;text-transform:uppercase}
+.tabs{display:flex;gap:4px}
+.tabs button{background:none;border:0;color:var(--club-ink);opacity:.75;font-family:var(--label);font-weight:700;font-size:16px;letter-spacing:1px;text-transform:uppercase;padding:10px 12px;border-bottom:3px solid transparent}
+.tabs button[aria-selected="true"]{opacity:1;border-bottom-color:#f3e7a4}
+main{padding-block:16px 40px;max-width:1100px;margin:0 auto}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px}
+.bar .grow{flex:1 1 200px;min-width:0}
+.btn{border:0;border-radius:8px;padding:9px 14px;font-weight:600;background:var(--chip);color:var(--ink)}
+.btn.pri{background:var(--club);color:var(--club-ink)}
+.btn.dan{background:transparent;color:var(--rojo);border:1.5px solid var(--rojo)}
+.btn.sm{padding:6px 10px;font-size:14px}
+input[type=text],input[type=date],input[type=search],select,textarea{width:100%;background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px}
+textarea{min-height:76px;resize:vertical}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:5px 11px;font-family:var(--label);font-weight:600;font-size:14px;letter-spacing:.5px}
+.chip[aria-pressed="true"]{background:var(--club);color:var(--club-ink);border-color:var(--club)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;text-align:left;padding:0;min-width:0}
+.card .dg{background:var(--pitch);aspect-ratio:16/10;display:flex;align-items:center;justify-content:center}
+.card .dg svg{width:100%;height:100%}
+.card .nodg{color:#cfe9d6;font-family:var(--display);font-size:28px;letter-spacing:1px}
+.card .bd{padding:10px 12px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.card h3{font-family:var(--label);font-size:19px;font-weight:700;margin:0;line-height:1.15;text-wrap:balance}
+.meta{display:flex;flex-wrap:wrap;gap:6px;font-size:13px;color:var(--muted)}
+.tag{font-family:var(--label);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--club);background:var(--chip);border-radius:4px;padding:1px 6px}
+.empty{border:2px dashed var(--line);border-radius:12px;padding:28px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--ink);font-size:17px;margin-bottom:4px}
+.note{font-size:13px;color:var(--muted)}
+.err{background:color-mix(in srgb,var(--rojo) 12%,var(--surface));border:1.5px solid var(--rojo);border-radius:8px;padding:8px 12px;margin-bottom:12px}
+/* Editor */
+.ed{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.ed{grid-template-columns:minmax(0,1fr)}}
+.board{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 100px)}
+@media (max-width:860px){.board{position:static}}
+.board svg{width:100%;height:auto;display:block;background:var(--pitch);border-radius:8px;touch-action:none;user-select:none}
+.tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tool{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 9px;font-size:14px;font-weight:600}
+.tool[aria-pressed="true"]{border-color:var(--club);background:var(--chip);box-shadow:inset 0 0 0 1.5px var(--club)}
+.sw{width:14px;height:14px;border-radius:50%;display:inline-block;border:2px solid #0b4a20}
+.clubgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,320px),1fr));gap:14px;align-items:start}
+.form{display:flex;flex-direction:column;gap:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media (max-width:480px){.row{grid-template-columns:1fr}}
+label{display:flex;flex-direction:column;gap:4px;font-family:var(--label);font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--muted)}
+.back{background:none;border:0;color:var(--club);font-weight:700;padding:4px 0;margin-bottom:8px}
+.confirm{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+/* Sesiones */
+.ses{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:6px;text-align:left;min-width:0}
+.ses .top{display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.ses h3{font-family:var(--display);font-weight:400;font-size:26px;letter-spacing:.5px;margin:0;line-height:1}
+.carga{font-family:var(--label);font-weight:700;font-size:12px;letter-spacing:1px;text-transform:uppercase;padding:2px 8px;border-radius:999px;color:#fff;white-space:nowrap}
+.c-alta{background:var(--rojo)}.c-media{background:#b98a00}.c-baja{background:#2f8f50}
+.tl{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.ti{display:grid;grid-template-columns:34px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:10px;padding:8px 10px}
+.ti .n{width:30px;height:30px;border-radius:50%;background:var(--rojo);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:20px}
+.ti .acts{display:flex;gap:4px}
+.ti .acts button{border:1.5px solid var(--line);background:var(--surface);border-radius:6px;width:32px;height:32px;font-weight:700}
+.picker{background:var(--surface);border:1.5px solid var(--club);border-radius:12px;padding:12px;margin-top:10px}
+.picker .list{max-height:320px;overflow:auto;display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.picker .list button{text-align:left;background:var(--chip);border:0;border-radius:8px;padding:8px 10px}
+/* Vista de sesión */
+.vista h2{font-family:var(--display);font-weight:400;font-size:40px;letter-spacing:1px;margin:0;line-height:1;text-wrap:balance}
+.vista .idea{font-family:var(--label);font-size:19px;font-weight:700;color:var(--club);border-left:5px solid var(--rojo);padding-left:10px;margin:8px 0 14px}
+.tarea{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;overflow:hidden;margin-bottom:14px}
+.tarea .th{display:flex;gap:10px;align-items:center;background:var(--chip);padding:8px 12px}
+.tarea .th h3{flex:1;margin:0;font-family:var(--label);font-size:20px;line-height:1.1}
+.tarea .tb{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px;padding:12px}
+@media (max-width:700px){.tarea .tb{grid-template-columns:minmax(0,1fr)}}
+.tarea .tb svg{width:100%;height:auto;border-radius:8px;background:var(--pitch)}
+.kv{font-size:14px;margin:2px 0}.kv b{font-family:var(--label);letter-spacing:.5px;color:var(--club)}
+.obj{background:color-mix(in srgb,var(--crema) 18%,var(--surface));border-left:4px solid var(--crema);padding:6px 10px;margin:6px 0;font-size:14px}
+ul{margin:4px 0 4px 18px;padding:0}
+.tot{font-variant-numeric:tabular-nums}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;z-index:20}
+@media print{header,.back,.bar .btn,.toast,body::before{display:none!important}body{background:#fff;color:#000}.tarea{break-inside:avoid;border-color:#bbb}main{padding:0}}
+@media (prefers-reduced-motion:no-preference){.card,.ses{transition:transform .12s}.card:hover,.ses:hover{transform:translateY(-2px)}}
+</style>
+
+</head><body>
+<header>
+  <div class="wrap hd">
+    <img id="clubImg" alt="Pizarra del Entrenador" src="icons/icon-192.png">
+    <div><h1 id="clubName">Pizarra del Entrenador</h1><div class="sub" id="clubSub">Ejercicios y sesiones</div></div>
+  </div>
+  <nav class="wrap tabs" role="tablist">
+    <button role="tab" id="tab-ej" aria-selected="true">Ejercicios</button>
+    <button role="tab" id="tab-se" aria-selected="false">Sesiones</button>
+    <button role="tab" id="tab-club" aria-selected="false">Mi club</button>
+  </nav>
+</header>
+<main class="wrap" id="app">
+  <div class="empty" id="boot"><b>Cargando la pizarra…</b>Tus ejercicios y sesiones aparecerán aquí.</div>
+</main>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+// ---------- Datos y estado ----------
+const CATS = ["Calentamiento","Técnica","Táctica","Finalización","Físico","Balón parado","Partido","Vuelta a la calma","Charla"];
+const CAMPOS = {rect:{w:40,h:30,n:"Espacio libre"}, f7:{w:60,h:40,n:"Campo F7"}, medio:{w:64,h:50,n:"Medio campo F11"}, area:{w:64,h:30,n:"Área"}, completo:{w:100,h:64,n:"Campo entero F11"}};
+const CARGAS = ["Alta","Media-alta","Media","Baja-media","Baja"];
+const S = {db:null, canWrite:true, ej:{}, se:{}, view:"ej", filtro:"Todas", q:"", editId:null, draft:null, tool:"mover", textoTool:"", sesId:null, picking:false, delConfirm:null, error:""};
+const $ = (s,el=document)=>el.querySelector(s);
+const esc = s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const app = $("#app");
+function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>el.hidden=true,2200)}
+function minutos(t){ // "4 x 4'" -> 16, "20'" -> 20
+  const s=String(t||"").replace(",","."); let m=s.match(/(\d+)\s*x\s*(\d+(?:\.\d+)?)/i); if(m) return (+m[1])*(+m[2]);
+  m=s.match(/(\d+(?:\.\d+)?)/); return m?+m[1]:0 }
+const ahora=()=>new Date().toISOString();
+const fmtFecha=f=>{if(!f)return"";const d=new Date(f+"T12:00:00");return d.toLocaleDateString("es-ES",{weekday:"long",day:"numeric",month:"long"})};
+
+// ---------- Diagrama (coordenadas en metros) ----------
+function lineasCampo(tipo,w,h){
+  const L=(a,b,c,d)=>`<line x1="${a}" y1="${b}" x2="${c}" y2="${d}"/>`, R=(x,y,ww,hh)=>`<rect x="${x}" y="${y}" width="${ww}" height="${hh}" fill="none"/>`,
+        C=(x,y,r)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="none"/>`, G=(x,y,ww,hh)=>`<rect x="${x}" y="${y}" width="${ww}" height="${hh}" fill="#fff" fill-opacity=".85" stroke="none"/>`;
+  let o=R(0,0,w,h);
+  if(tipo==="f7") o+=L(w/2,0,w/2,h)+C(w/2,h/2,6)+R(0,h/2-12,12,24)+R(w-12,h/2-12,12,24)+G(-1.2,h/2-3,1.2,6)+G(w,h/2-3,1.2,6);
+  else if(tipo==="completo") o+=L(w/2,0,w/2,h)+C(w/2,h/2,9.15)+R(0,h/2-20.15,16.5,40.3)+R(w-16.5,h/2-20.15,16.5,40.3)+R(0,h/2-9.15,5.5,18.3)+R(w-5.5,h/2-9.15,5.5,18.3)+G(-1.5,h/2-3.66,1.5,7.32)+G(w,h/2-3.66,1.5,7.32);
+  else if(tipo==="medio") o+=`<path d="M${w/2-9.15},0 A9.15,9.15 0 0 0 ${w/2+9.15},0" fill="none"/>`+R(w/2-20.15,h-16.5,40.3,16.5)+R(w/2-9.15,h-5.5,18.3,5.5)+G(w/2-3.66,h,7.32,1.5);
+  else if(tipo==="area") o+=R(w/2-20.15,h-16.5,40.3,16.5)+R(w/2-9.15,h-5.5,18.3,5.5)+G(w/2-3.66,h,7.32,1.5);
+  return o }
+function svgDiagrama(dg,{editable=false,preview=null,uid="d"}={}){
+  const w=dg.w,h=dg.h,pad=Math.max(2,w*0.035),r=Math.max(0.9,w*0.02),fs=Math.max(1.1,w*0.024),sw=Math.max(0.12,w*0.0035);
+  let ly="",ar="",pl="";
+  const flecha=(k,x1,y1,x2,y2,op=1)=>{const col={pase:"#fff",carrera:"#ffd84a",conduccion:"#7fe0ff"}[k];
+    const dash={pase:`stroke-dasharray="${r*0.9} ${r*0.6}"`,carrera:"",conduccion:`stroke-dasharray="${r*0.2} ${r*0.55}" stroke-linecap="round"`}[k];
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${k==="conduccion"?sw*3:sw*2.2}" ${dash} marker-end="url(#${uid}${k})" opacity="${op}"/>`};
+  (dg.el||[]).forEach((el,i)=>{const k=el[0];
+    if(k==="zona"){ly+=`<rect x="${el[1]}" y="${el[2]}" width="${el[3]}" height="${el[4]}" fill="#ffd84a" fill-opacity=".16" stroke="#ffd84a" stroke-opacity=".7" stroke-width="${sw}" stroke-dasharray="${r} ${r*.8}"/>`;
+      if(el[5]) ly+=`<text x="${el[1]+el[3]/2}" y="${el[2]+fs*1.3}" font-size="${fs}" fill="#ffd84a" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700">${esc(el[5])}</text>`}
+    else if(k==="pase"||k==="carrera"||k==="conduccion") ar+=flecha(k,el[1],el[2],el[3],el[4]);
+    else if(k==="cono"){const c=r*.7;pl+=`<polygon data-i="${i}" points="${el[1]},${el[2]-c} ${el[1]-c*.85},${el[2]+c*.6} ${el[1]+c*.85},${el[2]+c*.6}" fill="#ff8a1f" stroke="#7a3a00" stroke-width="${sw*.6}"/>`}
+    else if(k==="porteria_cono"){const c=r*.7;[-2,2].forEach(dx=>pl+=`<polygon points="${el[1]+dx},${el[2]-c} ${el[1]+dx-c*.85},${el[2]+c*.6} ${el[1]+dx+c*.85},${el[2]+c*.6}" fill="#ff8a1f" stroke="#7a3a00" stroke-width="${sw*.6}"/>`);
+      ly+=`<line x1="${el[1]-2}" y1="${el[2]}" x2="${el[1]+2}" y2="${el[2]}" stroke="#ff8a1f" stroke-width="${sw*1.5}" stroke-dasharray="${r*.4} ${r*.4}"/>`}
+    else if(k==="A"||k==="B"||k==="C"||k==="PT"){const [f,s,t]={A:["#fff","#0b4a20","#0b3a19"],B:["#e0322b","#fff","#fff"],C:["#ffd84a","#7a5a00","#3a2a00"],PT:["#111","#ffd84a","#ffd84a"]}[k];
+      const lab=el[3]??(k==="PT"?"PT":"");
+      pl+=`<circle cx="${el[1]}" cy="${el[2]}" r="${r}" fill="${f}" stroke="${s}" stroke-width="${sw*1.6}"/>`;
+      if(lab) pl+=`<text x="${el[1]}" y="${el[2]+r*.38}" font-size="${r*1.05}" fill="${t}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif">${esc(lab)}</text>`}
+    else if(k==="balon") pl+=`<circle cx="${el[1]}" cy="${el[2]}" r="${r*.45}" fill="#fff" stroke="#111" stroke-width="${sw}"/>`;
+    else if(k==="texto") ly+=`<text x="${el[1]}" y="${el[2]}" font-size="${fs}" fill="#fff" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700" paint-order="stroke" stroke="#0b3a19" stroke-width="${fs*.2}">${esc(el[3])}</text>`;
+  });
+  if(preview) ar+=flecha(preview[0],preview[1],preview[2],preview[3],preview[4],.7);
+  const marks=["pase","carrera","conduccion"].map(k=>`<marker id="${uid}${k}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${{pase:"#fff",carrera:"#ffd84a",conduccion:"#7fe0ff"}[k]}"/></marker>`).join("");
+  let rayas="";for(let i=0;i<8;i++) rayas+=`<rect x="${i*w/8}" y="0" width="${w/16}" height="${h}" fill="#fff" fill-opacity=".045"/>`;
+  return `<svg viewBox="${-pad} ${-pad} ${w+2*pad} ${h+2*pad}" ${editable?'id="edsvg"':""} role="img" aria-label="Gráfico del ejercicio"><defs>${marks}</defs>
+    <rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="#1f7a3c"/>${rayas}
+    <g stroke="#fff" stroke-opacity=".75" stroke-width="${sw*1.4}">${lineasCampo(dg.tipo||"rect",w,h)}</g>${ly}${ar}${pl}</svg>` }
+
+// ---------- Render general ----------
+function render(){
+  $("#tab-ej").setAttribute("aria-selected",S.view==="ej"||S.view==="edit");
+  $("#tab-se").setAttribute("aria-selected",S.view==="se"||S.view==="sesion"||S.view==="vista");
+  const err=S.error?`<div class="err">${esc(S.error)}</div>`:"";
+  if(S.view==="ej") app.innerHTML=err+vistaEjercicios();
+  else if(S.view==="edit") app.innerHTML=err+vistaEditor();
+  else if(S.view==="se") app.innerHTML=err+vistaSesiones();
+  else if(S.view==="sesion") app.innerHTML=err+vistaSesionEdit();
+  else if(S.view==="vista") app.innerHTML=err+vistaSesion();
+  else if(S.view==="club") app.innerHTML=err+vistaClub();
+  $("#tab-club").setAttribute("aria-selected",S.view==="club");
+  if(S.view==="edit") montarEditor();
+}
+$("#tab-ej").onclick=()=>{S.view="ej";render()};
+$("#tab-se").onclick=()=>{S.view="se";render()};
+$("#tab-club").onclick=()=>{S.view="club";S.delConfirm=null;render()};
+
+function vistaEjercicios(){
+  const lista=Object.entries(S.ej).filter(([id,e])=>(S.filtro==="Todas"||e.categoria===S.filtro)&&(!S.q||(e.nombre+" "+e.objetivo).toLowerCase().includes(S.q.toLowerCase())))
+    .sort((a,b)=>CATS.indexOf(a[1].categoria)-CATS.indexOf(b[1].categoria)||a[1].nombre.localeCompare(b[1].nombre));
+  const chips=["Todas",...CATS].map(c=>`<button class="chip" aria-pressed="${S.filtro===c}" data-f="${esc(c)}">${esc(c)}</button>`).join("");
+  const cards=lista.map(([id,e])=>`<button class="card" data-open="${esc(id)}"><div class="dg">${e.diagrama?svgDiagrama(e.diagrama,{uid:"c"+id.replace(/\W/g,"")}):`<span class="nodg">${esc(e.categoria)}</span>`}</div>
+    <div class="bd"><span class="tag">${esc(e.categoria)}</span><h3>${esc(e.nombre)}</h3><div class="meta"><span>${esc(e.tiempo)}</span>${e.jugadores?`<span>· ${esc(e.jugadores.split("·")[0])}</span>`:""}</div></div></button>`).join("");
+  return `<div class="bar"><input class="grow" type="search" id="q" placeholder="Buscar ejercicio u objetivo" value="${esc(S.q)}">
+    ${S.canWrite?`<button class="btn pri" id="nuevo">+ Nuevo ejercicio</button>`:""}</div>
+    <div class="chips" style="margin-bottom:14px">${chips}</div>
+    ${Object.keys(S.ej).length===0?`<div class="empty"><b>Todavía no hay ejercicios</b>Pulsa «Nuevo ejercicio» para crear el primero y dibujarlo en la pizarra.</div>`
+      : lista.length?`<div class="grid">${cards}</div>`:`<div class="empty"><b>Nada con ese filtro</b>Prueba otra categoría o borra la búsqueda.</div>`}`;
+}
+app.addEventListener("click",ev=>{
+  const t=ev.target.closest("button"); if(!t) return;
+  if(t.dataset.f){S.filtro=t.dataset.f;render();return}
+  if(t.id==="nuevo"){abrirEditor(null);return}
+  if(t.dataset.open){abrirEditor(t.dataset.open);return}
+});
+app.addEventListener("input",ev=>{if(ev.target.id==="q"){S.q=ev.target.value;const pos=ev.target.selectionStart;render();const q=$("#q");q.focus();q.setSelectionRange(pos,pos)}});
+
+// ---------- Editor de ejercicio ----------
+function abrirEditor(id){
+  const base=id?structuredClone(S.ej[id]):{nombre:"",categoria:"Táctica",tiempo:"",series:"",espacio:"",jugadores:"",objetivo:"",descripcion:"",consignas:[],variantes:"",fuente:"",diagrama:{tipo:"f7",w:60,h:40,el:[]}};
+  if(!base.diagrama) base.diagrama={tipo:"rect",w:40,h:30,el:[]};
+  S.editId=id; S.draft=base; S.hist=[]; S.tool="mover"; S.delConfirm=null; S.view="edit"; render(); window.scrollTo(0,0);
+}
+const HERR=[["mover","✋ Mover"],["A",'<span class="sw" style="background:#fff"></span>Blanco'],["B",'<span class="sw" style="background:#e0322b;border-color:#fff;outline:1px solid #999"></span>Rojo'],["PT",'<span class="sw" style="background:#111;border-color:#ffd84a"></span>Portero'],["C",'<span class="sw" style="background:#ffd84a"></span>Comodín'],["cono","▲ Cono"],["balon","● Balón"],["pase","⇢ Pase"],["carrera","→ Carrera"],["conduccion","⋯ Conducción"],["texto","T Texto"],["borrar","✕ Borrar"]];
+function vistaEditor(){
+  const d=S.draft, ro=!S.canWrite;
+  const campo=Object.entries(CAMPOS).map(([k,v])=>`<option value="${k}" ${d.diagrama.tipo===k?"selected":""}>${v.n} (${v.w}×${v.h} m)</option>`).join("");
+  return `<button class="back" id="volver">← Ejercicios</button>
+  <div class="ed">
+    <div class="board">
+      <div id="edwrap">${svgDiagrama(d.diagrama,{editable:true,uid:"e"})}</div>
+      ${ro?"":`<div class="tools" role="toolbar" aria-label="Herramientas de la pizarra">${HERR.map(([k,l])=>`<button class="tool" data-tool="${k}" aria-pressed="${S.tool===k}">${l}</button>`).join("")}</div>
+      <div class="bar" style="margin:8px 0 0">${S.tool==="texto"?`<input type="text" id="textoTool" class="grow" placeholder="Escribe el texto y toca el campo" value="${esc(S.textoTool)}">`:""}
+        <button class="btn sm" id="deshacer" ${S.hist.length?"":"disabled"}>↶ Deshacer</button>
+        <button class="btn sm" id="limpiar">Vaciar pizarra</button></div>
+      <p class="note" style="margin:6px 0 0">${{mover:"Arrastra jugadores, conos o el balón para moverlos.",pase:"Arrastra desde el origen hasta el destino para dibujar la flecha.",carrera:"Arrastra para dibujar la carrera.",conduccion:"Arrastra para dibujar la conducción.",borrar:"Toca un elemento para quitarlo.",texto:"Escribe arriba y toca donde va el texto."}[S.tool]||"Toca el campo para colocarlo."}</p>`}
+    </div>
+    <form class="form" id="fe" onsubmit="return false">
+      <label>Nombre<input type="text" id="f-nombre" value="${esc(d.nombre)}" placeholder="p. ej. Rondo 4 contra 2" ${ro?"disabled":""}></label>
+      <div class="row"><label>Categoría<select id="f-categoria" ${ro?"disabled":""}>${CATS.map(c=>`<option ${d.categoria===c?"selected":""}>${c}</option>`).join("")}</select></label>
+        <label>Campo<select id="f-campo" ${ro?"disabled":""}>${campo}</select></label></div>
+      <div class="row"><label>Tiempo<input type="text" id="f-tiempo" value="${esc(d.tiempo)}" placeholder="4 x 4'" ${ro?"disabled":""}></label>
+        <label>Series y descanso<input type="text" id="f-series" value="${esc(d.series)}" placeholder="Descanso 1'30&quot;" ${ro?"disabled":""}></label></div>
+      <label>Espacio<input type="text" id="f-espacio" value="${esc(d.espacio)}" placeholder="Campo de F7 transversal" ${ro?"disabled":""}></label>
+      <label>Jugadores<input type="text" id="f-jugadores" value="${esc(d.jugadores)}" placeholder="8v8 + 2 porteros" ${ro?"disabled":""}></label>
+      <label>Objetivo<input type="text" id="f-objetivo" value="${esc(d.objetivo)}" placeholder="Qué se trabaja, en una línea" ${ro?"disabled":""}></label>
+      <label>Desarrollo y reglas<textarea id="f-descripcion" ${ro?"disabled":""}>${esc(d.descripcion)}</textarea></label>
+      <label>Consignas (una por línea)<textarea id="f-consignas" ${ro?"disabled":""}>${esc((d.consignas||[]).join("\n"))}</textarea></label>
+      <label>Variantes (16 / 20 jugadores)<input type="text" id="f-variantes" value="${esc(d.variantes)}" ${ro?"disabled":""}></label>
+      <label>Fuente o fundamento<input type="text" id="f-fuente" value="${esc(d.fuente)}" placeholder="FIFA 11+, juegos reducidos…" ${ro?"disabled":""}></label>
+      ${ro?``:`<div class="bar">
+        <button class="btn pri" id="guardar">Guardar ejercicio</button>
+        ${S.editId?`<button class="btn" id="duplicar">Duplicar</button><button class="btn" id="compEj">Compartir</button>
+        ${S.delConfirm===S.editId?`<span class="confirm">¿Borrar el ejercicio? <button class="btn dan sm" id="borrarSi">Sí, borrar</button><button class="btn sm" id="borrarNo">No</button></span>`:`<button class="btn dan" id="borrar">Borrar</button>`}`:""}
+      </div>`}
+    </form>
+  </div>`;
+}
+function leerForm(){
+  const d=S.draft,v=id=>$("#"+id)?.value??"";
+  Object.assign(d,{nombre:v("f-nombre").trim(),categoria:v("f-categoria"),tiempo:v("f-tiempo").trim(),series:v("f-series").trim(),espacio:v("f-espacio").trim(),
+    jugadores:v("f-jugadores").trim(),objetivo:v("f-objetivo").trim(),descripcion:v("f-descripcion").trim(),consignas:v("f-consignas").split("\n").map(s=>s.trim()).filter(Boolean),
+    variantes:v("f-variantes").trim(),fuente:v("f-fuente").trim()});
+}
+function redibujar(preview){ $("#edwrap").innerHTML=svgDiagrama(S.draft.diagrama,{editable:true,uid:"e",preview}); enlazarSvg() }
+function snap(v){return Math.round(v*2)/2}
+function punto(ev){const svg=$("#edsvg");const p=svg.createSVGPoint();p.x=ev.clientX;p.y=ev.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());
+  const {w,h}=S.draft.diagrama;return [Math.min(w,Math.max(0,snap(q.x))),Math.min(h,Math.max(0,snap(q.y)))]}
+function cercano(x,y){const els=S.draft.diagrama.el,lim=Math.max(2,S.draft.diagrama.w*0.04);let best=-1,bd=1e9;
+  els.forEach((el,i)=>{let d;if(["pase","carrera","conduccion"].includes(el[0])){const mx=(el[1]+el[3])/2,my=(el[2]+el[4])/2;d=Math.min(Math.hypot(x-mx,y-my),Math.hypot(x-el[1],y-el[2]),Math.hypot(x-el[3],y-el[4]))}
+    else if(el[0]==="zona"){d=(x>=el[1]&&x<=el[1]+el[3]&&y>=el[2]&&y<=el[2]+el[4])?lim*.9:1e9} else d=Math.hypot(x-el[1],y-el[2]);
+    if(d<bd){bd=d;best=i}});return bd<=lim?best:-1}
+function guardarHist(){S.hist.push(JSON.stringify(S.draft.diagrama.el)); if(S.hist.length>50) S.hist.shift(); const b=$("#deshacer"); if(b) b.disabled=false}
+function enlazarSvg(){
+  const svg=$("#edsvg"); if(!svg||!S.canWrite) return;
+  let drag=null;
+  svg.onpointerdown=ev=>{ev.preventDefault();svg.setPointerCapture(ev.pointerId);const [x,y]=punto(ev),t=S.tool;
+    if(t==="mover"){const i=cercano(x,y);if(i>=0&&!["pase","carrera","conduccion","zona"].includes(S.draft.diagrama.el[i][0])){guardarHist();drag={i}}}
+    else if(["pase","carrera","conduccion"].includes(t)) drag={flecha:t,x,y};
+    else if(t==="borrar"){const i=cercano(x,y);if(i>=0){guardarHist();S.draft.diagrama.el.splice(i,1);redibujar()}}
+    else if(t==="texto"){const txt=($("#textoTool")?.value||"").trim();if(txt){guardarHist();S.draft.diagrama.el.push(["texto",x,y,txt]);redibujar()}else toast("Escribe primero el texto")}
+    else {guardarHist();S.draft.diagrama.el.push(t==="cono"||t==="balon"?[t,x,y]:[t,x,y]);redibujar()}};
+  svg.onpointermove=ev=>{if(!drag) return;const [x,y]=punto(ev);
+    if(drag.i!==undefined){const el=S.draft.diagrama.el[drag.i];el[1]=x;el[2]=y;redibujar()}
+    else if(drag.flecha) redibujar([drag.flecha,drag.x,drag.y,x,y])};
+  svg.onpointerup=ev=>{if(drag&&drag.flecha){const [x,y]=punto(ev);if(Math.hypot(x-drag.x,y-drag.y)>=1.5){guardarHist();S.draft.diagrama.el.push([drag.flecha,drag.x,drag.y,x,y])}redibujar()}drag=null};
+}
+function montarEditor(){
+  enlazarSvg();
+  $("#volver").onclick=()=>{S.view="ej";render()};
+  document.querySelectorAll("[data-tool]").forEach(b=>b.onclick=()=>{leerForm();S.tool=b.dataset.tool;render()});
+  const tt=$("#textoTool"); if(tt) tt.oninput=()=>S.textoTool=tt.value;
+  const dh=$("#deshacer"); if(dh) dh.onclick=()=>{const p=S.hist.pop();if(p){S.draft.diagrama.el=JSON.parse(p);redibujar()}dh.disabled=!S.hist.length};
+  const lp=$("#limpiar"); if(lp) lp.onclick=()=>{guardarHist();S.draft.diagrama.el=[];redibujar()};
+  const fc=$("#f-campo"); if(fc) fc.onchange=()=>{const c=CAMPOS[fc.value];S.draft.diagrama.tipo=fc.value;S.draft.diagrama.w=c.w;S.draft.diagrama.h=c.h;
+    S.draft.diagrama.el=S.draft.diagrama.el.filter(el=>el[1]<=c.w&&el[2]<=c.h);redibujar()};
+  const g=$("#guardar"); if(g) g.onclick=guardarEjercicio;
+  const ce=$("#compEj"); if(ce) ce.onclick=()=>{leerForm();const e={...S.draft};compartir(nombreArchivo(e.nombre),paquete({[S.editId]:e},{}),"Ejercicio: "+e.nombre)};
+  const du=$("#duplicar"); if(du) du.onclick=()=>{leerForm();S.editId=null;S.draft.nombre=S.draft.nombre+" (copia)";render();toast("Copia lista: cámbiala y guárdala")};
+  const br=$("#borrar"); if(br) br.onclick=()=>{S.delConfirm=S.editId;leerForm();render()};
+  const bn=$("#borrarNo"); if(bn) bn.onclick=()=>{S.delConfirm=null;leerForm();render()};
+  const bs=$("#borrarSi"); if(bs) bs.onclick=borrarEjercicio;
+}
+async function guardarEjercicio(){
+  leerForm(); const d=S.draft;
+  if(!d.nombre){toast("Ponle un nombre al ejercicio");$("#f-nombre").focus();return}
+  if(!S.db){toast("No se puede guardar: la pizarra no tiene conexión");return}
+  const id=S.editId||("ej-"+Date.now().toString(36));
+  try{ await S.db.doc("ejercicios/"+id).set({...d,actualizado:ahora()}); S.editId=id; toast("Ejercicio guardado"); S.view="ej"; render() }
+  catch(e){ if(e.code==="invalid_argument"){S.canWrite=false;S.error="No se pudo guardar en este móvil."} else S.error="No se pudo guardar ("+(e.code||"error")+"). Vuelve a intentarlo en un momento."; render() }
+}
+async function borrarEjercicio(){
+  const id=S.editId; if(!S.db||!id) return;
+  try{ await S.db.doc("ejercicios/"+id).delete();
+    for(const [sid,s] of Object.entries(S.se)) if((s.tareas||[]).includes(id)) await S.db.doc("sesiones/"+sid).update({tareas:s.tareas.filter(x=>x!==id),actualizado:ahora()});
+    toast("Ejercicio borrado"); S.view="ej"; S.delConfirm=null; render() }
+  catch(e){ S.error="No se pudo borrar ("+(e.code||"error")+")."; render() }
+}
+
+// ---------- Sesiones ----------
+function claseCarga(c){c=(c||"").toLowerCase();return c.includes("alta")?"c-alta":c.includes("baja")?"c-baja":"c-media"}
+function vistaSesiones(){
+  const l=Object.entries(S.se).sort((a,b)=>(b[1].fecha||"").localeCompare(a[1].fecha||""));
+  return `<div class="bar"><div class="grow note">Cada sesión junta ejercicios de la biblioteca en orden. Toca una para verla o editarla.</div>
+    ${S.canWrite?`<button class="btn pri" id="nuevaSes">+ Nueva sesión</button>`:""}</div>
+    ${l.length?`<div class="grid">${l.map(([id,s])=>{const ts=(s.tareas||[]).map(t=>S.ej[t]).filter(Boolean);const tot=ts.reduce((a,e)=>a+minutos(e.tiempo),0);
+      return `<button class="ses" data-ses="${esc(id)}"><div class="top"><h3>${esc(s.nombre||"Sesión")}</h3><span class="carga ${claseCarga(s.carga)}">${esc(s.carga||"")}</span></div>
+      <div class="meta"><span>${esc(fmtFecha(s.fecha))}</span><span>· ${ts.length} ejercicios</span><span class="tot">· ${tot}'</span></div>
+      ${s.idea?`<div class="note">«${esc(s.idea)}»</div>`:""}</button>`}).join("")}</div>`
+      :`<div class="empty"><b>Aún no hay sesiones</b>Crea una sesión para el próximo entrenamiento y añádele ejercicios.</div>`}`;
+}
+app.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t)return;
+  if(t.id==="nuevaSes"){const id="ses-"+Date.now().toString(36);S.sesId=id;S.sesDraft={fecha:new Date().toISOString().slice(0,10),nombre:"",idea:"",carga:"Media",tareas:[],notas:""};S.nueva=true;S.picking=false;S.view="sesion";render();return}
+  if(t.dataset.ses){S.sesId=t.dataset.ses;S.view="vista";render();window.scrollTo(0,0);return}
+});
+function tareasDe(s){return (s.tareas||[]).map(id=>[id,S.ej[id]]).filter(x=>x[1])}
+function vistaSesion(){
+  const s=S.se[S.sesId]; if(!s) return `<button class="back" id="volverSes">← Sesiones</button><div class="empty"><b>Esta sesión ya no existe</b></div>`;
+  const ts=tareasDe(s),tot=ts.reduce((a,[,e])=>a+minutos(e.tiempo),0);
+  return `<button class="back" id="volverSes">← Sesiones</button>
+  <div class="vista"><div class="bar"><div class="grow"><h2>${esc(s.nombre||"Sesión")}</h2><div class="meta" style="margin-top:6px"><span>${esc(fmtFecha(s.fecha))}</span><span class="tot">· ${tot}' de trabajo</span><span class="carga ${claseCarga(s.carga)}">${esc(s.carga||"")}</span></div></div>
+    <button class="btn" id="copiar">Copiar texto</button><button class="btn" id="compSes">Compartir</button><button class="btn" id="imprimir">Imprimir</button>${S.canWrite?`<button class="btn pri" id="editarSes">Editar sesión</button>`:""}</div>
+    ${s.idea?`<div class="idea">«${esc(s.idea)}»</div>`:""}
+    ${s.notas?`<p class="note">${esc(s.notas)}</p>`:""}
+    ${ts.length?ts.map(([id,e],i)=>`<article class="tarea"><div class="th"><span class="n" style="width:30px;height:30px;border-radius:50%;background:var(--rojo);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:20px">${i+1}</span><h3>${esc(e.nombre)}</h3><span class="tag">${esc(e.tiempo)}</span></div>
+      <div class="tb">${e.diagrama?`<div>${svgDiagrama(e.diagrama,{uid:"v"+i})}</div>`:""}<div style="min-width:0">
+        ${e.espacio?`<div class="kv"><b>Espacio:</b> ${esc(e.espacio)}</div>`:""}${e.jugadores?`<div class="kv"><b>Jugadores:</b> ${esc(e.jugadores)}</div>`:""}${e.series&&e.series!=="—"?`<div class="kv"><b>Series:</b> ${esc(e.series)}</div>`:""}
+        ${e.objetivo?`<div class="obj"><b>Objetivo:</b> ${esc(e.objetivo)}</div>`:""}${e.descripcion?`<div class="kv">${esc(e.descripcion)}</div>`:""}
+        ${(e.consignas||[]).length?`<div class="kv" style="margin-top:6px"><b>Consignas:</b><ul>${e.consignas.map(c=>`<li>${esc(c)}</li>`).join("")}</ul></div>`:""}
+        ${e.variantes&&e.variantes!=="—"?`<div class="kv"><b>Variantes:</b> ${esc(e.variantes)}</div>`:""}${e.fuente&&e.fuente!=="—"?`<div class="note">Fundamento: ${esc(e.fuente)}</div>`:""}
+      </div></div></article>`).join(""):`<div class="empty"><b>Sesión sin ejercicios</b>Pulsa «Editar sesión» para añadirlos desde la biblioteca.</div>`}
+  </div>`;
+}
+function vistaSesionEdit(){
+  const d=S.sesDraft, ts=d.tareas.map(id=>[id,S.ej[id]]).filter(x=>x[1]), tot=ts.reduce((a,[,e])=>a+minutos(e.tiempo),0);
+  const disp=Object.entries(S.ej).sort((a,b)=>CATS.indexOf(a[1].categoria)-CATS.indexOf(b[1].categoria));
+  return `<button class="back" id="volverSes">← Sesiones</button>
+  <form class="form" onsubmit="return false" style="max-width:760px">
+    <div class="row"><label>Fecha<input type="date" id="s-fecha" value="${esc(d.fecha)}"></label><label>Carga<select id="s-carga">${CARGAS.map(c=>`<option ${d.carga===c?"selected":""}>${c}</option>`).join("")}</select></label></div>
+    <label>Nombre<input type="text" id="s-nombre" value="${esc(d.nombre)}" placeholder="Lunes · Presión arriba"></label>
+    <label>Idea de la sesión<input type="text" id="s-idea" value="${esc(d.idea)}" placeholder="Presionamos juntos y robamos arriba"></label>
+    <label>Notas<textarea id="s-notas" placeholder="Material, quién falta, lesiones…">${esc(d.notas)}</textarea></label>
+    <div class="bar" style="margin:4px 0 0"><div class="grow"><b>Ejercicios</b> <span class="note tot">· ${ts.length} · ${tot}' de trabajo</span></div><button class="btn" id="anadir">${S.picking?"Cerrar biblioteca":"+ Añadir ejercicio"}</button></div>
+    ${S.picking?`<div class="picker"><div class="note">Toca un ejercicio para añadirlo al final.</div><div class="list">${disp.map(([id,e])=>`<button data-add="${esc(id)}"><span class="tag">${esc(e.categoria)}</span> ${esc(e.nombre)} <span class="note">· ${esc(e.tiempo)}</span></button>`).join("")||'<div class="note">La biblioteca está vacía.</div>'}</div></div>`:""}
+    <div class="tl">${ts.map(([id,e],i)=>`<div class="ti"><span class="n">${i+1}</span><div style="min-width:0"><b>${esc(e.nombre)}</b><div class="note">${esc(e.categoria)} · ${esc(e.tiempo)}</div></div>
+      <div class="acts"><button data-up="${i}" aria-label="Subir" ${i===0?"disabled":""}>↑</button><button data-down="${i}" aria-label="Bajar" ${i===ts.length-1?"disabled":""}>↓</button><button data-rm="${i}" aria-label="Quitar">✕</button></div></div>`).join("")||'<div class="note">Todavía sin ejercicios.</div>'}</div>
+    <div class="bar" style="margin-top:8px"><button class="btn pri" id="guardarSes">Guardar sesión</button>
+      ${!S.nueva?(S.delConfirm===S.sesId?`<span class="confirm">¿Borrar la sesión? <button class="btn dan sm" id="borrarSesSi">Sí, borrar</button><button class="btn sm" id="borrarSesNo">No</button></span>`:`<button class="btn dan" id="borrarSes">Borrar sesión</button>`):""}</div>
+  </form>`;
+}
+function leerSes(){const d=S.sesDraft,v=id=>$("#"+id)?.value??"";Object.assign(d,{fecha:v("s-fecha"),carga:v("s-carga"),nombre:v("s-nombre").trim(),idea:v("s-idea").trim(),notas:v("s-notas").trim()})}
+app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!t)return;
+  if(t.id==="volverSes"){S.view="se";S.delConfirm=null;render();return}
+  if(t.id==="editarSes"){S.sesDraft=structuredClone(S.se[S.sesId]);S.sesDraft.tareas=S.sesDraft.tareas||[];S.nueva=false;S.picking=false;S.view="sesion";render();return}
+  if(t.id==="copiar"){const s=S.se[S.sesId],ts=tareasDe(s);
+    const txt=`⚽ ${s.nombre} · ${fmtFecha(s.fecha)}\n${s.idea?"«"+s.idea+"»\n":""}\n`+ts.map(([,e],i)=>`${i+1}. ${e.nombre} (${e.tiempo})${e.objetivo?"\n   "+e.objetivo:""}`).join("\n")+`\n\n¡A por todas!`;
+    try{await navigator.clipboard.writeText(txt);toast("Resumen copiado")}catch(e){toast("No se pudo copiar: mantén pulsado para seleccionar")} return}
+  if(t.id==="compSes"){const s=S.se[S.sesId],ej={};(s.tareas||[]).forEach(id=>{if(S.ej[id])ej[id]=S.ej[id]});compartir(nombreArchivo(s.nombre),paquete(ej,{[S.sesId]:s}),"Sesión: "+s.nombre);return}
+  if(t.id==="imprimir"){window.print();return}
+  if(S.view!=="sesion") return;
+  if(t.id==="anadir"){leerSes();S.picking=!S.picking;render();return}
+  if(t.dataset.add){leerSes();S.sesDraft.tareas.push(t.dataset.add);render();toast("Añadido");return}
+  if(t.dataset.up){leerSes();const i=+t.dataset.up,a=S.sesDraft.tareas;[a[i-1],a[i]]=[a[i],a[i-1]];render();return}
+  if(t.dataset.down){leerSes();const i=+t.dataset.down,a=S.sesDraft.tareas;[a[i+1],a[i]]=[a[i],a[i+1]];render();return}
+  if(t.dataset.rm){leerSes();S.sesDraft.tareas.splice(+t.dataset.rm,1);render();return}
+  if(t.id==="borrarSes"){leerSes();S.delConfirm=S.sesId;render();return}
+  if(t.id==="borrarSesNo"){leerSes();S.delConfirm=null;render();return}
+  if(t.id==="borrarSesSi"){try{await S.db.doc("sesiones/"+S.sesId).delete();toast("Sesión borrada");S.view="se";S.delConfirm=null;render()}catch(e){S.error="No se pudo borrar ("+(e.code||"error")+").";render()}return}
+  if(t.id==="guardarSes"){leerSes();if(!S.sesDraft.nombre){toast("Ponle nombre a la sesión");return}
+    if(!S.db){toast("No se puede guardar: la pizarra no tiene conexión");return}
+    try{await S.db.doc("sesiones/"+S.sesId).set({...S.sesDraft,actualizado:ahora()});toast("Sesión guardada");S.view="vista";render()}
+    catch(e){if(e.code==="invalid_argument"){S.canWrite=false;S.error="No se pudo guardar en este móvil."}else S.error="No se pudo guardar ("+(e.code||"error")+").";render()}}
+});
+
+// ---------- Almacén en este dispositivo ----------
+const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
+function crearDB(){
+  const subs={ejercicios:[],sesiones:[]}, key=c=>"pizarra."+c, leer=c=>LS.get(key(c),{});
+  const emitir=c=>{const m=leer(c);const snap={docs:Object.entries(m).map(([id,d])=>({id,data:()=>d}))};subs[c].forEach(f=>f(snap))};
+  const doc=p=>{const [c,id]=p.split("/");return{
+    async set(d){const m=leer(c);m[id]=d;if(!LS.set(key(c),m))throw{code:"quota_exceeded"};emitir(c)},
+    async update(d){const m=leer(c);if(!m[id])throw{code:"not_found"};m[id]={...m[id],...d};LS.set(key(c),m);emitir(c)},
+    async delete(){const m=leer(c);delete m[id];LS.set(key(c),m);emitir(c)}}};
+  return {doc,leer,
+    collection:c=>({onSnapshot(f){subs[c].push(f);setTimeout(()=>emitir(c),0);return()=>{}}}),
+    fusionar(c,nuevos){const m=leer(c);Object.assign(m,nuevos);if(!LS.set(key(c),m))throw{code:"quota_exceeded"};emitir(c)},
+    vaciar(){LS.set(key("ejercicios"),{});LS.set(key("sesiones"),{});emitir("ejercicios");emitir("sesiones")}};
+}
+
+// ---------- Mi club ----------
+S.club=LS.get("pizarra.club",{nombre:"",sub:"",escudo:""});
+function aplicarClub(){
+  $("#clubImg").src=S.club.escudo||"icons/icon-192.png";
+  $("#clubImg").alt=S.club.nombre?"Escudo de "+S.club.nombre:"Pizarra del Entrenador";
+  $("#clubName").textContent=S.club.nombre?"Pizarra "+S.club.nombre:"Pizarra del Entrenador";
+  $("#clubSub").textContent=S.club.sub||"Ejercicios y sesiones";
+  document.title=S.club.nombre?"Pizarra "+S.club.nombre:"Pizarra del Entrenador";
+}
+let promptInstalar=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();promptInstalar=e;if(S.view==="club")render()});
+function vistaClub(){
+  const n=Object.keys(S.ej).length,m=Object.keys(S.se).length;
+  return `<div class="clubgrid">
+  <section class="form ses" style="gap:10px"><h3>Mi club</h3>
+    <p class="note">El nombre y el escudo solo se guardan en este móvil y salen en la cabecera.</p>
+    <label>Nombre del club o del equipo<input type="text" id="c-nombre" value="${esc(S.club.nombre)}" placeholder="p. ej. C.D. Ejemplo"></label>
+    <label>Subtítulo<input type="text" id="c-sub" value="${esc(S.club.sub)}" placeholder="p. ej. Cadete A · temporada 26-27"></label>
+    <label>Escudo<input type="file" id="c-escudo" accept="image/*"></label>
+    ${S.club.escudo?`<div class="bar"><img src="${S.club.escudo}" alt="Escudo actual" style="width:56px;height:56px;object-fit:contain;background:#fff;border-radius:8px;padding:4px"><button class="btn sm" id="c-quitar">Quitar escudo</button></div>`:""}
+    <div class="bar"><button class="btn pri" id="c-guardar">Guardar</button></div>
+  </section>
+  <section class="form ses" style="gap:10px"><h3>Tus datos</h3>
+    <p class="note">Tienes <b>${n}</b> ejercicios y <b>${m}</b> sesiones guardados <b>en este dispositivo</b>. No hay cuenta ni nube: exporta una copia de vez en cuando para no perderlos y para pasarlos a otro móvil o a otro entrenador.</p>
+    <div class="bar"><button class="btn pri" id="exportar">Exportar todo</button>
+      <label class="btn" style="flex-direction:row;text-transform:none;letter-spacing:0;font-family:var(--body);font-size:15px;color:var(--ink);cursor:pointer">Importar archivo<input type="file" id="importar" accept=".json,application/json" hidden></label></div>
+    <div class="bar"><button class="btn" id="ejemplos">Cargar ejercicios de ejemplo</button>
+      ${S.delConfirm==="todo"?`<span class="confirm">¿Borrar todo lo de este móvil? <button class="btn dan sm" id="vaciarSi">Sí, borrar</button><button class="btn sm" id="vaciarNo">No</button></span>`:`<button class="btn dan" id="vaciar">Borrar todo</button>`}</div>
+  </section>
+  <section class="form ses" style="gap:8px"><h3>Instalar en el móvil</h3>
+    ${promptInstalar?`<div class="bar"><button class="btn pri" id="instalar">Instalar la app</button></div>`:""}
+    <p class="note"><b>Android (Chrome):</b> menú ⋮ → «Instalar aplicación» o «Añadir a pantalla de inicio».<br><b>iPhone (Safari):</b> botón Compartir → «Añadir a pantalla de inicio».<br>Queda un icono como el de cualquier app y funciona sin cobertura en el campo.</p>
+  </section>
+  <section class="form ses" style="gap:8px"><h3>Cómo se comparte</h3>
+    <p class="note">En un ejercicio o en una sesión, pulsa <b>Compartir</b>: se envía un archivo por WhatsApp, correo o lo que tengas. Quien lo reciba lo abre aquí con <b>Importar archivo</b> y le aparece en su biblioteca. Los ejercicios con el mismo nombre interno se actualizan, no se duplican.</p>
+  </section></div>`;
+}
+function paquete(ej,se){return {app:"pizarra-entrenador",version:1,exportado:ahora(),ejercicios:ej,sesiones:se}}
+function descargar(nombre,obj){const b=new Blob([JSON.stringify(obj,null,1)],{type:"application/json"});const u=URL.createObjectURL(b);
+  const a=document.createElement("a");a.href=u;a.download=nombre;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),2000)}
+async function compartir(nombre,obj,texto){
+  try{const f=new File([JSON.stringify(obj)],nombre,{type:"application/json"});
+    if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:nombre,text:texto});return}}catch(e){if(e&&e.name==="AbortError")return}
+  descargar(nombre,obj);toast("Archivo descargado: envíalo por WhatsApp o correo")}
+const nombreArchivo=s=>(s||"pizarra").normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^\w]+/g,"-").replace(/^-|-$/g,"").toLowerCase().slice(0,50)+".json";
+async function importarTexto(txt){
+  let d;try{d=JSON.parse(txt)}catch(e){toast("Ese archivo no es de la pizarra");return}
+  if(!d||typeof d!=="object"||(!d.ejercicios&&!d.sesiones)){toast("Ese archivo no es de la pizarra");return}
+  const ej={},se={};
+  for(const [id,e] of Object.entries(d.ejercicios||{})) if(e&&typeof e.nombre==="string") ej[String(id).slice(0,80)]={...e,diagrama:e.diagrama&&Array.isArray(e.diagrama.el)?e.diagrama:null};
+  for(const [id,s] of Object.entries(d.sesiones||{})) if(s&&typeof s.nombre==="string") se[String(id).slice(0,80)]={...s,tareas:Array.isArray(s.tareas)?s.tareas.map(String):[]};
+  try{S.db.fusionar("ejercicios",ej);S.db.fusionar("sesiones",se);toast(`Importados ${Object.keys(ej).length} ejercicios y ${Object.keys(se).length} sesiones`)}
+  catch(e){toast("No cabe más en este móvil: borra algo o exporta y limpia")}
+}
+async function cargarEjemplos(){try{const r=await fetch("ejemplos.json",{cache:"no-cache"});await importarTexto(await r.text())}catch(e){toast("No se pudieron cargar los ejemplos (¿sin conexión?)")}}
+app.addEventListener("change",async ev=>{
+  if(ev.target.id==="importar"&&ev.target.files[0]){await importarTexto(await ev.target.files[0].text());ev.target.value="";render()}
+  if(ev.target.id==="c-escudo"&&ev.target.files[0]){const f=ev.target.files[0];const img=new Image();img.onload=()=>{const c=document.createElement("canvas"),k=Math.min(1,160/Math.max(img.width,img.height));
+    c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);S.club.escudo=c.toDataURL("image/png");URL.revokeObjectURL(img.src);render()};img.src=URL.createObjectURL(f)}
+});
+app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!t||S.view!=="club")return;
+  const v=id=>$("#"+id)?.value??"";
+  if(t.id==="c-guardar"){S.club.nombre=v("c-nombre").trim();S.club.sub=v("c-sub").trim();LS.set("pizarra.club",S.club)?toast("Guardado"):toast("No se pudo guardar el escudo: prueba con una imagen más pequeña");aplicarClub();render()}
+  if(t.id==="c-quitar"){S.club.escudo="";LS.set("pizarra.club",S.club);aplicarClub();render()}
+  if(t.id==="exportar") compartir("pizarra-"+new Date().toISOString().slice(0,10)+".json",paquete(S.ej,S.se),"Copia de mi pizarra de entrenamientos");
+  if(t.id==="ejemplos"){await cargarEjemplos();render()}
+  if(t.id==="vaciar"){S.delConfirm="todo";render()}
+  if(t.id==="vaciarNo"){S.delConfirm=null;render()}
+  if(t.id==="vaciarSi"){S.db.vaciar();S.delConfirm=null;toast("Borrado");render()}
+  if(t.id==="instalar"&&promptInstalar){promptInstalar.prompt();promptInstalar=null;render()}
+});
+
+// ---------- Arranque ----------
+(async()=>{
+  aplicarClub();
+  const db=crearDB(); S.db=db;
+  if(!LS.get("pizarra.iniciada",false)&&!Object.keys(db.leer("ejercicios")).length){LS.set("pizarra.iniciada",true);await cargarEjemplos()}
+  let llegados=0;const listo=()=>{if(++llegados>=2&&S.view!=="edit"&&S.view!=="sesion")render()};
+  db.collection("ejercicios").onSnapshot(snap=>{S.ej={};snap.docs.forEach(d=>S.ej[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
+  db.collection("sesiones").onSnapshot(snap=>{S.se={};snap.docs.forEach(d=>S.se[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
+  if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+})();
+</script>
+
+</body></html>
