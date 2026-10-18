@@ -113,7 +113,7 @@ label{display:flex;flex-direction:column;gap:4px;font-family:var(--label);font-w
 .obj{background:color-mix(in srgb,var(--crema) 18%,var(--surface));border-left:4px solid var(--crema);padding:6px 10px;margin:6px 0;font-size:14px}
 ul{margin:4px 0 4px 18px;padding:0}
 .tot{font-variant-numeric:tabular-nums}
-.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;z-index:20}
+.toast{max-width:min(92vw,520px);text-align:center;position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;z-index:20}
 @media print{header,.back,.bar .btn,.toast,body::before{display:none!important}body{background:#fff;color:#000}.tarea{break-inside:avoid;border-color:#bbb}main{padding:0}}
 @media (prefers-reduced-motion:no-preference){.card,.ses{transition:transform .12s}.card:hover,.ses:hover{transform:translateY(-2px)}}
 </style>
@@ -411,6 +411,13 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
     catch(e){if(e.code==="invalid_argument"){S.canWrite=false;S.error="No se pudo guardar en este móvil."}else S.error="No se pudo guardar ("+(e.code||"error")+").";render()}}
 });
 
+// ---------- Versión y novedades (la más nueva arriba) ----------
+const VERSION="1.2";
+const NOVEDADES=[
+  ["1.2","18-oct-2026",["Número de versión y esta lista de novedades.","Aviso la primera vez que se abre una versión nueva."]],
+  ["1.1","18-oct-2026",["Pases, carreras y conducciones se dibujan arrastrando con un dedo en el móvil.","Mover jugadores y conos ya no desplaza la página."]],
+  ["1.0","18-oct-2026",["Primera versión: biblioteca de ejercicios con pizarra táctil, sesiones, compartir e importar, «Mi club» y uso sin conexión."]]];
+function htmlNovedades(){return NOVEDADES.map(([v,f,l])=>`<div><b>Versión ${v}</b> <span class="note">· ${f}</span><ul>${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
 // ---------- Almacén en este dispositivo ----------
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
@@ -433,7 +440,7 @@ function aplicarClub(){
   $("#clubImg").src=S.club.escudo||"icons/icon-192.png";
   $("#clubImg").alt=S.club.nombre?"Escudo de "+S.club.nombre:"Pizarra del Entrenador";
   $("#clubName").textContent=S.club.nombre?"Pizarra "+S.club.nombre:"Pizarra del Entrenador";
-  $("#clubSub").textContent=S.club.sub||"Ejercicios y sesiones";
+  $("#clubSub").textContent=(S.club.sub||"Ejercicios y sesiones")+" · v"+VERSION;
   document.title=S.club.nombre?"Pizarra "+S.club.nombre:"Pizarra del Entrenador";
 }
 let promptInstalar=null;
@@ -460,6 +467,7 @@ function vistaClub(){
     ${promptInstalar?`<div class="bar"><button class="btn pri" id="instalar">Instalar la app</button></div>`:""}
     <p class="note"><b>Android (Chrome):</b> menú ⋮ → «Instalar aplicación» o «Añadir a pantalla de inicio».<br><b>iPhone (Safari):</b> botón Compartir → «Añadir a pantalla de inicio».<br>Queda un icono como el de cualquier app y funciona sin cobertura en el campo.</p>
   </section>
+  <section class="form ses" style="gap:8px"><h3>Versión ${VERSION} · novedades</h3>${htmlNovedades()}</section>
   <section class="form ses" style="gap:8px"><h3>Cómo se comparte</h3>
     <p class="note">En un ejercicio o en una sesión, pulsa <b>Compartir</b>: se envía un archivo por WhatsApp, correo o lo que tengas. Quien lo reciba lo abre aquí con <b>Importar archivo</b> y le aparece en su biblioteca. Los ejercicios con el mismo nombre interno se actualizan, no se duplican.</p>
   </section></div>`;
@@ -508,6 +516,8 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   db.collection("ejercicios").onSnapshot(snap=>{S.ej={};snap.docs.forEach(d=>S.ej[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
   db.collection("sesiones").onSnapshot(snap=>{S.se={};snap.docs.forEach(d=>S.se[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
   if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+  const vista=LS.get("pizarra.version",null);
+  if(vista!==VERSION){LS.set("pizarra.version",VERSION);if(vista){const n=NOVEDADES[0][2][0];setTimeout(()=>toast("Novedades de la versión "+VERSION+": "+n),800)}}
 })();
 </script>
 

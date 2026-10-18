@@ -1,0 +1,14 @@
+# Novedades de la Pizarra del Entrenador
+
+La versión en uso sale en la cabecera de la app y en «Mi club».
+
+## 1.2 · 18-oct-2026
+- Número de versión visible y lista de novedades dentro de la app.
+- Aviso la primera vez que se abre una versión nueva.
+
+## 1.1 · 18-oct-2026
+- Pases, carreras y conducciones se dibujan arrastrando con un dedo en el móvil.
+- Mover jugadores y conos ya no desplaza la página.
+
+## 1.0 · 18-oct-2026
+- Primera versión: biblioteca de ejercicios con pizarra táctil, sesiones, compartir e importar, «Mi club» y uso sin conexión.
