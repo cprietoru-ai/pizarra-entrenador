@@ -74,6 +74,7 @@ textarea{min-height:76px;resize:vertical}
 .board{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 100px)}
 @media (max-width:860px){.board{position:static}}
 .board svg{width:100%;height:auto;display:block;background:var(--pitch);border-radius:8px;touch-action:none;user-select:none}
+#edwrap{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 .tools{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
 .tool{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);background:var(--surface);border-radius:8px;padding:6px 9px;font-size:14px;font-weight:600}
 .tool[aria-pressed="true"]{border-color:var(--club);background:var(--chip);box-shadow:inset 0 0 0 1.5px var(--club)}
@@ -272,7 +273,7 @@ function leerForm(){
     jugadores:v("f-jugadores").trim(),objetivo:v("f-objetivo").trim(),descripcion:v("f-descripcion").trim(),consignas:v("f-consignas").split("\n").map(s=>s.trim()).filter(Boolean),
     variantes:v("f-variantes").trim(),fuente:v("f-fuente").trim()});
 }
-function redibujar(preview){ $("#edwrap").innerHTML=svgDiagrama(S.draft.diagrama,{editable:true,uid:"e",preview}); enlazarSvg() }
+function redibujar(preview){ $("#edwrap").innerHTML=svgDiagrama(S.draft.diagrama,{editable:true,uid:"e",preview}) }
 function snap(v){return Math.round(v*2)/2}
 function punto(ev){const svg=$("#edsvg");const p=svg.createSVGPoint();p.x=ev.clientX;p.y=ev.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());
   const {w,h}=S.draft.diagrama;return [Math.min(w,Math.max(0,snap(q.x))),Math.min(h,Math.max(0,snap(q.y)))]}
@@ -281,19 +282,27 @@ function cercano(x,y){const els=S.draft.diagrama.el,lim=Math.max(2,S.draft.diagr
     else if(el[0]==="zona"){d=(x>=el[1]&&x<=el[1]+el[3]&&y>=el[2]&&y<=el[2]+el[4])?lim*.9:1e9} else d=Math.hypot(x-el[1],y-el[2]);
     if(d<bd){bd=d;best=i}});return bd<=lim?best:-1}
 function guardarHist(){S.hist.push(JSON.stringify(S.draft.diagrama.el)); if(S.hist.length>50) S.hist.shift(); const b=$("#deshacer"); if(b) b.disabled=false}
+let drag=null; // gesto en curso: {i} mover un elemento, {flecha,x,y} dibujar una flecha
 function enlazarSvg(){
-  const svg=$("#edsvg"); if(!svg||!S.canWrite) return;
-  let drag=null;
-  svg.onpointerdown=ev=>{ev.preventDefault();svg.setPointerCapture(ev.pointerId);const [x,y]=punto(ev),t=S.tool;
+  // Los gestos se escuchan en #edwrap, que no se redibuja: el SVG de dentro sí se
+  // regenera en cada movimiento, y si el gesto viviera en él el móvil lo perdería
+  // a mitad y lo tomaría como desplazar la página.
+  const wrap=$("#edwrap"); if(!wrap||!S.canWrite) return;
+  const quieto=e=>{if(e.cancelable)e.preventDefault()};
+  wrap.addEventListener("touchstart",quieto,{passive:false});
+  wrap.addEventListener("touchmove",quieto,{passive:false});
+  wrap.onpointerdown=ev=>{if(!$("#edsvg"))return;ev.preventDefault();try{wrap.setPointerCapture(ev.pointerId)}catch(e){}
+    const [x,y]=punto(ev),t=S.tool;drag=null;
     if(t==="mover"){const i=cercano(x,y);if(i>=0&&!["pase","carrera","conduccion","zona"].includes(S.draft.diagrama.el[i][0])){guardarHist();drag={i}}}
     else if(["pase","carrera","conduccion"].includes(t)) drag={flecha:t,x,y};
     else if(t==="borrar"){const i=cercano(x,y);if(i>=0){guardarHist();S.draft.diagrama.el.splice(i,1);redibujar()}}
     else if(t==="texto"){const txt=($("#textoTool")?.value||"").trim();if(txt){guardarHist();S.draft.diagrama.el.push(["texto",x,y,txt]);redibujar()}else toast("Escribe primero el texto")}
-    else {guardarHist();S.draft.diagrama.el.push(t==="cono"||t==="balon"?[t,x,y]:[t,x,y]);redibujar()}};
-  svg.onpointermove=ev=>{if(!drag) return;const [x,y]=punto(ev);
+    else {guardarHist();S.draft.diagrama.el.push([t,x,y]);redibujar()}};
+  wrap.onpointermove=ev=>{if(!drag) return;ev.preventDefault();const [x,y]=punto(ev);
     if(drag.i!==undefined){const el=S.draft.diagrama.el[drag.i];el[1]=x;el[2]=y;redibujar()}
     else if(drag.flecha) redibujar([drag.flecha,drag.x,drag.y,x,y])};
-  svg.onpointerup=ev=>{if(drag&&drag.flecha){const [x,y]=punto(ev);if(Math.hypot(x-drag.x,y-drag.y)>=1.5){guardarHist();S.draft.diagrama.el.push([drag.flecha,drag.x,drag.y,x,y])}redibujar()}drag=null};
+  wrap.onpointerup=ev=>{if(drag&&drag.flecha){const [x,y]=punto(ev);if(Math.hypot(x-drag.x,y-drag.y)>=1.5){guardarHist();S.draft.diagrama.el.push([drag.flecha,drag.x,drag.y,x,y])}redibujar()}drag=null};
+  wrap.onpointercancel=()=>{if(drag){drag=null;redibujar()}};
 }
 function montarEditor(){
   enlazarSvg();
