@@ -2,6 +2,9 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.3 · 18-oct-2026
+- Convive con otras apps del mismo sitio (como la Esquina del Entrenador) sin borrarles el modo sin conexión.
+
 ## 1.2 · 18-oct-2026
 - Número de versión visible y lista de novedades dentro de la app.
 - Aviso la primera vez que se abre una versión nueva.
