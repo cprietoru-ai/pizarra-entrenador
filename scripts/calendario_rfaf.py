@@ -15,12 +15,23 @@ import glob, html, http.cookiejar, io, json, os, re, sys, time, urllib.request
 from PIL import Image
 
 BASE = "https://www.rfaf.es/pnfg/NPcd/"
-op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
-op.addheaders = [("User-Agent", "Mozilla/5.0")]
+
+
+def abrir():
+    op = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(http.cookiejar.CookieJar()))
+    op.addheaders = [("User-Agent", "Mozilla/5.0")]
+    return op
+
+
+op = abrir()
 
 
 def get(url):
+    """La página, o None si la RFAF la sigue dando vacía (pasa a ratos)."""
+    global op
     for i in range(6):
+        if i == 3:
+            op = abrir()  # a mitad de reintentos, cookie nueva
         try:
             op.open(url, timeout=30).read()
             raw = op.open(url, timeout=30).read().decode("latin-1")
@@ -29,7 +40,8 @@ def get(url):
         except Exception as e:
             sys.stderr.write(f"reintento {i}: {e}\n")
         time.sleep(2 + i * 2)
-    raise SystemExit(f"La RFAF no devuelve la página: {url}")
+    sys.stderr.write(f"AVISO: la RFAF no devuelve la página: {url}\n")
+    return None
 
 
 def clean(s):
@@ -38,6 +50,8 @@ def clean(s):
 
 def jornada(grupo, j):
     raw = get(f"{BASE}NFG_CmpJornada?cod_primaria=1000120&CodGrupo={grupo}&CodJornada={j}")
+    if raw is None:
+        return None
     out = []
     for b in raw.split('<tr style="background-color: #ffffff00;">')[1:]:
         teams = re.findall(r'Codigo_Equipo=(\d+)">\s*(.*?)\s*</a>', b, flags=re.S)
@@ -55,6 +69,8 @@ def jornada(grupo, j):
 
 def resultados(grupo, cod):
     raw = get(f"{BASE}NFG_VisCompeticiones_Grupo?&cod_primaria=1000123&codequipo={cod}&codgrupo={grupo}")
+    if raw is None:
+        return None
     pat = r"<h5>(\d+)</h5></td>\s*<td[^>]*>\s*<h5>(.*?)</h5>\s*<h5>(.*?)</h5>.*?</td>\s*<td[^>]*>\s*<h5>(.*?)</h5>"
     res = {}
     for j, l, v, r in re.findall(pat, raw, flags=re.S):
@@ -85,9 +101,21 @@ def escudo(carpeta, cod, url):
 def equipo(carpeta):
     cfg = json.load(open(f"{carpeta}/config.json"))
     grupo, yo = cfg["grupo"], cfg["nombre_rfaf"]
-    partidos, cod, res = {}, None, {}
+    ruta = f"{carpeta}/calendario.json"
+    viejo = json.load(open(ruta)) if os.path.exists(ruta) else {}
+    antes = viejo.get("partidos", {})
+    partidos, cod, res, fallos = {}, None, None, 0
     for j in range(1, 40):
         js = jornada(grupo, j)
+        if js is None:
+            # Página vacía: se deja la jornada como estaba y se sigue
+            fallos += 1
+            if f"j{j:02d}" in antes:
+                partidos[f"j{j:02d}"] = antes[f"j{j:02d}"]
+                continue
+            if j > max([int(k[1:]) for k in antes] or [0]):
+                break
+            continue
         if not js:
             break
         p = next((p for p in js if yo in (p["local"], p["visitante"])), None)
@@ -97,20 +125,22 @@ def equipo(carpeta):
         if cod is None:
             cod = p["cod_local"] if casa else p["cod_visitante"]
             res = resultados(grupo, cod)
+            if res is None:  # sin resultados nuevos: se quedan los que había
+                res = {p["jornada"]: p["resultado"] for p in antes.values() if p.get("resultado")}
         rival = p["visitante"] if casa else p["local"]
         m = re.match(r"(\d{2})-(\d{2})-(\d{4})(?: (\d{2}:\d{2}))?", p["fecha"])
         partidos[f"j{j:02d}"] = {
             "jornada": j, "rival": nombre(rival), "casa": casa,
             "fecha": f"{m[3]}-{m[2]}-{m[1]}" if m else "", "hora": (m[4] or "") if m else "",
-            "campo": p["campo"], "resultado": res.get(j, ""),
+            "campo": p["campo"], "resultado": (res or {}).get(j, ""),
             "derbi": any(d in rival for d in cfg.get("derbis", [])),
             "escudo_rival": escudo(carpeta, p["cod_visitante"] if casa else p["cod_local"],
                                    p["esc_visitante"] if casa else p["esc_local"])}
     if not partidos:
         raise SystemExit(f"{carpeta}: no sale ningún partido (¿cambió la web?)")
+    if fallos:
+        print(f"{carpeta}: {fallos} jornadas sin leer, se quedan como estaban")
     nuevo = {"club": cfg["club"], "categoria": cfg["categoria"], "escudo": cfg["escudo"], "partidos": partidos}
-    ruta = f"{carpeta}/calendario.json"
-    viejo = json.load(open(ruta)) if os.path.exists(ruta) else {}
     if {k: v for k, v in viejo.items() if k != "actualizado"} == nuevo:
         print(f"{carpeta}: sin cambios")
         return
