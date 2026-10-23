@@ -2,6 +2,10 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.5 · 23-oct-2026
+- Conectar con tu equipo: con el código y la contraseña, la plantilla y el calendario llegan y se actualizan solos, en cualquier móvil.
+- El calendario y los resultados se actualizan cada día desde la federación.
+
 ## 1.4 · 23-oct-2026
 - Nueva pestaña «Partidos»: plantilla con fotos, calendario, convocatoria y alineación.
 - Imagen de la convocatoria y de la alineación lista para compartir por WhatsApp.

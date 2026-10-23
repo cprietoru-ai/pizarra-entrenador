@@ -20,3 +20,14 @@ Funciona sin conexión.
 Trae de ejemplo 10 ejercicios basados en fuentes abiertas: el calentamiento preventivo FIFA 11+, juegos reducidos para cadetes (Univ. de Huelva; Castillo et al., 2019) y el FIFA Training Centre.
 
 Es una sola página (`index.html`) sin dependencias, con `sw.js` para el modo sin conexión.
+
+## Equipos conectados
+
+Un equipo puede tener su plantilla y su calendario aquí, en `equipos/<código>/`:
+- `config.json`: grupo de la RFAF, nombre del equipo en la federación y derbis.
+- `calendario.json` y `escudos/`: públicos. Los actualiza cada día la tarea
+  `.github/workflows/calendario.yml` con `scripts/calendario_rfaf.py`.
+- `plantilla.enc.json`: jugadores y fotos, **cifrados** (AES-256-GCM, clave
+  PBKDF2-SHA256). Sin la contraseña del equipo no se puede leer.
+
+En la app: «Mi club» → código del equipo y contraseña, una sola vez.

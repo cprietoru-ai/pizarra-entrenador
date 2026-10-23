@@ -251,7 +251,7 @@ function render(){
 }
 $("#tab-ej").onclick=()=>{S.view="ej";render()};
 $("#tab-se").onclick=()=>{S.view="se";render()};
-$("#tab-pa").onclick=()=>{S.view="pa";S.slot=null;S.img=null;S.delConfirm=null;render()};
+$("#tab-pa").onclick=()=>{S.view="pa";S.slot=null;S.img=null;S.delConfirm=null;render();if(typeof sincronizar==="function")sincronizar()};
 $("#tab-club").onclick=()=>{S.view="club";S.delConfirm=null;render()};
 
 function vistaEjercicios(){
@@ -460,8 +460,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.4";
+const VERSION="1.5";
 const NOVEDADES=[
+  ["1.5","23-oct-2026",["Conectar con tu equipo: con el código y la contraseña, la plantilla y el calendario llegan y se actualizan solos, en cualquier móvil.","El calendario y los resultados se actualizan cada día desde la federación."]],
   ["1.4","23-oct-2026",["Nueva pestaña «Partidos»: plantilla con fotos, calendario, convocatoria y alineación.","Imagen de la convocatoria y de la alineación lista para compartir por WhatsApp.","Importar y exportar el equipo en un archivo: se guarda solo en el móvil."]],
   ["1.3","18-oct-2026",["Convive con otras apps del mismo sitio (como la Esquina del Entrenador) sin borrarles el modo sin conexión."]],
   ["1.2","18-oct-2026",["Número de versión y esta lista de novedades.","Aviso la primera vez que se abre una versión nueva."]],
@@ -506,6 +507,7 @@ function vistaClub(){
     ${S.club.escudo?`<div class="bar"><img src="${S.club.escudo}" alt="Escudo actual" style="width:56px;height:56px;object-fit:contain;background:#fff;border-radius:8px;padding:4px"><button class="btn sm" id="c-quitar">Quitar escudo</button></div>`:""}
     <div class="bar"><button class="btn pri" id="c-guardar">Guardar</button></div>
   </section>
+  <section class="form ses" style="gap:10px"><h3>Mi equipo</h3>${htmlConexion()}</section>
   <section class="form ses" style="gap:10px"><h3>Tus datos</h3>
     <p class="note">Tienes <b>${n}</b> ejercicios y <b>${m}</b> sesiones guardados <b>en este dispositivo</b>. No hay cuenta ni nube: exporta una copia de vez en cuando para no perderlos y para pasarlos a otro móvil o a otro entrenador.</p>
     <div class="bar"><button class="btn pri" id="exportar">Exportar todo</button>
@@ -591,7 +593,7 @@ function vistaPA(){
   if(S.view==="jugador") return vistaJugador();
   if(S.view==="partido") return vistaPartido();
   const l=partidosOrden(), nj=Object.keys(S.eq.jugadores).length, px=proximo();
-  return `<div class="bar"><div class="grow note">Plantilla, calendario, convocatoria y alineación. Se guardan <b>solo en este móvil</b>.</div>
+  return `<div class="bar"><div class="grow note">${S.conex&&!S.conex.error?"Equipo conectado: la plantilla y el calendario se actualizan solos. Tus convocatorias y alineaciones se guardan en este móvil.":S.conex&&S.conex.error?`<span class="over">${esc(S.conex.error)}</span>: revísalo en «Mi club».`:"Plantilla, calendario, convocatoria y alineación. Se guardan <b>solo en este móvil</b>. Si tu club te ha dado un código de equipo, conéctalo en «Mi club»."}</div>
     <button class="btn" id="paPlantilla">Plantilla (${nj})</button><button class="btn pri" id="paNuevo">+ Partido</button></div>
     ${!nj&&!l.length?`<div class="empty"><b>Todavía no hay equipo</b>Mete la plantilla y los partidos a mano, o importa el archivo del equipo si te lo han pasado.
       <div class="bar" style="justify-content:center;margin-top:12px"><label class="btn pri filebtn">Importar equipo<input type="file" id="paImportar" accept=".json,application/json" hidden></label></div></div>`
@@ -737,6 +739,10 @@ app.addEventListener("change",async ev=>{const t=ev.target;if(!PA_VISTAS.include
 async function importarEquipo(txt){
   let d;try{d=JSON.parse(txt)}catch(e){toast("Ese archivo no es de un equipo");return}
   const e=d&&d.tipo==="equipo"&&d.equipo;if(!e||typeof e!=="object"){toast("Ese archivo no es de un equipo");return}
+  fusionarEquipo(e);
+  if(eqGuardar()) toast(`Equipo importado: ${Object.keys(e.jugadores||{}).length} jugadores y ${Object.keys(e.partidos||{}).length} partidos`);
+}
+function fusionarEquipo(e){
   const eq=S.eq;
   for(const k of ["club","categoria","lema","escudo"]) if(typeof e[k]==="string"&&e[k]) eq[k]=e[k];
   for(const [id,j] of Object.entries(e.jugadores||{})) if(j&&(j.corto||j.nombre)) eq.jugadores[String(id).slice(0,60)]={...eq.jugadores[id],...j};
@@ -744,9 +750,74 @@ async function importarEquipo(txt){
     // Lo del entrenador (convocatoria, once, capitán, citación) no se pisa al reimportar el calendario
     eq.partidos[String(id).slice(0,60)]={...p,...pick(prev,["convocados","once","sistema","capitan","citacion"]),resultado:p.resultado||prev.resultado||""}}
   Object.assign(eq.campos,e.campos||{});
-  if(eqGuardar()) toast(`Equipo importado: ${Object.keys(e.jugadores||{}).length} jugadores y ${Object.keys(e.partidos||{}).length} partidos`);
 }
 function pick(o,ks){const r={};ks.forEach(k=>{if(o[k]!==undefined&&o[k]!==""&&!(Array.isArray(o[k])&&!o[k].length))r[k]=o[k]});return r}
+
+// ---------- Equipo conectado (1.5) ----------
+// Con código y contraseña, la app baja sola de este mismo sitio:
+//   equipos/<código>/calendario.json   público, lo actualiza cada día la tarea del repo
+//   equipos/<código>/plantilla.enc.json   jugadores y fotos, cifrado (AES-GCM, clave PBKDF2)
+// Lo del entrenador (convocatorias, onces, citaciones) no se pisa nunca.
+const CONEX_KEY="pizarra.conexion";
+S.conex=(()=>{try{return JSON.parse(localStorage.getItem(CONEX_KEY))||null}catch(e){return null}})();
+function conexGuardar(){try{S.conex?localStorage.setItem(CONEX_KEY,JSON.stringify(S.conex)):localStorage.removeItem(CONEX_KEY)}catch(e){}}
+const b64=x=>Uint8Array.from(atob(x),c=>c.charCodeAt(0));
+async function descifrar(r,clave){
+  const base=await crypto.subtle.importKey("raw",new TextEncoder().encode(clave),"PBKDF2",false,["deriveKey"]);
+  const k=await crypto.subtle.deriveKey({name:"PBKDF2",hash:"SHA-256",salt:b64(r.sal),iterations:r.iter},base,{name:"AES-GCM",length:256},false,["decrypt"]);
+  const gz=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64(r.iv)},k,b64(r.datos));
+  return JSON.parse(await new Response(new Blob([gz]).stream().pipeThrough(new DecompressionStream("gzip"))).text());
+}
+let sincronizando=null;
+async function sincronizar({forzar=false,avisar=false}={}){
+  const c=S.conex; if(!c) return false;
+  if(sincronizando) return sincronizando;
+  if(!forzar&&c.ultima&&Date.now()-c.ultima<10*60*1000) return true;
+  sincronizando=(async()=>{
+    const dir="equipos/"+encodeURIComponent(c.equipo)+"/";
+    try{
+      const rc=await fetch(dir+"calendario.json",{cache:"no-store"});
+      if(rc.status===404){c.error="No existe ese equipo";return false}
+      const cal=await rc.json();
+      fusionarEquipo({club:cal.club,categoria:cal.categoria,escudo:cal.escudo,partidos:cal.partidos});
+      const rp=await fetch(dir+"plantilla.enc.json",{cache:"no-store"});
+      if(rp.ok){const r=await rp.json();
+        if(forzar||r.exportado!==c.plantilla){
+          let pl;try{pl=await descifrar(r,c.clave)}catch(e){c.error="Contraseña incorrecta";eqGuardar();return false}
+          for(const id of Object.keys(S.eq.jugadores)) if(S.eq.jugadores[id].remoto&&!pl.jugadores[id]) delete S.eq.jugadores[id];
+          for(const j of Object.values(pl.jugadores)) j.remoto=true;
+          fusionarEquipo(pl);c.plantilla=r.exportado}}
+      c.error="";c.ultima=Date.now();c.calendario=cal.actualizado||"";eqGuardar();
+      if(avisar) toast("Equipo actualizado");return true
+    }catch(e){if(avisar)toast("Sin conexión: se usan los datos guardados");return false}
+    finally{conexGuardar();sincronizando=null;if(["club","pa"].includes(S.view))render()}
+  })();
+  return sincronizando;
+}
+function htmlConexion(){
+  const c=S.conex;
+  if(c&&!c.error) return `<p class="note">Conectado a <b>${esc(S.eq.club||c.equipo)}</b>. La plantilla y el calendario se actualizan solos al abrir la app${c.calendario?` (calendario de la federación del ${esc(new Date(c.calendario).toLocaleDateString("es-ES",{day:"numeric",month:"short"}))})`:""}.</p>
+    <div class="bar"><button class="btn" id="cx-act">Actualizar ahora</button>${S.delConfirm==="conex"?`<span class="confirm">¿Desconectar? Se quitan los jugadores del equipo de este móvil. <button class="btn dan sm" id="cx-noSi">Sí</button><button class="btn sm" id="cx-noNo">No</button></span>`:`<button class="btn dan sm" id="cx-no">Desconectar</button>`}</div>`;
+  return `<p class="note">Si tu club te ha dado un código de equipo y una contraseña, ponlos aquí una vez: la plantilla con fotos y el calendario llegarán solos y se mantendrán al día.</p>
+    ${c&&c.error?`<div class="err">${esc(c.error)}</div>`:""}
+    <div class="row"><label>Código del equipo<input type="text" id="cx-eq" value="${esc(c?c.equipo:"")}" autocapitalize="none" autocomplete="off" spellcheck="false"></label>
+      <label>Contraseña<input type="password" id="cx-clave" autocomplete="current-password"></label></div>
+    <div class="bar"><button class="btn pri" id="cx-si">Conectar</button></div>`;
+}
+app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!t||S.view!=="club")return;
+  if(t.id==="cx-si"){const eq=($("#cx-eq").value||"").trim().toLowerCase(),cl=$("#cx-clave").value;
+    if(!eq||!cl){toast("Pon el código y la contraseña");return}
+    t.disabled=true;t.textContent="Conectando…";S.conex={equipo:eq,clave:cl};
+    const ok=await sincronizar({forzar:true});
+    if(ok) toast("Conectado: "+Object.keys(S.eq.jugadores).length+" jugadores y "+Object.keys(S.eq.partidos).length+" partidos");
+    else if(!S.conex.error){S.conex.error="No se pudo conectar. Comprueba la cobertura.";conexGuardar()}
+    render();return}
+  if(t.id==="cx-act"){await sincronizar({forzar:true,avisar:true});return}
+  if(t.id==="cx-no"){S.delConfirm="conex";render();return}
+  if(t.id==="cx-noNo"){S.delConfirm=null;render();return}
+  if(t.id==="cx-noSi"){for(const id of Object.keys(S.eq.jugadores)) if(S.eq.jugadores[id].remoto) delete S.eq.jugadores[id];
+    S.eq.campos={};eqGuardar();S.conex=null;conexGuardar();S.delConfirm=null;render();toast("Desconectado");return}
+});
 
 // ---------- Imágenes (1080x1920, para WhatsApp y stories) ----------
 const cargarImg=src=>new Promise(ok=>{if(!src)return ok(null);const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src});
@@ -824,6 +895,7 @@ async function dibujar(p,tipo){
   db.collection("ejercicios").onSnapshot(snap=>{S.ej={};snap.docs.forEach(d=>S.ej[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
   db.collection("sesiones").onSnapshot(snap=>{S.se={};snap.docs.forEach(d=>S.se[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
   if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+  sincronizar();
   const vista=LS.get("pizarra.version",null);
   if(vista!==VERSION){LS.set("pizarra.version",VERSION);if(vista){const n=NOVEDADES[0][2][0];setTimeout(()=>toast("Novedades de la versión "+VERSION+": "+n),800)}}
 })();

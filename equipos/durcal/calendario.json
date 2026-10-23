@@ -1,0 +1,250 @@
+{
+ "club": "C.D. Dúrcal",
+ "categoria": "4ª Andaluza Cadete",
+ "escudo": "equipos/durcal/escudo.png",
+ "partidos": {
+  "j01": {
+   "jornada": 1,
+   "rival": "Almuñécar 2021 A",
+   "casa": true,
+   "fecha": "2026-10-02",
+   "hora": "17:30",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
+   "resultado": "3-0",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/24492801.png"
+  },
+  "j02": {
+   "jornada": 2,
+   "rival": "Unión Órgiva-Alpujarra",
+   "casa": false,
+   "fecha": "2026-10-18",
+   "hora": "11:00",
+   "campo": "Órgiva - LA MANCANZUÑA POLIDEPORTIVO MUNICIPAL (F11-F7)",
+   "resultado": "1-7",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/561415.png"
+  },
+  "j03": {
+   "jornada": 3,
+   "rival": "Padul Balompié B",
+   "casa": true,
+   "fecha": "2026-10-24",
+   "hora": "12:30",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
+   "resultado": "",
+   "derbi": true,
+   "escudo_rival": "equipos/durcal/escudos/17856317.png"
+  },
+  "j04": {
+   "jornada": 4,
+   "rival": "Atlético Salobreña",
+   "casa": false,
+   "fecha": "2026-11-08",
+   "hora": "",
+   "campo": "Salobreña - LOS TRANCES ESTADIO MUNICIPAL (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/556118.png"
+  },
+  "j05": {
+   "jornada": 5,
+   "rival": "Almuñécar C.F.",
+   "casa": true,
+   "fecha": "2026-11-15",
+   "hora": "",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/38963090.png"
+  },
+  "j06": {
+   "jornada": 6,
+   "rival": "Origen Valle de Lecrín",
+   "casa": false,
+   "fecha": "2026-11-22",
+   "hora": "",
+   "campo": "Lecrín - LECRÍN BLAS INFANTE (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/30341006.png"
+  },
+  "j07": {
+   "jornada": 7,
+   "rival": "Motril A",
+   "casa": true,
+   "fecha": "2026-11-29",
+   "hora": "",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/44822776.png"
+  },
+  "j08": {
+   "jornada": 8,
+   "rival": "Recreativo Cájar 2016",
+   "casa": false,
+   "fecha": "2026-12-13",
+   "hora": "",
+   "campo": "Cájar - CÁJAR POLIDEPORTIVO MUNICIPAL (F11-F7 1)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/48515716.png"
+  },
+  "j09": {
+   "jornada": 9,
+   "rival": "Costa Tropical",
+   "casa": false,
+   "fecha": "2026-12-20",
+   "hora": "",
+   "campo": "Motril - PUNTALÓN CAMPO de FÚTBOL (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/28636816.png"
+  },
+  "j10": {
+   "jornada": 10,
+   "rival": "Alborán",
+   "casa": true,
+   "fecha": "2027-01-10",
+   "hora": "",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/25517390.png"
+  },
+  "j11": {
+   "jornada": 11,
+   "rival": "Puerto de Motril C.F.",
+   "casa": false,
+   "fecha": "2027-01-17",
+   "hora": "",
+   "campo": "Motril - ANTONIO GONZALEZ RUIZ ESTADIO MUNICIPAL (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/526518.png"
+  },
+  "j12": {
+   "jornada": 12,
+   "rival": "Almuñécar 2021 A",
+   "casa": false,
+   "fecha": "2027-01-24",
+   "hora": "",
+   "campo": "Almuñécar - RíO VERDE CAMPO de FÚTBOL (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/24492801.png"
+  },
+  "j13": {
+   "jornada": 13,
+   "rival": "Unión Órgiva-Alpujarra",
+   "casa": true,
+   "fecha": "2027-02-07",
+   "hora": "",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/561415.png"
+  },
+  "j14": {
+   "jornada": 14,
+   "rival": "Padul Balompié B",
+   "casa": false,
+   "fecha": "2027-02-14",
+   "hora": "",
+   "campo": "Padul - PADUL POLIDEPORTIVO MUNICIPAL (F11-F7)",
+   "resultado": "",
+   "derbi": true,
+   "escudo_rival": "equipos/durcal/escudos/17856317.png"
+  },
+  "j15": {
+   "jornada": 15,
+   "rival": "Atlético Salobreña",
+   "casa": true,
+   "fecha": "2027-02-21",
+   "hora": "",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/556118.png"
+  },
+  "j16": {
+   "jornada": 16,
+   "rival": "Almuñécar C.F.",
+   "casa": false,
+   "fecha": "2027-03-07",
+   "hora": "",
+   "campo": "Almuñécar - RíO VERDE CAMPO de FÚTBOL (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/38963090.png"
+  },
+  "j17": {
+   "jornada": 17,
+   "rival": "Origen Valle de Lecrín",
+   "casa": true,
+   "fecha": "2027-03-14",
+   "hora": "",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/30341006.png"
+  },
+  "j18": {
+   "jornada": 18,
+   "rival": "Motril A",
+   "casa": false,
+   "fecha": "2027-04-04",
+   "hora": "",
+   "campo": "Motril - HERMANOS CALLEJÓN CAMPO MUNICIPAL (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/44822776.png"
+  },
+  "j19": {
+   "jornada": 19,
+   "rival": "Recreativo Cájar 2016",
+   "casa": true,
+   "fecha": "2027-04-11",
+   "hora": "",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/48515716.png"
+  },
+  "j20": {
+   "jornada": 20,
+   "rival": "Costa Tropical",
+   "casa": true,
+   "fecha": "2027-04-18",
+   "hora": "",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/28636816.png"
+  },
+  "j21": {
+   "jornada": 21,
+   "rival": "Alborán",
+   "casa": false,
+   "fecha": "2027-04-25",
+   "hora": "",
+   "campo": "Calahonda (Motril) - CALAHONDA CAMPO MUNICIPAL (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/25517390.png"
+  },
+  "j22": {
+   "jornada": 22,
+   "rival": "Puerto de Motril C.F.",
+   "casa": true,
+   "fecha": "2027-05-09",
+   "hora": "",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
+   "resultado": "",
+   "derbi": false,
+   "escudo_rival": "equipos/durcal/escudos/526518.png"
+  }
+ },
+ "actualizado": "2026-10-23T06:35:01Z"
+}
