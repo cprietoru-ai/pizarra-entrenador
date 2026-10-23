@@ -617,7 +617,7 @@ function vistaJugador(){
   return `<button class="back" id="juVolver">← Plantilla</button>
   <form class="form" onsubmit="return false" style="max-width:560px">
     <div class="bar">${fotoHtml(j,"ph big")}<label class="btn filebtn">${j.foto?"Cambiar foto":"Poner foto"}<input type="file" id="juFoto" accept="image/*" hidden></label>${j.foto?`<button class="btn sm" id="juSinFoto">Quitar foto</button>`:""}</div>
-    <div class="row"><label>Nombre en la imagen<input type="text" id="j-corto" value="${esc(j.corto)}" placeholder="p. ej. ZARCO"></label><label>Dorsal<input type="number" inputmode="numeric" id="j-dorsal" value="${esc(j.dorsal??"")}" min="0" max="99"></label></div>
+    <div class="row"><label>Nombre en la imagen<input type="text" id="j-corto" value="${esc(j.corto)}" placeholder="p. ej. LUCAS"></label><label>Dorsal<input type="number" inputmode="numeric" id="j-dorsal" value="${esc(j.dorsal??"")}" min="0" max="99"></label></div>
     <label>Nombre completo<input type="text" id="j-nombre" value="${esc(j.nombre)}"></label>
     <div class="bar"><label class="chk"><input type="checkbox" id="j-portero" ${j.portero?"checked":""}> Portero</label><label class="chk"><input type="checkbox" id="j-capitan" ${j.capitan?"checked":""}> Capitán</label></div>
     <div class="bar"><button class="btn pri" id="juGuardar">Guardar</button>
