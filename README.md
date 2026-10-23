@@ -5,6 +5,7 @@ App web gratuita para entrenadores de fútbol base. Sirve para:
 - **Crear ejercicios** dibujándolos en una pizarra táctil (jugadores, porteros, conos, balón, pases, carreras, conducciones y textos) sobre un campo de F7, medio campo, campo entero, el área o un espacio libre.
 - **Rellenar la ficha** de cada ejercicio: tiempo, espacio, jugadores, objetivo, reglas, consignas, variantes y fuente.
 - **Organizar sesiones**: elegir ejercicios de la biblioteca, ordenarlos y ver el tiempo total.
+- **Preparar los partidos**: plantilla con fotos, calendario, convocatoria y alineación, con una imagen de cada una para mandar al grupo. La plantilla se queda en el móvil; se pasa a otro con «Exportar equipo».
 - **Compartir** un ejercicio o una sesión por WhatsApp o correo, e importarlo en otro móvil.
 - **Personalizarla** con el nombre y el escudo de tu club (solo en tu dispositivo).
 

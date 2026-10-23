@@ -116,17 +116,62 @@ ul{margin:4px 0 4px 18px;padding:0}
 .toast{max-width:min(92vw,520px);text-align:center;position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-weight:600;z-index:20}
 @media print{header,.back,.bar .btn,.toast,body::before{display:none!important}body{background:#fff;color:#000}.tarea{break-inside:avoid;border-color:#bbb}main{padding:0}}
 @media (prefers-reduced-motion:no-preference){.card,.ses{transition:transform .12s}.card:hover,.ses:hover{transform:translateY(-2px)}}
+/* ==== PARTIDOS ==== */
+.tabs{overflow-x:auto;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tabs button{white-space:nowrap;flex:0 0 auto}
+@media (max-width:480px){.tabs button{padding:10px 8px;font-size:15px;letter-spacing:.5px}}
+.h2{font-family:var(--display);font-weight:400;font-size:34px;letter-spacing:.5px;margin:0;line-height:1.05;text-wrap:balance}
+.h3{font-family:var(--label);font-size:21px;margin:0}
+.filebtn{flex-direction:row;text-transform:none;letter-spacing:0;font-family:var(--body);font-size:15px;color:var(--ink);cursor:pointer}
+.btn.pri.filebtn{color:var(--club-ink)}
+.chk{flex-direction:row;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-family:var(--body);font-size:15px;color:var(--ink);font-weight:600}
+.chk input{width:20px;height:20px}
+.tag.rojo{background:var(--rojo);color:#fff}
+.plist{display:flex;flex-direction:column;gap:8px}
+.pcard{display:grid;grid-template-columns:42px 40px minmax(0,1fr) auto;gap:10px;align-items:center;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:8px 12px;text-align:left}
+.pcard.next{border-color:var(--club);box-shadow:inset 0 0 0 1.5px var(--club)}
+.pj{font-family:var(--display);font-size:24px;color:var(--club)}
+.pesc{width:40px;height:40px;object-fit:contain;background:#fff;border-radius:50%;padding:3px;display:inline-block}
+.pesc.big{width:64px;height:64px;flex:0 0 auto}
+.pmid{min-width:0;overflow-wrap:anywhere}
+.pres{font-family:var(--display);font-size:26px}
+.phead{display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.datos{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:14px}
+.datos summary{font-weight:700;cursor:pointer}
+.blk{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:12px;margin-bottom:14px}
+.ph{width:44px;height:44px;border-radius:50%;object-fit:cover;flex:0 0 auto;background:var(--chip);display:inline-flex;align-items:center;justify-content:center;font-family:var(--display);font-size:20px;color:var(--club)}
+.ph.sm{width:38px;height:38px;font-size:17px}
+.ph.big{width:96px;height:96px;font-size:36px}
+.jgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
+.jcard{display:flex;gap:10px;align-items:center;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:8px 10px;min-width:0}
+.convgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;margin-top:8px}
+.cj{display:flex;gap:8px;align-items:center;text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px 4px 4px;font-family:var(--label);font-weight:700;font-size:15px;min-width:0}
+.cj span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cj[aria-pressed="true"]{background:var(--club);color:var(--club-ink);border-color:var(--club)}
+.over{color:var(--rojo)!important;font-weight:700}
+.campo11{position:relative;aspect-ratio:68/80;max-width:460px;margin:10px auto 0;background:var(--pitch);border-radius:10px;border:3px solid rgba(255,255,255,.6);
+  background-image:radial-gradient(circle at 50% 0,transparent 15%,rgba(255,255,255,.55) 15.4%,transparent 16%),linear-gradient(transparent 88%,rgba(255,255,255,.08) 88%)}
+.slot{position:absolute;transform:translate(-50%,-50%);background:none;border:0;padding:0;display:flex;flex-direction:column;align-items:center;gap:2px;width:76px}
+.slot .ph{border:2.5px solid #fff}
+.slot .vacio{background:rgba(0,0,0,.25);color:#fff;font-size:15px;border-style:dashed}
+.slot.sel .ph{box-shadow:0 0 0 4px var(--crema)}
+.sn{font-family:var(--label);font-weight:700;font-size:13px;color:#fff;text-shadow:0 1px 2px #000;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.imgov{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:16px}
+.imgbox{background:var(--surface);border-radius:12px;padding:12px;max-height:100%;overflow:auto;width:min(420px,100%)}
+.imgbox img{width:100%;height:auto;display:block;border-radius:8px}
+/* ==== /PARTIDOS ==== */
 </style>
 
 </head><body>
 <header>
   <div class="wrap hd">
     <img id="clubImg" alt="Pizarra del Entrenador" src="icons/icon-192.png">
-    <div><h1 id="clubName">Pizarra del Entrenador</h1><div class="sub" id="clubSub">Ejercicios y sesiones</div></div>
+    <div><h1 id="clubName">Pizarra del Entrenador</h1><div class="sub" id="clubSub">Entrenos y partidos</div></div>
   </div>
   <nav class="wrap tabs" role="tablist">
     <button role="tab" id="tab-ej" aria-selected="true">Ejercicios</button>
     <button role="tab" id="tab-se" aria-selected="false">Sesiones</button>
+    <button role="tab" id="tab-pa" aria-selected="false">Partidos</button>
     <button role="tab" id="tab-club" aria-selected="false">Mi club</button>
   </nav>
 </header>
@@ -198,12 +243,15 @@ function render(){
   else if(S.view==="se") app.innerHTML=err+vistaSesiones();
   else if(S.view==="sesion") app.innerHTML=err+vistaSesionEdit();
   else if(S.view==="vista") app.innerHTML=err+vistaSesion();
+  else if(PA_VISTAS.includes(S.view)) app.innerHTML=err+vistaPA();
   else if(S.view==="club") app.innerHTML=err+vistaClub();
+  $("#tab-pa").setAttribute("aria-selected",PA_VISTAS.includes(S.view));
   $("#tab-club").setAttribute("aria-selected",S.view==="club");
   if(S.view==="edit") montarEditor();
 }
 $("#tab-ej").onclick=()=>{S.view="ej";render()};
 $("#tab-se").onclick=()=>{S.view="se";render()};
+$("#tab-pa").onclick=()=>{S.view="pa";S.slot=null;S.img=null;S.delConfirm=null;render()};
 $("#tab-club").onclick=()=>{S.view="club";S.delConfirm=null;render()};
 
 function vistaEjercicios(){
@@ -412,8 +460,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.3";
+const VERSION="1.4";
 const NOVEDADES=[
+  ["1.4","23-oct-2026",["Nueva pestaña «Partidos»: plantilla con fotos, calendario, convocatoria y alineación.","Imagen de la convocatoria y de la alineación lista para compartir por WhatsApp.","Importar y exportar el equipo en un archivo: se guarda solo en el móvil."]],
   ["1.3","18-oct-2026",["Convive con otras apps del mismo sitio (como la Esquina del Entrenador) sin borrarles el modo sin conexión."]],
   ["1.2","18-oct-2026",["Número de versión y esta lista de novedades.","Aviso la primera vez que se abre una versión nueva."]],
   ["1.1","18-oct-2026",["Pases, carreras y conducciones se dibujan arrastrando con un dedo en el móvil.","Mover jugadores y conos ya no desplaza la página."]],
@@ -441,7 +490,7 @@ function aplicarClub(){
   $("#clubImg").src=S.club.escudo||"icons/icon-192.png";
   $("#clubImg").alt=S.club.nombre?"Escudo de "+S.club.nombre:"Pizarra del Entrenador";
   $("#clubName").textContent=S.club.nombre?"Pizarra "+S.club.nombre:"Pizarra del Entrenador";
-  $("#clubSub").textContent=(S.club.sub||"Ejercicios y sesiones")+" · v"+VERSION;
+  $("#clubSub").textContent=(S.club.sub||"Entrenos y partidos")+" · v"+VERSION;
   document.title=S.club.nombre?"Pizarra "+S.club.nombre:"Pizarra del Entrenador";
 }
 let promptInstalar=null;
@@ -508,6 +557,264 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   if(t.id==="instalar"&&promptInstalar){promptInstalar.prompt();promptInstalar=null;render()}
 });
 
+// ==== PARTIDOS ====
+// ---------- Partidos: plantilla, calendario, convocatoria y alineación ----------
+// Módulo común a las dos apps (se pega antes de «Arranque» con app/_meter_partidos.py).
+// Todo se guarda en este dispositivo (localStorage "pizarra.equipo"), nunca en la
+// base de datos compartida: son datos de menores (nombres y fotos).
+const PA_VISTAS=["pa","plantilla","jugador","partido"];
+const EQ_KEY="pizarra.equipo";
+const EQ_VACIO={club:"",categoria:"",lema:"",escudo:"",jugadores:{},partidos:{},campos:{}};
+function eqLeer(){try{const v=localStorage.getItem(EQ_KEY);return v?{...EQ_VACIO,...JSON.parse(v)}:structuredClone(EQ_VACIO)}catch(e){return structuredClone(EQ_VACIO)}}
+function eqGuardar(){try{localStorage.setItem(EQ_KEY,JSON.stringify(S.eq));return true}catch(e){toast("No cabe en este móvil: quita alguna foto");return false}}
+S.eq=eqLeer(); S.paId=null; S.juId=null; S.slot=null; S.img=null;
+const SISTEMAS={
+  "4-2-3-1":[["POR",50,92],["LI",13,72],["DFC",37,76],["DFC",63,76],["LD",87,72],["MC",33,51],["MC",67,51],["EI",14,31],["MP",50,34],["ED",86,33],["DC",50,15]],
+  "4-3-3":[["POR",50,92],["LI",13,69],["DFC",37,74],["DFC",63,74],["LD",87,69],["MC",24,49],["MC",50,54],["MC",76,49],["EI",16,25],["DC",50,15],["ED",84,25]],
+  "4-4-2":[["POR",50,92],["LI",13,69],["DFC",37,74],["DFC",63,74],["LD",87,69],["MI",13,44],["MC",37,49],["MC",63,49],["MD",87,44],["DC",35,18],["DC",65,18]],
+  "4-1-4-1":[["POR",50,92],["LI",13,70],["DFC",37,75],["DFC",63,75],["LD",87,70],["MCD",50,58],["MI",13,39],["MC",37,41],["MC",63,41],["MD",87,39],["DC",50,15]],
+  "3-5-2":[["POR",50,92],["DFC",24,72],["DFC",50,76],["DFC",76,72],["CI",10,47],["MC",31,52],["MP",50,40],["MC",69,52],["CD",90,47],["DC",35,18],["DC",65,18]]};
+const MAX_CONV=18;
+const hoyISO=()=>new Date().toISOString().slice(0,10);
+const jugOrden=(a,b)=>(a[1].dorsal??99)-(b[1].dorsal??99)||(a[1].corto||"").localeCompare(b[1].corto||"");
+const slugPA=t=>(t||"x").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w]+/g,"-").replace(/^-|-$/g,"").toLowerCase().slice(0,40);
+const nomJ=j=>j?(j.corto||j.nombre||"?"):"";
+function partidosOrden(){return Object.entries(S.eq.partidos).sort((a,b)=>(a[1].fecha||"9").localeCompare(b[1].fecha||"9")||(a[1].jornada||0)-(b[1].jornada||0))}
+function proximo(){const h=hoyISO();return (partidosOrden().find(([,p])=>(p.fecha||"")>=h&&!p.resultado)||[])[0]}
+function fotoHtml(j,cls="ph"){return j&&j.foto?`<img class="${cls}" src="${j.foto}" alt="">`:`<span class="${cls} sinfoto">${esc(j&&j.dorsal!=null?j.dorsal:"·")}</span>`}
+function escudoClub(){return S.eq.escudo||$("header .hd img")?.src||""}
+function nombreClub(){return S.eq.club||(S.club&&S.club.nombre)||$("header h1")?.textContent.replace(/^Pizarra\s*/,"")||"Mi equipo"}
+
+// ---------- Vistas ----------
+function vistaPA(){
+  if(S.view==="plantilla") return vistaPlantilla();
+  if(S.view==="jugador") return vistaJugador();
+  if(S.view==="partido") return vistaPartido();
+  const l=partidosOrden(), nj=Object.keys(S.eq.jugadores).length, px=proximo();
+  return `<div class="bar"><div class="grow note">Plantilla, calendario, convocatoria y alineación. Se guardan <b>solo en este móvil</b>.</div>
+    <button class="btn" id="paPlantilla">Plantilla (${nj})</button><button class="btn pri" id="paNuevo">+ Partido</button></div>
+    ${!nj&&!l.length?`<div class="empty"><b>Todavía no hay equipo</b>Mete la plantilla y los partidos a mano, o importa el archivo del equipo si te lo han pasado.
+      <div class="bar" style="justify-content:center;margin-top:12px"><label class="btn pri filebtn">Importar equipo<input type="file" id="paImportar" accept=".json,application/json" hidden></label></div></div>`
+    :l.length?`<div class="plist">${l.map(([id,p])=>{const r=p.resultado,act=id===px;
+      return `<button class="pcard${act?" next":""}" data-pa="${esc(id)}">
+        <span class="pj">${p.jornada?"J"+esc(p.jornada):"·"}</span>
+        ${p.escudo_rival?`<img class="pesc" src="${p.escudo_rival}" alt="">`:`<span class="pesc"></span>`}
+        <span class="pmid"><b>${p.casa?"vs":"en"} ${esc(p.rival||"Rival")}</b>${p.derbi?' <span class="tag rojo">Derbi</span>':""}<br><span class="note">${esc(fmtCorta(p.fecha))}${p.hora?" · "+esc(p.hora):""}${act?" · <b>próximo</b>":""}</span></span>
+        <span class="pres">${r?esc(r):(p.convocados||[]).length?`<span class="note">${p.convocados.length} conv.</span>`:""}</span></button>`}).join("")}</div>`
+    :`<div class="empty"><b>Sin partidos</b>Pulsa «+ Partido» para crear el primero.</div>`}
+    ${nj||l.length?`<div class="bar" style="margin-top:18px"><label class="btn filebtn">Importar equipo<input type="file" id="paImportar" accept=".json,application/json" hidden></label><button class="btn" id="paExportar">Exportar equipo</button></div>`:""}`;
+}
+function fmtCorta(f){if(!f)return"Sin fecha";const d=new Date(f+"T12:00:00");return d.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"})}
+function vistaPlantilla(){
+  const l=Object.entries(S.eq.jugadores).sort(jugOrden);
+  return `<button class="back" id="paVolver">← Partidos</button>
+  <div class="bar"><div class="grow"><h2 class="h2">Plantilla</h2><div class="note">${l.length} jugadores · toca uno para editarlo</div></div><button class="btn pri" id="juNuevo">+ Jugador</button></div>
+  ${l.length?`<div class="jgrid">${l.map(([id,j])=>`<button class="jcard" data-ju="${esc(id)}">${fotoHtml(j)}<span><b>${j.dorsal!=null?esc(j.dorsal)+" · ":""}${esc(nomJ(j))}</b>${j.capitan?' <span class="tag">C</span>':""}${j.portero?' <span class="tag">POR</span>':""}<br><span class="note">${esc(j.nombre||"")}</span></span></button>`).join("")}</div>`
+  :`<div class="empty"><b>Plantilla vacía</b>Añade a los jugadores con su dorsal y, si quieres, una foto.</div>`}`;
+}
+function vistaJugador(){
+  const j=S.juDraft, nuevo=!S.eq.jugadores[S.juId];
+  return `<button class="back" id="juVolver">← Plantilla</button>
+  <form class="form" onsubmit="return false" style="max-width:560px">
+    <div class="bar">${fotoHtml(j,"ph big")}<label class="btn filebtn">${j.foto?"Cambiar foto":"Poner foto"}<input type="file" id="juFoto" accept="image/*" hidden></label>${j.foto?`<button class="btn sm" id="juSinFoto">Quitar foto</button>`:""}</div>
+    <div class="row"><label>Nombre en la imagen<input type="text" id="j-corto" value="${esc(j.corto)}" placeholder="p. ej. ZARCO"></label><label>Dorsal<input type="number" inputmode="numeric" id="j-dorsal" value="${esc(j.dorsal??"")}" min="0" max="99"></label></div>
+    <label>Nombre completo<input type="text" id="j-nombre" value="${esc(j.nombre)}"></label>
+    <div class="bar"><label class="chk"><input type="checkbox" id="j-portero" ${j.portero?"checked":""}> Portero</label><label class="chk"><input type="checkbox" id="j-capitan" ${j.capitan?"checked":""}> Capitán</label></div>
+    <div class="bar"><button class="btn pri" id="juGuardar">Guardar</button>
+      ${nuevo?"":S.delConfirm===S.juId?`<span class="confirm">¿Quitar de la plantilla? <button class="btn dan sm" id="juBorrarSi">Sí</button><button class="btn sm" id="juBorrarNo">No</button></span>`:`<button class="btn dan" id="juBorrar">Quitar</button>`}</div>
+  </form>`;
+}
+function vistaPartido(){
+  const p=S.eq.partidos[S.paId]; if(!p) return `<button class="back" id="paVolver">← Partidos</button><div class="empty"><b>Este partido ya no existe</b></div>`;
+  const J=S.eq.jugadores, conv=(p.convocados||[]).filter(id=>J[id]), sis=SISTEMAS[p.sistema]?p.sistema:"4-2-3-1", once=p.once||{};
+  const enOnce=new Set(Object.values(once)), banq=conv.filter(id=>!enOnce.has(id)).sort((a,b)=>jugOrden([a,J[a]],[b,J[b]]));
+  const todos=Object.entries(J).sort(jugOrden);
+  const slots=SISTEMAS[sis].map(([lab,x,y],i)=>{const j=J[once[i]];return `<button class="slot${S.slot===i?" sel":""}" data-slot="${i}" style="left:${x}%;top:${y}%" aria-label="${lab}${j?": "+esc(nomJ(j)):""}">${j?fotoHtml(j,"ph sm"):`<span class="ph sm vacio">${lab}</span>`}<span class="sn">${j?esc(nomJ(j)):""}</span></button>`}).join("");
+  const libres=conv.filter(id=>!enOnce.has(id)||once[S.slot]===id).sort((a,b)=>jugOrden([a,J[a]],[b,J[b]]));
+  return `<button class="back" id="paVolver">← Partidos</button>
+  <div class="phead">${escudoHtml(p,true)}<div class="grow" style="min-width:0"><h2 class="h2">${p.jornada?"J"+esc(p.jornada)+" · ":""}${p.casa?"vs":"en"} ${esc(p.rival||"Rival")}</h2>
+    <div class="note">${esc(fmtFecha(p.fecha))}${p.hora?" · "+esc(p.hora):""}${p.campo?" · "+esc(p.campo):""}</div></div>${escudoHtml(p,false)}</div>
+  <details class="datos"${p.rival?"":" open"}><summary>Datos del partido</summary><div class="form" style="margin-top:10px">
+    <div class="row"><label>Jornada<input type="number" inputmode="numeric" data-pf="jornada" value="${esc(p.jornada??"")}"></label><label>Rival<input type="text" data-pf="rival" value="${esc(p.rival)}"></label></div>
+    <div class="row"><label>Fecha<input type="date" data-pf="fecha" value="${esc(p.fecha)}"></label><label>Hora<input type="time" data-pf="hora" value="${esc(p.hora)}"></label></div>
+    <label>Campo<input type="text" data-pf="campo" value="${esc(p.campo)}"></label>
+    <label>Citación (sale en la convocatoria)<input type="text" data-pf="citacion" value="${esc(p.citacion)}" placeholder="p. ej. 11:45 en el campo, con la equipación blanca"></label>
+    <div class="row"><label>Resultado<input type="text" data-pf="resultado" value="${esc(p.resultado)}" placeholder="3-1 (nosotros primero si es en casa)"></label>
+      <div class="bar" style="align-self:end"><label class="chk"><input type="checkbox" data-pf="casa" ${p.casa?"checked":""}> En casa</label><label class="chk"><input type="checkbox" data-pf="derbi" ${p.derbi?"checked":""}> Derbi</label></div></div>
+    <label>Escudo del rival<input type="file" id="paEscudo" accept="image/*"></label>
+    <div class="bar">${S.delConfirm===S.paId?`<span class="confirm">¿Borrar el partido? <button class="btn dan sm" id="paBorrarSi">Sí, borrar</button><button class="btn sm" id="paBorrarNo">No</button></span>`:`<button class="btn dan sm" id="paBorrar">Borrar partido</button>`}</div>
+  </div></details>
+  <section class="blk"><div class="bar"><div class="grow"><h3 class="h3">Convocatoria <span class="note tot${conv.length>MAX_CONV?" over":""}">${conv.length}/${MAX_CONV}</span></h3>
+    <div class="note">Toca a cada jugador para convocarlo o quitarlo.</div></div><button class="btn sm" id="convTodos">Todos</button><button class="btn sm" id="convNadie">Ninguno</button></div>
+    ${todos.length?`<div class="convgrid">${todos.map(([id,j])=>`<button class="cj" data-conv="${esc(id)}" aria-pressed="${conv.includes(id)}">${fotoHtml(j,"ph sm")}<span>${j.dorsal!=null?esc(j.dorsal)+" ":""}${esc(nomJ(j))}</span></button>`).join("")}</div>`
+    :`<div class="empty"><b>No hay plantilla</b>Añade jugadores en «Plantilla» o importa el archivo del equipo.</div>`}
+    ${conv.length>MAX_CONV?`<p class="note over">Hay más de ${MAX_CONV}: en el acta solo caben ${MAX_CONV}.</p>`:""}
+    <div class="bar" style="margin-top:10px"><button class="btn pri" id="imgConv" ${conv.length?"":"disabled"}>Imagen de la convocatoria</button></div></section>
+  <section class="blk"><div class="bar"><div class="grow"><h3 class="h3">Alineación</h3><div class="note">${conv.length?"Toca un hueco y elige quién juega ahí.":"Primero haz la convocatoria."}</div></div>
+    <label style="flex-direction:row;align-items:center;gap:8px">Sistema<select id="paSistema" style="width:auto">${Object.keys(SISTEMAS).map(k=>`<option ${k===sis?"selected":""}>${k}</option>`).join("")}</select></label></div>
+    <div class="campo11">${slots}</div>
+    ${S.slot!=null&&conv.length?`<div class="picker"><div class="bar"><div class="grow note">¿Quién juega de <b>${SISTEMAS[sis][S.slot][0]}</b>?</div>${once[S.slot]?`<button class="btn sm" id="slotVaciar">Dejar vacío</button>`:""}<button class="btn sm" id="slotCerrar">Cerrar</button></div>
+      <div class="convgrid">${libres.map(id=>`<button class="cj" data-pon="${esc(id)}" aria-pressed="${once[S.slot]===id}">${fotoHtml(J[id],"ph sm")}<span>${J[id].dorsal!=null?esc(J[id].dorsal)+" ":""}${esc(nomJ(J[id]))}</span></button>`).join("")||'<div class="note">Todos los convocados ya están en el once.</div>'}</div></div>`:""}
+    <div class="note" style="margin-top:8px"><b>Banquillo (${banq.length}):</b> ${banq.map(id=>esc((J[id].dorsal!=null?J[id].dorsal+" ":"")+nomJ(J[id]))).join(" · ")||"—"}</div>
+    <div class="row" style="margin-top:8px"><label>Capitán<select id="paCapitan"><option value="">—</option>${[...enOnce].filter(id=>J[id]).map(id=>`<option value="${esc(id)}" ${capitanDe(p)===id?"selected":""}>${esc(nomJ(J[id]))}</option>`).join("")}</select></label></div>
+    <div class="bar" style="margin-top:10px"><button class="btn pri" id="imgOnce" ${enOnce.size?"":"disabled"}>Imagen de la alineación</button><button class="btn" id="copiarOnce" ${enOnce.size?"":"disabled"}>Copiar texto</button></div></section>
+  ${S.img?`<div class="imgov" role="dialog" aria-label="Imagen"><div class="imgbox"><img src="${S.img.url}" alt="${esc(S.img.nombre)}">
+    <div class="bar" style="justify-content:center;margin-top:10px"><button class="btn pri" id="imgCompartir">Compartir</button><button class="btn" id="imgBajar">Descargar</button><button class="btn" id="imgCerrar">Cerrar</button></div>
+    <p class="note" style="text-align:center">Si no se comparte, mantén pulsada la imagen para guardarla.</p></div></div>`:""}`;
+}
+function escudoHtml(p,izq){const nuestro=izq===!!p.casa, src=nuestro?escudoClub():p.escudo_rival;return src?`<img class="pesc big" src="${src}" alt="">`:`<span class="pesc big"></span>`}
+function capitanDe(p){const ids=Object.values(p.once||{});if(p.capitan&&ids.includes(p.capitan))return p.capitan;return ids.find(id=>S.eq.jugadores[id]?.capitan)||""}
+
+// ---------- Acciones ----------
+function montarPA(){}
+function pGuardar(){return eqGuardar()}
+app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!t||!PA_VISTAS.includes(S.view))return;
+  const P=S.eq.partidos[S.paId];
+  if(t.id==="paVolver"){S.view="pa";S.slot=null;S.img=null;S.delConfirm=null;render();return}
+  if(t.id==="paPlantilla"){S.view="plantilla";render();return}
+  if(t.id==="paNuevo"){const id="pa-"+Date.now().toString(36);S.eq.partidos[id]={jornada:null,rival:"",fecha:hoyISO(),hora:"",campo:"",casa:true,convocados:[],sistema:"4-2-3-1",once:{}};pGuardar();S.paId=id;S.view="partido";render();return}
+  if(t.dataset.pa){S.paId=t.dataset.pa;S.slot=null;S.img=null;S.delConfirm=null;S.view="partido";render();window.scrollTo(0,0);return}
+  if(t.id==="paExportar"){const nom="equipo-"+slugPA(nombreClub())+".json";const obj={app:"pizarra-entrenador",tipo:"equipo",version:1,exportado:ahora(),equipo:S.eq};
+    if(typeof compartir==="function") compartir(nom,obj,"Equipo: "+nombreClub()); else bajarBlob(new Blob([JSON.stringify(obj)],{type:"application/json"}),nom);return}
+  // Plantilla y jugador
+  if(t.id==="juNuevo"){S.juId="ju-"+Date.now().toString(36);S.juDraft={nombre:"",corto:"",dorsal:null};S.delConfirm=null;S.view="jugador";render();return}
+  if(t.dataset.ju){S.juId=t.dataset.ju;S.juDraft=structuredClone(S.eq.jugadores[S.juId]);S.delConfirm=null;S.view="jugador";render();return}
+  if(t.id==="juVolver"){S.view="plantilla";render();return}
+  if(t.id==="juSinFoto"){leerJu();delete S.juDraft.foto;render();return}
+  if(t.id==="juGuardar"){leerJu();const j=S.juDraft;if(!j.corto&&!j.nombre){toast("Ponle nombre");return}
+    if(!j.corto) j.corto=j.nombre.split(" ")[0].toUpperCase();
+    if(j.capitan) for(const o of Object.values(S.eq.jugadores)) delete o.capitan;
+    S.eq.jugadores[S.juId]=j;if(pGuardar()!==false){toast("Guardado")}S.view="plantilla";render();return}
+  if(t.id==="juBorrar"){leerJu();S.delConfirm=S.juId;render();return}
+  if(t.id==="juBorrarNo"){leerJu();S.delConfirm=null;render();return}
+  if(t.id==="juBorrarSi"){delete S.eq.jugadores[S.juId];pGuardar();S.delConfirm=null;S.view="plantilla";render();toast("Quitado de la plantilla");return}
+  if(!P) return;
+  // Partido
+  if(t.id==="paBorrar"){S.delConfirm=S.paId;render();return}
+  if(t.id==="paBorrarNo"){S.delConfirm=null;render();return}
+  if(t.id==="paBorrarSi"){delete S.eq.partidos[S.paId];pGuardar();S.delConfirm=null;S.view="pa";render();toast("Partido borrado");return}
+  if(t.dataset.conv){const c=P.convocados=P.convocados||[],id=t.dataset.conv,i=c.indexOf(id);
+    if(i>=0){c.splice(i,1);for(const k in P.once) if(P.once[k]===id) delete P.once[k]} else c.push(id);pGuardar();render();return}
+  if(t.id==="convTodos"){P.convocados=Object.keys(S.eq.jugadores);pGuardar();render();return}
+  if(t.id==="convNadie"){P.convocados=[];P.once={};S.slot=null;pGuardar();render();return}
+  if(t.dataset.slot){const i=+t.dataset.slot;S.slot=S.slot===i?null:i;render();return}
+  if(t.id==="slotCerrar"){S.slot=null;render();return}
+  if(t.id==="slotVaciar"){delete P.once[S.slot];S.slot=null;pGuardar();render();return}
+  if(t.dataset.pon){P.once=P.once||{};for(const k in P.once) if(P.once[k]===t.dataset.pon) delete P.once[k];P.once[S.slot]=t.dataset.pon;
+    const n=SISTEMAS[P.sistema||"4-2-3-1"].length;let sig=null;for(let k=1;k<=n;k++){const s=(S.slot+k)%n;if(!P.once[s]){sig=s;break}}
+    S.slot=sig;pGuardar();render();return}
+  if(t.id==="copiarOnce"){const J=S.eq.jugadores,ids=SISTEMAS[P.sistema||"4-2-3-1"].map((_,i)=>P.once[i]).filter(id=>J[id]),en=new Set(ids);
+    const banq=(P.convocados||[]).filter(id=>J[id]&&!en.has(id)).sort((a,b)=>jugOrden([a,J[a]],[b,J[b]]));
+    const txt=`⚽ ${P.jornada?"J"+P.jornada+" · ":""}${nombreClub()} ${P.casa?"vs":"en"} ${P.rival}\n${fmtFecha(P.fecha)}${P.hora?" · "+P.hora:""}${P.campo?"\n📍 "+P.campo:""}\n\nOnce (${P.sistema||"4-2-3-1"}): `+ids.map(id=>nomJ(J[id])+(capitanDe(P)===id?" (C)":"")).join(", ")+`\nBanquillo: ${banq.map(id=>nomJ(J[id])).join(", ")||"—"}${S.eq.lema?"\n\n"+S.eq.lema:""}`;
+    try{await navigator.clipboard.writeText(txt);toast("Copiado")}catch(e){toast("No se pudo copiar")}return}
+  if(t.id==="imgConv"||t.id==="imgOnce"){t.disabled=true;try{const tipo=t.id==="imgConv"?"conv":"once";const blob=await dibujar(P,tipo);
+      if(S.img) URL.revokeObjectURL(S.img.url);
+      S.img={blob,url:URL.createObjectURL(blob),nombre:(tipo==="conv"?"convocatoria":"alineacion")+"-"+(P.jornada?"j"+P.jornada+"-":"")+slugPA(P.rival)+".png"};render()}
+    catch(e){toast("No se pudo hacer la imagen");t.disabled=false}return}
+  if(t.id==="imgCerrar"){URL.revokeObjectURL(S.img.url);S.img=null;render();return}
+  if(t.id==="imgBajar"){bajarBlob(S.img.blob,S.img.nombre);return}
+  if(t.id==="imgCompartir"){try{const f=new File([S.img.blob],S.img.nombre,{type:"image/png"});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e&&e.name==="AbortError")return}
+    bajarBlob(S.img.blob,S.img.nombre);toast("Imagen descargada");return}
+});
+function bajarBlob(b,nombre){const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=nombre;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)}
+function leerJu(){const j=S.juDraft,v=id=>$("#"+id);if(!v("j-corto"))return;
+  j.corto=v("j-corto").value.trim().toUpperCase();j.nombre=v("j-nombre").value.trim();const d=v("j-dorsal").value;j.dorsal=d===""?null:+d;
+  j.portero=v("j-portero").checked;j.capitan=v("j-capitan").checked}
+function reducir(file,lado,tipo="image/jpeg"){return new Promise((ok,ko)=>{const img=new Image();img.onload=()=>{const c=document.createElement("canvas"),k=Math.min(1,lado/Math.max(img.width,img.height));
+  c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(img.src);ok(c.toDataURL(tipo,.82))};img.onerror=ko;img.src=URL.createObjectURL(file)})}
+app.addEventListener("change",async ev=>{const t=ev.target;if(!PA_VISTAS.includes(S.view))return;
+  if(t.id==="paImportar"&&t.files[0]){await importarEquipo(await t.files[0].text());t.value="";render();return}
+  if(t.id==="juFoto"&&t.files[0]){leerJu();try{S.juDraft.foto=await reducir(t.files[0],200)}catch(e){toast("No se pudo leer la foto")}render();return}
+  const P=S.eq.partidos[S.paId]; if(!P) return;
+  if(t.id==="paEscudo"&&t.files[0]){try{P.escudo_rival=await reducir(t.files[0],160,"image/png");pGuardar()}catch(e){toast("No se pudo leer el escudo")}render();return}
+  if(t.id==="paSistema"){P.sistema=t.value;P.once={};S.slot=null;pGuardar();render();toast("Sistema cambiado: vuelve a colocar el once");return}
+  if(t.id==="paCapitan"){P.capitan=t.value;pGuardar();return}
+  if(t.dataset.pf){const k=t.dataset.pf;P[k]=t.type==="checkbox"?t.checked:k==="jornada"?(t.value===""?null:+t.value):t.value.trim();pGuardar();
+    // Los textos no redibujan: si no, el toque en un botón justo al salir del campo se perdería
+    if(t.type==="checkbox"||t.type==="date"||t.type==="time"){render();const d=$("details.datos");if(d)d.open=true}return}
+});
+async function importarEquipo(txt){
+  let d;try{d=JSON.parse(txt)}catch(e){toast("Ese archivo no es de un equipo");return}
+  const e=d&&d.tipo==="equipo"&&d.equipo;if(!e||typeof e!=="object"){toast("Ese archivo no es de un equipo");return}
+  const eq=S.eq;
+  for(const k of ["club","categoria","lema","escudo"]) if(typeof e[k]==="string"&&e[k]) eq[k]=e[k];
+  for(const [id,j] of Object.entries(e.jugadores||{})) if(j&&(j.corto||j.nombre)) eq.jugadores[String(id).slice(0,60)]={...eq.jugadores[id],...j};
+  for(const [id,p] of Object.entries(e.partidos||{})){if(!p||typeof p!=="object")continue;const prev=eq.partidos[id]||{};
+    // Lo del entrenador (convocatoria, once, capitán, citación) no se pisa al reimportar el calendario
+    eq.partidos[String(id).slice(0,60)]={...p,...pick(prev,["convocados","once","sistema","capitan","citacion"]),resultado:p.resultado||prev.resultado||""}}
+  Object.assign(eq.campos,e.campos||{});
+  if(eqGuardar()) toast(`Equipo importado: ${Object.keys(e.jugadores||{}).length} jugadores y ${Object.keys(e.partidos||{}).length} partidos`);
+}
+function pick(o,ks){const r={};ks.forEach(k=>{if(o[k]!==undefined&&o[k]!==""&&!(Array.isArray(o[k])&&!o[k].length))r[k]=o[k]});return r}
+
+// ---------- Imágenes (1080x1920, para WhatsApp y stories) ----------
+const cargarImg=src=>new Promise(ok=>{if(!src)return ok(null);const i=new Image();i.onload=()=>ok(i);i.onerror=()=>ok(null);i.src=src});
+async function dibujar(p,tipo){
+  try{await Promise.all(['400 100px "Bebas Neue"','700 40px "Barlow Condensed"','600 40px "Barlow Condensed"'].map(f=>document.fonts.load(f)))}catch(e){}
+  const W=1080,H=1920,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+  const BE='"Bebas Neue",Impact,sans-serif',BC='"Barlow Condensed","Arial Narrow",sans-serif',CREMA="#f3e7a4",ROJO="#d22f28";
+  const J=S.eq.jugadores;
+  // Fondo: foto del campo si la hay, oscurecida; si no, degradado del club
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,"#0b4a20");g.addColorStop(1,"#04200d");x.fillStyle=g;x.fillRect(0,0,W,H);
+  const fondo=await cargarImg(S.eq.campos[p.campo]);
+  if(fondo){const k=Math.max(W/fondo.width,H/fondo.height),w=fondo.width*k,h=fondo.height*k;x.drawImage(fondo,(W-w)/2,(H-h)/2,w,h);
+    const o=x.createLinearGradient(0,0,0,H);o.addColorStop(0,"rgba(4,32,13,.78)");o.addColorStop(.5,"rgba(4,32,13,.62)");o.addColorStop(1,"rgba(4,32,13,.9)");x.fillStyle=o;x.fillRect(0,0,W,H)}
+  for(let i=0;i<12;i++){x.fillStyle=`rgba(255,255,255,${i%2?0:.025})`;x.fillRect(0,i*H/12,W,H/12)}
+  const txt=(t,X,Y,f,col="#fff",al="center",st=0)=>{x.font=f;x.textAlign=al;x.textBaseline="alphabetic";if(st){x.lineWidth=st;x.strokeStyle="rgba(0,0,0,.6)";x.lineJoin="round";x.strokeText(t,X,Y)}x.fillStyle=col;x.fillText(t,X,Y)};
+  const ajustar=(t,max,tam,fam)=>{let s=tam;x.font=`${s}px ${fam}`;while(x.measureText(t).width>max&&s>18){s-=2;x.font=`${s}px ${fam}`}return s};
+  // Cabecera: escudos y nombres
+  const loc=p.casa?{n:nombreClub(),e:escudoClub()}:{n:p.rival,e:p.escudo_rival}, vis=p.casa?{n:p.rival,e:p.escudo_rival}:{n:nombreClub(),e:escudoClub()};
+  const linea1=[p.jornada?"JORNADA "+p.jornada:"",S.eq.categoria].filter(Boolean).join(" · ").toUpperCase();
+  if(linea1) txt(linea1,W/2,92,`700 36px ${BC}`,CREMA);
+  for(const [eq,cx] of [[loc,230],[vis,850]]){const im=await cargarImg(eq.e);
+    x.save();x.beginPath();x.arc(cx,250,112,0,7);x.fillStyle="rgba(255,255,255,.95)";x.fill();x.restore();
+    if(im){const k=Math.min(170/im.width,170/im.height);x.drawImage(im,cx-im.width*k/2,250-im.height*k/2,im.width*k,im.height*k)}
+    const n=(eq.n||"").toUpperCase(),s=ajustar(n,330,44,BE);txt(n,cx,420,`${s}px ${BE}`)}
+  txt("VS",W/2,280,`110px ${BE}`,CREMA);
+  if(p.derbi){x.fillStyle=ROJO;x.beginPath();x.roundRect(W/2-90,118,180,58,10);x.fill();txt("DERBI",W/2,163,`52px ${BE}`)}
+  const titulo=tipo==="conv"?"CONVOCATORIA":"ALINEACIÓN";
+  txt(titulo,W/2,575,`${ajustar(titulo,980,150,BE)}px ${BE}`,"#fff","center");
+  const fh=[p.fecha?new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"}).replace(/\./g,""):"",p.hora].filter(Boolean).join(" · ").toUpperCase();
+  const campo=(p.campo||"").replace(/\s*\(.*?\)\s*/g,"").toUpperCase();
+  txt(fh,W/2,636,`700 44px ${BC}`,CREMA);
+  if(campo) txt(campo,W/2,686,`600 ${ajustar(campo,960,34,BC)}px ${BC}`,"#fff");
+  const ficha=async(j,cx,cy,r,cap)=>{const im=await cargarImg(j.foto);
+    x.save();x.beginPath();x.arc(cx,cy,r,0,7);x.closePath();x.fillStyle="#0b4a20";x.fill();x.clip();
+    // Las fotos salen de capturas con un círculo turquesa abajo: se toma el 84 % de arriba
+    if(im){const sw=im.width*.84;x.drawImage(im,(im.width-sw)/2,0,sw,sw,cx-r,cy-r,2*r,2*r)}
+    else txt(String(j.dorsal??""),cx,cy+r*.38,`${r*1.1}px ${BE}`);
+    x.restore();x.lineWidth=6;x.strokeStyle="#fff";x.beginPath();x.arc(cx,cy,r,0,7);x.stroke();
+    if(j.dorsal!=null&&im){x.fillStyle=ROJO;x.beginPath();x.arc(cx+r*.78,cy-r*.72,r*.36,0,7);x.fill();x.lineWidth=3;x.stroke();txt(String(j.dorsal),cx+r*.78,cy-r*.72+r*.15,`${r*.44}px ${BE}`)}
+    if(cap){x.fillStyle=CREMA;x.beginPath();x.arc(cx-r*.78,cy-r*.72,r*.3,0,7);x.fill();txt("C",cx-r*.78,cy-r*.72+r*.13,`${r*.38}px ${BE}`,"#0b4a20")}
+    const n=nomJ(j).toUpperCase();txt(n,cx,cy+r+44,`${ajustar(n,r*3,42,BE)}px ${BE}`,"#fff","center",6)};
+  if(tipo==="once"){
+    const X0=70,Y0=730,PW=940,PH=860;
+    x.strokeStyle="rgba(255,255,255,.55)";x.lineWidth=4;x.strokeRect(X0,Y0,PW,PH);
+    x.beginPath();x.arc(W/2,Y0,110,0,Math.PI);x.stroke();
+    x.strokeRect(W/2-250,Y0+PH-190,500,190);x.strokeRect(W/2-110,Y0+PH-70,220,70);
+    x.beginPath();x.arc(W/2,Y0+PH-190,80,Math.PI,0);x.stroke();
+    const sis=SISTEMAS[p.sistema]?p.sistema:"4-2-3-1",cap=capitanDe(p);
+    txt(sis,X0+PW-14,Y0+52,`46px ${BE}`,CREMA,"right");
+    // y del sistema (12 = delantero, 91 = portero) estirada a todo el campo dibujado
+    const Y=py=>Y0+66+(py-12)/(92-12)*(PH-176);
+    for(const [i,[,px,py]] of SISTEMAS[sis].entries()){const j=J[(p.once||{})[i]];if(j) await ficha(j,X0+px/100*PW,Y(py),55,cap===(p.once||{})[i])}
+    const en=new Set(Object.values(p.once||{})),banq=(p.convocados||[]).filter(id=>J[id]&&!en.has(id)).sort((a,b)=>jugOrden([a,J[a]],[b,J[b]]));
+    if(banq.length){txt("BANQUILLO",W/2,1660,`54px ${BE}`,CREMA);
+      const items=banq.map(id=>(J[id].dorsal!=null?J[id].dorsal+" ":"")+nomJ(J[id]).toUpperCase());let lines=[""];x.font=`700 38px ${BC}`;
+      for(const it of items){const t=lines[lines.length-1]?lines[lines.length-1]+"  ·  "+it:it;if(x.measureText(t).width>960)lines.push(it);else lines[lines.length-1]=t}
+      lines.slice(0,3).forEach((l,k)=>txt(l,W/2,1716+k*48,`700 38px ${BC}`))}
+  } else {
+    const ids=(p.convocados||[]).filter(id=>J[id]).sort((a,b)=>jugOrden([a,J[a]],[b,J[b]])),n=ids.length,cols=n<=12?4:5,rows=Math.ceil(n/cols);
+    const top=760,bot=p.citacion?1650:1740,ch=Math.min(270,(bot-top)/rows),r=Math.min(cols===4?84:70,ch*.31),cw=W/cols;
+    for(const [k,id] of ids.entries()){const row=Math.floor(k/cols),inRow=Math.min(cols,n-row*cols),off=(W-inRow*cw)/2;
+      await ficha(J[id],off+cw*(k%cols)+cw/2,top+ch*row+r+6,r,false)}
+    if(p.citacion){const s=ajustar("CITACIÓN: "+p.citacion.toUpperCase(),980,40,BC);txt("CITACIÓN: "+p.citacion.toUpperCase(),W/2,1730,`700 ${s}px ${BC}`,CREMA)}
+  }
+  if(S.eq.lema){const l=S.eq.lema.toUpperCase();txt(l,W/2,1862,`${ajustar(l,980,76,BE)}px ${BE}`,CREMA,"center",8)}
+  return await new Promise(ok=>c.toBlob(ok,"image/png"));
+}
+// ==== /PARTIDOS ====
 // ---------- Arranque ----------
 (async()=>{
   aplicarClub();

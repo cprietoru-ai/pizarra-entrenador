@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.4 · 23-oct-2026
+- Nueva pestaña «Partidos»: plantilla con fotos, calendario, convocatoria y alineación.
+- Imagen de la convocatoria y de la alineación lista para compartir por WhatsApp.
+- Importar y exportar el equipo en un archivo: se guarda solo en el móvil.
+
 ## 1.3 · 18-oct-2026
 - Convive con otras apps del mismo sitio (como la Esquina del Entrenador) sin borrarles el modo sin conexión.
 
