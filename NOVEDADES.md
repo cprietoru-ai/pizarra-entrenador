@@ -2,6 +2,9 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.5.2 · 23-oct-2026
+- Lo que cambias en la plantilla (dorsal, foto, nombre, capitán) se queda aunque el club actualice la plantilla.
+
 ## 1.5.1 · 23-oct-2026
 - Con cobertura se abre siempre la última versión, sin tener que cerrar y abrir.
 

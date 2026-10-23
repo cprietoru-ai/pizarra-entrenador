@@ -460,8 +460,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.5.1";
+const VERSION="1.5.2";
 const NOVEDADES=[
+  ["1.5.2","23-oct-2026",["Lo que cambias en la plantilla (dorsal, foto, nombre, capitán) se queda aunque el club actualice la plantilla."]],
   ["1.5.1","23-oct-2026",["Con cobertura se abre siempre la última versión, sin tener que cerrar y abrir."]],
   ["1.5","23-oct-2026",["Conectar con tu equipo: con el código y la contraseña, la plantilla y el calendario llegan y se actualizan solos, en cualquier móvil.","El calendario y los resultados se actualizan cada día desde la federación."]],
   ["1.4","23-oct-2026",["Nueva pestaña «Partidos»: plantilla con fotos, calendario, convocatoria y alineación.","Imagen de la convocatoria y de la alineación lista para compartir por WhatsApp.","Importar y exportar el equipo en un archivo: se guarda solo en el móvil."]],
@@ -686,7 +687,11 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   if(t.id==="juSinFoto"){leerJu();delete S.juDraft.foto;render();return}
   if(t.id==="juGuardar"){leerJu();const j=S.juDraft;if(!j.corto&&!j.nombre){toast("Ponle nombre");return}
     if(!j.corto) j.corto=j.nombre.split(" ")[0].toUpperCase();
-    if(j.capitan) for(const o of Object.values(S.eq.jugadores)) delete o.capitan;
+    // Lo que cambia el entrenador queda marcado y la plantilla del club ya no lo pisa
+    const prev=S.eq.jugadores[S.juId]||{},ed=new Set(j.editados||[]);
+    for(const k of ["corto","nombre","dorsal","portero","capitan","foto"]) if(JSON.stringify(prev[k])!==JSON.stringify(j[k])) ed.add(k);
+    j.editados=[...ed];
+    if(j.capitan) for(const [oid,o] of Object.entries(S.eq.jugadores)) if(oid!==S.juId&&o.capitan){delete o.capitan;o.editados=[...new Set([...(o.editados||[]),"capitan"])]}
     S.eq.jugadores[S.juId]=j;if(pGuardar()!==false){toast("Guardado")}S.view="plantilla";render();return}
   if(t.id==="juBorrar"){leerJu();S.delConfirm=S.juId;render();return}
   if(t.id==="juBorrarNo"){leerJu();S.delConfirm=null;render();return}
@@ -746,7 +751,15 @@ async function importarEquipo(txt){
 function fusionarEquipo(e){
   const eq=S.eq;
   for(const k of ["club","categoria","lema","escudo"]) if(typeof e[k]==="string"&&e[k]) eq[k]=e[k];
-  for(const [id,j] of Object.entries(e.jugadores||{})) if(j&&(j.corto||j.nombre)) eq.jugadores[String(id).slice(0,60)]={...eq.jugadores[id],...j};
+  for(const [id0,j] of Object.entries(e.jugadores||{})){if(!j||!(j.corto||j.nombre))continue;
+    const id=String(id0).slice(0,60),prev=eq.jugadores[id],n={...prev,...j};
+    if(prev){
+      // Un dato vacío que llega nunca borra uno puesto en el móvil
+      for(const k of Object.keys(j)) if((j[k]==null||j[k]==="")&&prev[k]!=null&&prev[k]!=="") n[k]=prev[k];
+      // Y lo que el entrenador ha cambiado a mano se queda como él lo dejó
+      for(const k of prev.editados||[]){if(prev[k]===undefined)delete n[k];else n[k]=prev[k]}
+      if(prev.editados) n.editados=prev.editados}
+    eq.jugadores[id]=n}
   for(const [id,p] of Object.entries(e.partidos||{})){if(!p||typeof p!=="object")continue;const prev=eq.partidos[id]||{};
     // Lo del entrenador (convocatoria, once, capitán, citación) no se pisa al reimportar el calendario
     eq.partidos[String(id).slice(0,60)]={...p,...pick(prev,["convocados","once","sistema","capitan","citacion"]),resultado:p.resultado||prev.resultado||""}}
