@@ -460,8 +460,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.5";
+const VERSION="1.5.1";
 const NOVEDADES=[
+  ["1.5.1","23-oct-2026",["Con cobertura se abre siempre la última versión, sin tener que cerrar y abrir."]],
   ["1.5","23-oct-2026",["Conectar con tu equipo: con el código y la contraseña, la plantilla y el calendario llegan y se actualizan solos, en cualquier móvil.","El calendario y los resultados se actualizan cada día desde la federación."]],
   ["1.4","23-oct-2026",["Nueva pestaña «Partidos»: plantilla con fotos, calendario, convocatoria y alineación.","Imagen de la convocatoria y de la alineación lista para compartir por WhatsApp.","Importar y exportar el equipo en un archivo: se guarda solo en el móvil."]],
   ["1.3","18-oct-2026",["Convive con otras apps del mismo sitio (como la Esquina del Entrenador) sin borrarles el modo sin conexión."]],
@@ -894,7 +895,9 @@ async function dibujar(p,tipo){
   let llegados=0;const listo=()=>{if(++llegados>=2&&S.view!=="edit"&&S.view!=="sesion")render()};
   db.collection("ejercicios").onSnapshot(snap=>{S.ej={};snap.docs.forEach(d=>S.ej[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
   db.collection("sesiones").onSnapshot(snap=>{S.se={};snap.docs.forEach(d=>S.se[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
-  if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(()=>{});
+  if("serviceWorker" in navigator){const habia=!!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{if(habia&&!sessionStorage.getItem("pizarra.recargada")){sessionStorage.setItem("pizarra.recargada","1");location.reload()}});
+    navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{})}
   sincronizar();
   const vista=LS.get("pizarra.version",null);
   if(vista!==VERSION){LS.set("pizarra.version",VERSION);if(vista){const n=NOVEDADES[0][2][0];setTimeout(()=>toast("Novedades de la versión "+VERSION+": "+n),800)}}

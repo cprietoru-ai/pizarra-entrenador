@@ -2,6 +2,9 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.5.1 · 23-oct-2026
+- Con cobertura se abre siempre la última versión, sin tener que cerrar y abrir.
+
 ## 1.5 · 23-oct-2026
 - Conectar con tu equipo: con el código y la contraseña, la plantilla y el calendario llegan y se actualizan solos, en cualquier móvil.
 - El calendario y los resultados se actualizan cada día desde la federación.
