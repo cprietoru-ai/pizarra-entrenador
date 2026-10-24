@@ -4,6 +4,7 @@ name: Calendario RFAF
 on:
   schedule:
     - cron: "17 6 * * *"   # 6:17 UTC: 7:17 u 8:17 en España
+    - cron: "17 19 * * 6,0"   # sábado y domingo por la tarde, para los resultados del finde
   workflow_dispatch:
 permissions:
   contents: write
