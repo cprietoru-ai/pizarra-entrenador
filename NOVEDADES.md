@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.8 · 25-oct-2026
+- Informe del rival en cada partido, con los datos de la federación de ese día, y su imagen.
+- Calendario de entrenamientos en Sesiones: tus días de entreno con el partido de cada semana.
+- «Generar sesión»: una propuesta con tus ejercicios según el rival, los días que faltan al partido y tus indicaciones.
+
 ## 1.7.2 · 25-oct-2026
 - Las fotos de los campos salen todas del mismo tamaño en la ficha de cada equipo.
 

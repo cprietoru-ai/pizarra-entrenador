@@ -159,6 +159,13 @@ ul{margin:4px 0 4px 18px;padding:0}
 .fcampo{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;object-position:50% 60%;border-radius:10px;background:var(--chip)}
 .tclas tr[data-eqc]{cursor:pointer}.eqc{display:inline-flex;align-items:center;gap:8px}.eqc img{width:26px;height:26px;object-fit:contain;background:#fff;border-radius:50%;padding:2px}
 .tclas th,.tclas td{padding:6px 5px}
+.tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:12px}.tiles div{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px;text-align:center}
+.tiles b{display:block;font-family:var(--display);font-size:34px;font-weight:400;color:var(--club)}.tiles span{font-size:12px;color:var(--muted)}
+@media (max-width:480px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.forma{display:flex;gap:6px;margin-top:6px}.fk{width:30px;height:30px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-family:var(--display);font-size:20px}
+.fG{background:#2f8f50}.fE{background:#b98a00}.fP{background:var(--rojo)}
+.semcab{margin:12px 0 2px;font-family:var(--label);letter-spacing:.5px}.pcard.dia{grid-template-columns:52px minmax(0,1fr) auto}.pcard.pasado{opacity:.6}
+.pcard .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.lnk{background:none;border:0;padding:0;color:var(--club);font-weight:700;text-decoration:underline;text-align:left}
 .golgrid{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .golrow{display:flex;align-items:center;gap:8px}.golrow .tot{min-width:22px;text-align:center}
 .tstats{width:100%;border-collapse:collapse;font-size:15px}.tstats th,.tstats td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
@@ -394,8 +401,10 @@ async function borrarEjercicio(){
 // ---------- Sesiones ----------
 function claseCarga(c){c=(c||"").toLowerCase();return c.includes("alta")?"c-alta":c.includes("baja")?"c-baja":"c-media"}
 function vistaSesiones(){
+  const modo=S.seModo||"cal",tabs=`<div class="chips" style="margin-bottom:12px"><button class="chip" id="seCal" aria-pressed="${modo==="cal"}">Calendario</button><button class="chip" id="seLista" aria-pressed="${modo==="lista"}">Todas las sesiones</button></div>`;
+  if(modo==="cal") return tabs+htmlCalendario();
   const l=Object.entries(S.se).sort((a,b)=>(b[1].fecha||"").localeCompare(a[1].fecha||""));
-  return `<div class="bar"><div class="grow note">Cada sesión junta ejercicios de la biblioteca en orden. Toca una para verla o editarla.</div>
+  return tabs+`<div class="bar"><div class="grow note">Cada sesión junta ejercicios de la biblioteca en orden. Toca una para verla o editarla.</div>
     ${S.canWrite?`<button class="btn pri" id="nuevaSes">+ Nueva sesión</button>`:""}</div>
     ${l.length?`<div class="grid">${l.map(([id,s])=>{const ts=(s.tareas||[]).map(t=>S.ej[t]).filter(Boolean);const tot=ts.reduce((a,e)=>a+minutos(e.tiempo),0);
       return `<button class="ses" data-ses="${esc(id)}"><div class="top"><h3>${esc(s.nombre||"Sesión")}</h3><span class="carga ${claseCarga(s.carga)}">${esc(s.carga||"")}</span></div>
@@ -467,8 +476,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.7.2";
+const VERSION="1.8";
 const NOVEDADES=[
+  ["1.8","25-oct-2026",["Informe del rival en cada partido, con los datos de la federación de ese día, y su imagen.","Calendario de entrenamientos en Sesiones: tus días de entreno con el partido de cada semana.","«Generar sesión»: una propuesta con tus ejercicios según el rival, los días que faltan al partido y tus indicaciones."]],
   ["1.7.2","25-oct-2026",["Las fotos de los campos salen todas del mismo tamaño en la ficha de cada equipo."]],
   ["1.7.1","25-oct-2026",["Escudo de cada equipo en la clasificación y botón «Clasificación» arriba en Partidos.","Al estrenar versión se bajan al momento los datos nuevos del equipo."]],
   ["1.7","25-oct-2026",["Clasificación en su propia pantalla, con escudos, goles a favor y en contra, y la tabla tras cada jornada.","Ficha de cada equipo: sus resultados, su campo con foto y los partidos contra nosotros.","La imagen del resultado lleva la clasificación de esa jornada."]],
@@ -577,7 +587,7 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 // Módulo común a las dos apps (se pega antes de «Arranque» con app/_meter_partidos.py).
 // Todo se guarda en este dispositivo (localStorage "pizarra.equipo"), nunca en la
 // base de datos compartida: son datos de menores (nombres y fotos).
-const PA_VISTAS=["pa","plantilla","jugador","partido","stats","clasif","equipo"];
+const PA_VISTAS=["pa","plantilla","jugador","partido","stats","clasif","equipo","informe"];
 const EQ_KEY="pizarra.equipo";
 const EQ_VACIO={club:"",categoria:"",lema:"",escudo:"",jugadores:{},partidos:{},campos:{}};
 function eqLeer(){try{const v=localStorage.getItem(EQ_KEY);return v?{...EQ_VACIO,...JSON.parse(v)}:structuredClone(EQ_VACIO)}catch(e){return structuredClone(EQ_VACIO)}}
@@ -609,6 +619,7 @@ function vistaPA(){
   if(S.view==="stats") return vistaStats();
   if(S.view==="clasif") return vistaClasif();
   if(S.view==="equipo") return vistaEquipo();
+  if(S.view==="informe") return vistaInforme();
   const l=partidosOrden(), nj=Object.keys(S.eq.jugadores).length, px=proximo();
   return `<div class="bar"><div class="grow note">${S.conex&&!S.conex.error?"Equipo conectado: la plantilla y el calendario se actualizan solos. Tus convocatorias y alineaciones se guardan en este móvil.":S.conex&&S.conex.error?`<span class="over">${esc(S.conex.error)}</span>: revísalo en «Mi club».`:"Plantilla, calendario, convocatoria y alineación. Se guardan <b>solo en este móvil</b>. Si tu club te ha dado un código de equipo, conéctalo en «Mi club»."}</div>
     <button class="btn" id="paPlantilla">Plantilla (${nj})</button>${(S.eq.resultados||S.eq.clasificacion||[]).length?`<button class="btn" id="paClasif">Clasificación</button>`:""}<button class="btn" id="paStats">Estadísticas</button><button class="btn pri" id="paNuevo">+ Partido</button></div>
@@ -665,6 +676,7 @@ function vistaPartido(){
     <label>Escudo del rival<input type="file" id="paEscudo" accept="image/*"></label>
     <div class="bar">${S.delConfirm===S.paId?`<span class="confirm">¿Borrar el partido? <button class="btn dan sm" id="paBorrarSi">Sí, borrar</button><button class="btn sm" id="paBorrarNo">No</button></span>`:`<button class="btn dan sm" id="paBorrar">Borrar partido</button>`}</div>
   </div></details>
+  ${codRival(p)?`<div class="bar" style="margin:-4px 0 12px"><button class="btn" id="paInforme">Informe del rival</button></div>`:""}
   ${p.resultado?htmlResultado(p):""}
   <section class="blk"><div class="bar"><div class="grow"><h3 class="h3">Convocatoria <span class="note tot${conv.length>MAX_CONV?" over":""}">${conv.length}/${MAX_CONV}</span></h3>
     <div class="note">Toca a cada jugador para convocarlo o quitarlo.</div></div><button class="btn sm" id="convTodos">Todos</button><button class="btn sm" id="convNadie">Ninguno</button></div>
@@ -887,6 +899,131 @@ app.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t||!PA
   eqGuardar();render();
 });
 
+// ---------- Informe del rival (1.8) ----------
+// Todo sale de los datos del grupo que ya tiene la app: resultados de todos, clasificación,
+// goleadores y porteros de la liga. Se calcula en el momento, con lo que haya ese día.
+function codRival(p){const G=S.eq.grupo||{};return Object.keys(G).find(c=>c!==S.eq.cod&&G[c].nombre===p.rival)||""}
+const r1=x=>(Math.round(x*10)/10).toLocaleString("es-ES");
+function informeRival(p){
+  const c=codRival(p);if(!c) return null;
+  const G=S.eq.grupo||{},R=(S.eq.resultados||[]).filter(r=>r[1]===c||r[2]===c).sort((a,b)=>a[0]-b[0]);
+  const fila=tablaHasta().find(x=>x.cod===c)||null,st=S.eq.stats||{};
+  const part=R.map(([j,l,v,gl,gv])=>{const en=l===c,mi=en?gl:gv,su=en?gv:gl;return {j,casa:en,rival:(en?v:l),mi,su,k:mi>su?"G":mi===su?"E":"P"}});
+  const lado=part.filter(x=>x.casa===!p.casa);  // cómo le va donde se juega: en su casa si vamos fuera
+  const sum=a=>a.reduce((x,y)=>x+y,0),pj=part.length;
+  const gol=(st.liga_goleadores||[]).filter(g=>g.cod===c),por=(st.liga_porteros||[]).filter(g=>g.cod===c)[0];
+  const ida=Object.entries(S.eq.partidos).find(([id,q])=>q!==p&&q.rival===p.rival&&q.resultado);
+  const inf={cod:c,nombre:G[c]?.nombre||p.rival,fila,part,pj,gf:sum(part.map(x=>x.mi)),gc:sum(part.map(x=>x.su)),lado,
+    ladoTxt:p.casa?"fuera de casa":"en su campo",ladoG:lado.filter(x=>x.k==="G").length,goleador:gol[0]||null,golesTop:gol.slice(0,3),portero:por||null,ida:ida?ida[1]:null,claves:[]};
+  const K=inf.claves,gfpp=pj?inf.gf/pj:0,gcpp=pj?inf.gc/pj:0;
+  if(!pj) K.push("Todavía no ha jugado: no hay datos para el informe.");
+  else{
+    if(gcpp>=2) K.push(`Encaja mucho (${r1(gcpp)} por partido): presión arriba y llegar con gente al área.`);
+    else if(gcpp<=1) K.push(`Encaja poco (${r1(gcpp)} por partido): paciencia con balón, no perderla en zona de riesgo.`);
+    if(gfpp>=2.5) K.push(`Marca mucho (${r1(gfpp)} por partido): cuidar las transiciones defensivas y las vigilancias.`);
+    if(inf.goleador&&inf.goleador.goles>=3) K.push(`Su goleador lleva ${inf.goleador.goles} goles: vigilancia sobre él.`);
+    if(lado.length) K.push(`${inf.ladoTxt[0].toUpperCase()+inf.ladoTxt.slice(1)} ha ganado ${inf.ladoG} de ${lado.length}.`);
+    const ult=part.slice(-3).map(x=>x.k).join("");if(ult==="GGG")K.push("Llega en racha: tres victorias seguidas.");else if(!ult.includes("G")&&ult.length===3)K.push("Llega sin ganar en sus tres últimos partidos.");
+    if(inf.ida){const m=marcador(inf.ida);if(m)K.push(`En la ida: ${inf.ida.resultado} (${m.mios>m.suyos?"ganamos":m.mios<m.suyos?"perdimos":"empate"}).`)}}
+  return inf}
+function vistaInforme(){
+  const p=S.eq.partidos[S.paId],inf=p&&informeRival(p);
+  if(!inf) return `<button class="back" id="infVolver">← Partido</button><div class="empty"><b>Sin datos del rival</b>Conecta el equipo en «Mi club» para tener los resultados del grupo.</div>`;
+  const G=S.eq.grupo||{},nom=c=>c===S.eq.cod?nombreClub():(G[c]?.nombre||"?"),f=inf.fila;
+  return `<button class="back" id="infVolver">← Partido</button>
+  <div class="phead"><img class="pesc big" src="${escudoDe(inf.cod)}" alt=""><div class="grow"><h2 class="h2">${esc(inf.nombre)}</h2><div class="note">Informe del rival · J${esc(p.jornada)} · ${esc(fmtFecha(p.fecha))} · datos de la federación de hoy</div></div></div>
+  ${f?`<div class="tiles"><div><b>${f.pos}º</b><span>puesto</span></div><div><b>${f.pts}</b><span>puntos</span></div><div><b>${r1(inf.pj?inf.gf/inf.pj:0)}</b><span>goles a favor / partido</span></div><div><b>${r1(inf.pj?inf.gc/inf.pj:0)}</b><span>en contra / partido</span></div></div>`:""}
+  <section class="blk"><h3 class="h3">Claves</h3><ul>${inf.claves.map(k=>`<li>${esc(k)}</li>`).join("")}</ul></section>
+  <section class="blk"><h3 class="h3">Sus partidos</h3><div class="forma">${inf.part.map(x=>`<span class="fk f${x.k}" title="J${x.j}">${x.k}</span>`).join("")}</div>
+    <table class="tstats" style="margin-top:6px"><tbody>${inf.part.map(x=>`<tr><td>J${x.j}</td><td class="izq">${x.casa?"vs":"en"} ${esc(nom(x.rival))}</td><td><b>${x.casa?x.mi+"-"+x.su:x.su+"-"+x.mi}</b></td><td><span class="tag${x.k==="P"?" rojo":""}">${x.k}</span></td></tr>`).join("")}</tbody></table></section>
+  ${inf.golesTop.length||inf.portero?`<section class="blk"><h3 class="h3">Sus jugadores</h3>
+    ${inf.golesTop.map(g=>`<div class="kv">⚽ <b>${esc(g.jugador)}</b>: ${g.goles} ${g.goles===1?"gol":"goles"} en ${g.pj} ${g.pj===1?"partido":"partidos"}</div>`).join("")}
+    ${inf.portero?`<div class="kv">🧤 <b>${esc(inf.portero.jugador)}</b>: ${inf.portero.encajados} encajados en ${inf.portero.minutos}'</div>`:""}</section>`:""}
+  <div class="bar"><button class="btn pri" id="imgInf">Imagen del informe</button></div>
+  ${S.img?`<div class="imgov" role="dialog" aria-label="Imagen"><div class="imgbox"><img src="${S.img.url}" alt="${esc(S.img.nombre)}">
+    <div class="bar" style="justify-content:center;margin-top:10px"><button class="btn pri" id="imgCompartir">Compartir</button><button class="btn" id="imgBajar">Descargar</button><button class="btn" id="imgCerrar">Cerrar</button></div></div></div>`:""}`;
+}
+app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!t)return;
+  if(t.id==="paInforme"){S.view="informe";S.img=null;render();window.scrollTo(0,0);return}
+  if(t.id==="infVolver"){S.view="partido";S.img=null;render();return}
+  if(t.id==="imgInf"){const P=S.eq.partidos[S.paId];t.disabled=true;try{const blob=await dibujar(P,"inf");if(S.img)URL.revokeObjectURL(S.img.url);
+    S.img={blob,url:URL.createObjectURL(blob),nombre:"informe-"+(P.jornada?"j"+P.jornada+"-":"")+slugPA(P.rival)+".png"};render()}catch(e){toast("No se pudo hacer la imagen");t.disabled=false}return}
+});
+
+// ---------- Calendario de entrenamientos y «Generar sesión» (1.8) ----------
+const DIAS_N=["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+S.dias=(()=>{try{return JSON.parse(localStorage.getItem("pizarra.dias"))||[1,3]}catch(e){return [1,3]}})();
+const isoDe=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
+function diasEntreno(desde,semanas){const out=[],d=new Date(desde+"T12:00:00");for(let i=0;i<semanas*7;i++){if(S.dias.includes(d.getDay()))out.push(isoDe(d));d.setDate(d.getDate()+1)}return out}
+function partidoTras(fecha){return partidosOrden().find(([id,p])=>p.fecha&&p.fecha>fecha&&(new Date(p.fecha)-new Date(fecha))/864e5<=8)}
+function htmlCalendario(){
+  const hoy=hoyISO(),ini=new Date(hoy+"T12:00:00");ini.setDate(ini.getDate()-7);
+  const dias=diasEntreno(isoDe(ini),S.calSemanas||6),porFecha={};
+  for(const [id,s] of Object.entries(S.se)) (porFecha[s.fecha]=porFecha[s.fecha]||[]).push([id,s]);
+  let semana="";
+  return `<div class="bar"><div class="grow note">Días de entreno: ${[1,2,3,4,5,6,0].map(d=>`<button class="chip" data-dia="${d}" aria-pressed="${S.dias.includes(d)}">${DIAS_N[d].slice(0,2)}</button>`).join(" ")}</div></div>
+  <div class="plist">${dias.map(f=>{const d=new Date(f+"T12:00:00"),lunes=new Date(d);lunes.setDate(d.getDate()-((d.getDay()+6)%7));const sem=isoDe(lunes);
+    const px=partidoTras(f),ses=porFecha[f]||[],pasado=f<hoy;
+    const cab=sem!==semana?(semana=sem,`<div class="note semcab">Semana del ${esc(fmtCorta(sem))}${px?` · <b>J${esc(px[1].jornada)} ${px[1].casa?"vs":"en"} ${esc(px[1].rival)}</b> el ${esc(fmtCorta(px[1].fecha))}`:" · sin partido"}</div>`):"";
+    return cab+`<div class="pcard dia${f===hoy?" next":""}${pasado?" pasado":""}"><span class="pj">${DIAS_N[d.getDay()].slice(0,3)}</span><span class="pmid"><b>${esc(fmtCorta(f))}</b>
+      ${ses.length?ses.map(([id,s])=>`<br><button class="lnk" data-ses="${esc(id)}">${esc(s.nombre||"Sesión")}</button> <span class="carga ${claseCarga(s.carga)}">${esc(s.carga||"")}</span>`).join(""):`<br><span class="note">Sin sesión</span>`}</span>
+      <span class="acts">${S.canWrite&&!ses.length?`<button class="btn sm pri" data-gen="${f}">Generar</button><button class="btn sm" data-elegir="${f}">Elegir</button>`:""}</span></div>
+      ${S.genDia===f?htmlGenerar(f,px):""}${S.elegirDia===f?htmlElegir(f):""}`}).join("")}</div>
+  <div class="bar" style="margin-top:10px"><button class="btn" id="calMas">Ver más semanas</button></div>`;
+}
+function htmlGenerar(f,px){const inf=px&&informeRival(px[1]);
+  return `<div class="picker"><b>Generar la sesión del ${esc(fmtFecha(f))}</b>
+    <div class="note" style="margin:4px 0">${px?`Para el partido contra ${esc(px[1].rival)} (${Math.round((new Date(px[1].fecha)-new Date(f))/864e5)} días después).${inf&&inf.claves.length?" Tendrá en cuenta: "+esc(inf.claves.slice(0,2).join(" ")):""}`:"No hay partido esa semana."}</div>
+    <label>Indicaciones (opcional)<textarea id="genInd" placeholder="p. ej. trabajar la salida de balón; faltará el portero; poca gente">${esc(S.genInd||"")}</textarea></label>
+    <div class="bar" style="margin-top:6px"><button class="btn pri" id="genSi">Generar</button><button class="btn sm" id="genNo">Cancelar</button></div>
+    <p class="note">Es una propuesta con los ejercicios de tu biblioteca: revísala y guárdala.</p></div>`}
+function htmlElegir(f){const l=Object.entries(S.se).sort((a,b)=>(b[1].fecha||"").localeCompare(a[1].fecha||""));
+  return `<div class="picker"><b>Elegir una sesión para el ${esc(fmtFecha(f))}</b><div class="note">Se copia con la fecha nueva; la original no cambia.</div>
+    <div class="list">${l.map(([id,s])=>`<button data-copiar="${esc(id)}">${esc(s.nombre||"Sesión")} <span class="note">· ${esc(fmtCorta(s.fecha))}</span></button>`).join("")||'<div class="note">No hay sesiones todavía.</div>'}</div>
+    <div class="bar" style="margin-top:6px"><button class="btn sm" id="elegirNo">Cancelar</button></div></div>`}
+// Reglas (las del skill entrenamientos-durcal): calentamiento tipo FIFA 11+, juegos reducidos con
+// series cortas, más carga lejos del partido y menos la víspera, y el foco según el rival.
+function generarSesion(fecha,indic){
+  const px=partidoTras(fecha),p=px&&px[1],inf=p&&informeRival(p),dias=p?Math.round((new Date(p.fecha)-new Date(fecha))/864e5):9;
+  const alta=dias>=5,foco=[],temas=[];
+  if(inf&&inf.pj){const gc=inf.gc/inf.pj,gf=inf.gf/inf.pj;
+    if(gc>=2){foco.push("presi","robo","pressing");temas.push("Presión arriba")}
+    if(gf>=2.5){foco.push("defens","repliegue","transici","vigilan");temas.push("Defender las transiciones")}
+    if(gc<=1){foco.push("posesi","rondo","paciencia","salida");temas.push("Posesión con paciencia")}}
+  if(!alta){foco.push("finaliz","tiro","balón parado","córner","falta");if(!temas.length)temas.push("Finalización y balón parado")}
+  const extra=(indic||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").split(/[^a-zñ]+/).filter(w=>w.length>3);
+  if(extra.length) temas.unshift((indic||"").split(/[.;,\n]/)[0].trim().replace(/^./,c=>c.toUpperCase()));
+  const norm=t=>(t||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+  const previa=Object.values(S.se).filter(s=>s.fecha&&s.fecha<fecha).sort((a,b)=>b.fecha.localeCompare(a.fecha))[0],usadas=new Set(previa?previa.tareas||[]:[]);
+  const nota=(id,e)=>{const txt=norm([e.nombre,e.objetivo,e.descripcion,e.fuente].join(" "));let n=0;
+    for(const k of foco) if(txt.includes(norm(k))) n+=3; for(const k of extra) if(txt.includes(k)) n+=4;
+    if(usadas.has(id)) n-=2; return n+Math.random()*.5};
+  const huecos=alta?[["Calentamiento"],["Técnica","Táctica"],["Táctica","Finalización"],["Partido"],["Vuelta a la calma"]]
+                   :[["Calentamiento"],["Técnica","Finalización"],["Balón parado","Finalización"],["Partido"],["Vuelta a la calma"]];
+  const elegidos=[];
+  for(const cats of huecos){const c=Object.entries(S.ej).filter(([id,e])=>cats.includes(e.categoria)&&!elegidos.includes(id)).sort((a,b)=>nota(b[0],b[1])-nota(a[0],a[1]))[0];if(c) elegidos.push(c[0])}
+  const d=new Date(fecha+"T12:00:00"),dia=DIAS_N[d.getDay()];
+  const tema=temas[0]||(alta?"Juego y presión":"Activación y finalización");
+  return {fecha,nombre:dia[0].toUpperCase()+dia.slice(1)+" · "+tema,carga:alta?"Alta":"Baja",tareas:elegidos,
+    idea:inf&&inf.claves.length?inf.claves[0]:tema,
+    notas:`Propuesta generada ${p?`para el partido contra ${p.rival} (${dias} días antes)`:"sin partido esa semana"}: ${alta?"sesión de carga, la más lejos del partido":"víspera: menos volumen y más velocidad de decisión"}.${indic?" Indicaciones: "+indic:""} Revísala y cambia lo que quieras.`}
+}
+app.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t||S.view!=="se")return;
+  if(t.id==="seCal"){S.seModo="cal";render();return}
+  if(t.id==="seLista"){S.seModo="lista";render();return}
+  if(t.dataset.dia){const d=+t.dataset.dia;S.dias=S.dias.includes(d)?S.dias.filter(x=>x!==d):[...S.dias,d].sort();try{localStorage.setItem("pizarra.dias",JSON.stringify(S.dias))}catch(e){}render();return}
+  if(t.id==="calMas"){S.calSemanas=(S.calSemanas||6)+6;render();return}
+  if(t.dataset.gen){S.genDia=t.dataset.gen;S.elegirDia=null;render();return}
+  if(t.id==="genNo"){S.genDia=null;render();return}
+  if(t.id==="genSi"){const ind=($("#genInd")?.value||"").trim();S.genInd="";
+    if(!Object.keys(S.ej).length){toast("Primero hace falta tener ejercicios en la biblioteca");return}
+    const id="ses-"+Date.now().toString(36);S.sesId=id;S.sesDraft=generarSesion(S.genDia,ind);S.nueva=true;S.picking=false;S.genDia=null;S.view="sesion";render();window.scrollTo(0,0);
+    toast("Propuesta lista: revísala y guárdala");return}
+  if(t.dataset.elegir){S.elegirDia=t.dataset.elegir;S.genDia=null;render();return}
+  if(t.id==="elegirNo"){S.elegirDia=null;render();return}
+  if(t.dataset.copiar){const o=S.se[t.dataset.copiar];const id="ses-"+Date.now().toString(36);S.sesId=id;S.sesDraft={...structuredClone(o),fecha:S.elegirDia};S.nueva=true;S.picking=false;S.elegirDia=null;S.view="sesion";render();window.scrollTo(0,0);return}
+});
+
 // ---------- Equipo conectado (1.5) ----------
 // Con código y contraseña, la app baja sola de este mismo sitio:
 //   equipos/<código>/calendario.json   público, lo actualiza cada día la tarea del repo
@@ -979,7 +1116,7 @@ async function dibujar(p,tipo){
   const linea1=[p.jornada?"JORNADA "+p.jornada:"",S.eq.categoria].filter(Boolean).join(" · ").toUpperCase();
   const loc=p.casa?{n:nombreClub(),e:escudoClub()}:{n:p.rival,e:p.escudo_rival}, vis=p.casa?{n:p.rival,e:p.escudo_rival}:{n:nombreClub(),e:escudoClub()};
   if(linea1) txt(linea1,W/2,92,`700 36px ${BC}`,CREMA);
-  if(tipo!=="res"){
+  if(tipo!=="res"&&tipo!=="inf"){
   for(const [eq,cx] of [[loc,230],[vis,850]]){const im=await cargarImg(eq.e);
     x.save();x.beginPath();x.arc(cx,250,112,0,7);x.fillStyle="rgba(255,255,255,.95)";x.fill();x.restore();
     if(im){const k=Math.min(170/im.width,170/im.height);x.drawImage(im,cx-im.width*k/2,250-im.height*k/2,im.width*k,im.height*k)}
@@ -1018,6 +1155,26 @@ async function dibujar(p,tipo){
       const items=banq.map(id=>(J[id].dorsal!=null?J[id].dorsal+" ":"")+nomJ(J[id]).toUpperCase());let lines=[""];x.font=`700 38px ${BC}`;
       for(const it of items){const t=lines[lines.length-1]?lines[lines.length-1]+"  ·  "+it:it;if(x.measureText(t).width>960)lines.push(it);else lines[lines.length-1]=t}
       lines.slice(0,3).forEach((l,k)=>txt(l,W/2,1716+k*48,`700 38px ${BC}`))}
+  } else if(tipo==="inf"){
+    const inf=informeRival(p),f=inf.fila;
+    x.save();x.translate(W/2,150);x.rotate(-.035);x.font=`46px ${BE}`;const cw0=x.measureText("INFORME DEL RIVAL").width+70;
+    x.fillStyle="#fff";x.fillRect(-cw0/2+7,-23,cw0,62);x.fillStyle=ROJO;x.fillRect(-cw0/2,-30,cw0,62);x.restore();txt("INFORME DEL RIVAL",W/2,168,`46px ${BE}`);
+    const im=await cargarImg(escudoDe(inf.cod));x.save();x.beginPath();x.arc(W/2,340,120,0,7);x.fillStyle="#fff";x.fill();x.restore();
+    if(im){const k=Math.min(180/im.width,190/im.height);x.drawImage(im,W/2-im.width*k/2,340-im.height*k/2,im.width*k,im.height*k)}
+    const n=inf.nombre.toUpperCase();txt(n,W/2,560,`${ajustar(n,980,110,BE)}px ${BE}`,"#fff","center",10);
+    const fh=`J${p.jornada||"?"} · ${p.casa?"EN EL "+(p.campo||"").replace(/^.*? - /,"").replace(/\s*\(.*?\)/g,""):"EN SU CAMPO"} · ${(p.fecha?new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"}).replace(/\./g,""):"")}`.toUpperCase();
+    txt(fh,W/2,622,`700 ${ajustar(fh,980,36,BC)}px ${BC}`,CREMA);
+    const tiles=f?[[f.pos+"º","PUESTO"],[String(f.pts),"PUNTOS"],[r1(inf.pj?inf.gf/inf.pj:0),"MARCA / PARTIDO"],[r1(inf.pj?inf.gc/inf.pj:0),"ENCAJA / PARTIDO"]]:[];
+    tiles.forEach(([v,l],i)=>{const cx=W/8+i*W/4;x.fillStyle="rgba(255,255,255,.1)";x.fillRect(cx-118,680,236,170);txt(v,cx,790,`96px ${BE}`,CREMA);txt(l,cx,830,`700 24px ${BC}`,"#d8f5df")});
+    txt("SUS PARTIDOS",W/2,930,`50px ${BE}`,CREMA);
+    const fs=inf.part.slice(-6),cw=Math.min(150,960/Math.max(fs.length,1));
+    fs.forEach((q,i)=>{const cx=W/2-(fs.length-1)*cw/2+i*cw;x.fillStyle=q.k==="G"?"#2f8f50":q.k==="E"?"#b98a00":ROJO;x.beginPath();x.roundRect(cx-cw/2+8,960,cw-16,96,12);x.fill();
+      txt(q.k,cx,1030,`64px ${BE}`);txt(`J${q.j} ${q.casa?q.mi+"-"+q.su:q.su+"-"+q.mi}`,cx,1090,`700 26px ${BC}`,"#fff")});
+    let y=1180;txt("CLAVES",W/2,y,`50px ${BE}`,CREMA);y+=50;
+    x.font=`600 36px ${BC}`;
+    for(const k of inf.claves.slice(0,5)){const pal=k.split(" ");let l="";const lines=[];for(const w of pal){const tt=l?l+" "+w:w;if(x.measureText(tt).width>900){lines.push(l);l=w}else l=tt}lines.push(l);
+      lines.forEach((ln,i)=>{txt((i?"   ":"•  ")+ln,90,y,`600 36px ${BC}`,"#fff","left");y+=44});y+=12;if(y>1760)break}
+    if(inf.goleador&&y<1740){txt(`⚽ ${inf.goleador.jugador.toUpperCase()} · ${inf.goleador.goles} ${inf.goleador.goles===1?"GOL":"GOLES"}`,W/2,Math.max(y+20,1730),`700 34px ${BC}`,CREMA)}
   } else if(tipo==="res"){
     const m=marcador(p),g=golesDe(p,Object.keys(S.eq.partidos).find(k=>S.eq.partidos[k]===p))||{goleadores:{},propia:0};
     const gano=m.mios>m.suyos,emp=m.mios===m.suyos;
