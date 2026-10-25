@@ -156,6 +156,7 @@ ul{margin:4px 0 4px 18px;padding:0}
 .slot .vacio{background:rgba(0,0,0,.25);color:#fff;font-size:15px;border-style:dashed}
 .slot.sel .ph{box-shadow:0 0 0 4px var(--crema)}
 .sn{font-family:var(--label);font-weight:700;font-size:13px;color:#fff;text-shadow:0 1px 2px #000;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fcampo{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;object-position:50% 60%;border-radius:10px;background:var(--chip)}
 .tclas tr[data-eqc]{cursor:pointer}.eqc{display:inline-flex;align-items:center;gap:8px}.eqc img{width:26px;height:26px;object-fit:contain;background:#fff;border-radius:50%;padding:2px}
 .tclas th,.tclas td{padding:6px 5px}
 .golgrid{display:flex;flex-direction:column;gap:6px;margin-top:8px}
@@ -466,8 +467,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.7.1";
+const VERSION="1.7.2";
 const NOVEDADES=[
+  ["1.7.2","25-oct-2026",["Las fotos de los campos salen todas del mismo tamaño en la ficha de cada equipo."]],
   ["1.7.1","25-oct-2026",["Escudo de cada equipo en la clasificación y botón «Clasificación» arriba en Partidos.","Al estrenar versión se bajan al momento los datos nuevos del equipo."]],
   ["1.7","25-oct-2026",["Clasificación en su propia pantalla, con escudos, goles a favor y en contra, y la tabla tras cada jornada.","Ficha de cada equipo: sus resultados, su campo con foto y los partidos contra nosotros.","La imagen del resultado lleva la clasificación de esa jornada."]],
   ["1.6","25-oct-2026",["Nueva sección «Resultado» en cada partido: marcador y goleadores, que llegan solos de la federación, con su imagen para el grupo.","Estadísticas: convocatorias, titularidades, goles y clasificación.","Plantilla con posición, bajas y fichas nuevas que llegan solas."]],
@@ -843,7 +845,7 @@ function vistaEquipo(){
   <div class="phead">${escudoDe(c)?`<img class="pesc big" src="${escudoDe(c)}" alt="">`:""}<div class="grow"><h2 class="h2">${esc(nom)}</h2>
     ${fila?`<div class="note"><b>${fila.pos}º</b> · ${fila.pts} puntos · ${fila.g}G ${fila.e}E ${fila.p}P · ${fila.gf} a favor, ${fila.gc} en contra</div>`:""}</div></div>
   ${f.campo?`<section class="blk"><h3 class="h3">Su campo</h3><div class="note" style="margin:4px 0 8px">${esc(f.campo)}</div>
-    ${foto?`<img src="${foto}" alt="Campo" style="width:100%;border-radius:10px">`:`<div class="note">Sin foto todavía. Si le haces una cuando vayas, saldrá de fondo en la convocatoria y en la alineación.</div>`}
+    ${foto?`<img class="fcampo" src="${foto}" alt="Campo">`:`<div class="note">Sin foto todavía. Si le haces una cuando vayas, saldrá de fondo en la convocatoria y en la alineación.</div>`}
     <div class="bar" style="margin-top:8px"><label class="btn filebtn">${foto?"Cambiar foto":"Poner foto del campo"}<input type="file" id="eqFoto" accept="image/*" hidden></label></div></section>`:""}
   ${nuestros.length?`<section class="blk"><h3 class="h3">Contra nosotros</h3><div class="plist" style="margin-top:8px">${nuestros.map(([id,p])=>`<button class="pcard" data-pa="${esc(id)}"><span class="pj">J${esc(p.jornada)}</span><span class="pesc"></span><span class="pmid"><b>${p.casa?"En casa":"Fuera"}</b><br><span class="note">${esc(fmtCorta(p.fecha))}</span></span><span class="pres">${esc(p.resultado||"")}</span></button>`).join("")}</div></section>`:""}
   <section class="blk"><h3 class="h3">Sus resultados</h3>${R.length?`<table class="tstats" style="margin-top:6px"><tbody>${R.map(([j,l,v,gl,gv])=>{const en=l===c,rv=en?v:l,mi=en?gl:gv,su=en?gv:gl,k=mi>su?"G":mi===su?"E":"P";

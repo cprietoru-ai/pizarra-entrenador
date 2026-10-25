@@ -2,6 +2,9 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.7.2 · 25-oct-2026
+- Las fotos de los campos salen todas del mismo tamaño en la ficha de cada equipo.
+
 ## 1.7.1 · 25-oct-2026
 - Escudo de cada equipo en la clasificación y botón «Clasificación» arriba en Partidos.
 - Al estrenar versión se bajan al momento los datos nuevos del equipo.
