@@ -466,8 +466,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.7";
+const VERSION="1.7.1";
 const NOVEDADES=[
+  ["1.7.1","25-oct-2026",["Escudo de cada equipo en la clasificación y botón «Clasificación» arriba en Partidos.","Al estrenar versión se bajan al momento los datos nuevos del equipo."]],
   ["1.7","25-oct-2026",["Clasificación en su propia pantalla, con escudos, goles a favor y en contra, y la tabla tras cada jornada.","Ficha de cada equipo: sus resultados, su campo con foto y los partidos contra nosotros.","La imagen del resultado lleva la clasificación de esa jornada."]],
   ["1.6","25-oct-2026",["Nueva sección «Resultado» en cada partido: marcador y goleadores, que llegan solos de la federación, con su imagen para el grupo.","Estadísticas: convocatorias, titularidades, goles y clasificación.","Plantilla con posición, bajas y fichas nuevas que llegan solas."]],
   ["1.5.2","23-oct-2026",["Lo que cambias en la plantilla (dorsal, foto, nombre, capitán) se queda aunque el club actualice la plantilla."]],
@@ -608,7 +609,7 @@ function vistaPA(){
   if(S.view==="equipo") return vistaEquipo();
   const l=partidosOrden(), nj=Object.keys(S.eq.jugadores).length, px=proximo();
   return `<div class="bar"><div class="grow note">${S.conex&&!S.conex.error?"Equipo conectado: la plantilla y el calendario se actualizan solos. Tus convocatorias y alineaciones se guardan en este móvil.":S.conex&&S.conex.error?`<span class="over">${esc(S.conex.error)}</span>: revísalo en «Mi club».`:"Plantilla, calendario, convocatoria y alineación. Se guardan <b>solo en este móvil</b>. Si tu club te ha dado un código de equipo, conéctalo en «Mi club»."}</div>
-    <button class="btn" id="paPlantilla">Plantilla (${nj})</button>${(S.eq.resultados||[]).length?`<button class="btn" id="paClasif">Clasificación</button>`:""}<button class="btn" id="paStats">Estadísticas</button><button class="btn pri" id="paNuevo">+ Partido</button></div>
+    <button class="btn" id="paPlantilla">Plantilla (${nj})</button>${(S.eq.resultados||S.eq.clasificacion||[]).length?`<button class="btn" id="paClasif">Clasificación</button>`:""}<button class="btn" id="paStats">Estadísticas</button><button class="btn pri" id="paNuevo">+ Partido</button></div>
     ${!nj&&!l.length?`<div class="empty"><b>Todavía no hay equipo</b>Mete la plantilla y los partidos a mano, o importa el archivo del equipo si te lo han pasado.
       <div class="bar" style="justify-content:center;margin-top:12px"><label class="btn pri filebtn">Importar equipo<input type="file" id="paImportar" accept=".json,application/json" hidden></label></div></div>`
     :l.length?`<div class="plist">${l.map(([id,p])=>{const r=p.resultado,act=id===px;
@@ -823,12 +824,12 @@ function tablaHasta(J){
   o.forEach((x,i)=>{const k=[x.pts,x.gf-x.gc,x.gf].join();x.pos=k===prev?o[i-1].pos:i+1;prev=k;x.yo=x.cod===S.eq.cod;x.equipo=x.yo?nombreClub():(G[x.cod]?.nombre||"?")});
   return o}
 function jornadasJugadas(){return [...new Set((S.eq.resultados||[]).map(r=>r[0]))].sort((a,b)=>a-b)}
-function escudoDe(cod){return cod===S.eq.cod?escudoClub():(S.eq.grupo?.[cod]?.escudo||"")}
+function escudoDe(cod){if(!cod)return "";return cod===S.eq.cod?escudoClub():(S.eq.grupo?.[cod]?.escudo||"")}
 function vistaClasif(){
   const js=jornadasJugadas(),J=S.clasifJ&&js.includes(S.clasifJ)?S.clasifJ:js[js.length-1],t=tablaHasta(J);
   return `<button class="back" id="paVolver">← Partidos</button>
   <div class="bar"><div class="grow"><h2 class="h2">Clasificación</h2></div>
-    <label style="flex-direction:row;align-items:center;gap:8px">Tras la jornada<select id="clasifJ" style="width:auto">${js.map(j=>`<option ${j===J?"selected":""}>${j}</option>`).join("")}</select></label></div>
+    ${js.length?"":`<span class="note">Actualizando…</span>`}<label style="flex-direction:row;align-items:center;gap:8px${js.length?"":";display:none"}">Tras la jornada<select id="clasifJ" style="width:auto">${js.map(j=>`<option ${j===J?"selected":""}>${j}</option>`).join("")}</select></label></div>
   <div class="blk" style="overflow-x:auto;padding:6px"><table class="tstats tclas"><thead><tr><th>#</th><th class="izq">Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>Pts</th></tr></thead><tbody>
   ${t.map(f=>`<tr${f.yo?' class="yo"':""} data-eqc="${esc(f.cod)}"><td>${f.pos}</td><td class="izq"><span class="eqc">${escudoDe(f.cod)?`<img src="${escudoDe(f.cod)}" alt="">`:""}<span>${esc(f.equipo)}</span></span></td><td>${f.pj}</td><td>${f.g}</td><td>${f.e}</td><td>${f.p}</td><td>${f.gf}</td><td>${f.gc}</td><td><b>${f.pts}</b></td></tr>`).join("")}
   </tbody></table></div><p class="note">Toca un equipo para ver sus partidos y su campo. Datos de la federación.</p>`;
@@ -866,11 +867,11 @@ function vistaStats(){
     ${st.liga_goleadores.slice(0,10).map((g,i)=>`<tr${g.mio?' class="yo"':""}><td>${i+1}</td><td class="izq"><span class="eqc">${escudoDe(g.cod)?`<img src="${escudoDe(g.cod)}" alt="">`:""}<span>${esc(g.mio&&J[g.mio]?nomJ(J[g.mio]):g.jugador)}</span></span></td><td>${g.pj}</td><td><b>${g.goles}</b></td></tr>`).join("")}</tbody></table></div>`:""}
   ${(st.liga_porteros||[]).length?`<h3 class="h3" style="margin-top:14px">Porteros menos goleados</h3><div class="blk" style="overflow-x:auto;padding:6px"><table class="tstats tclas"><thead><tr><th class="izq">Portero</th><th>Min.</th><th>Encaj.</th></tr></thead><tbody>
     ${st.liga_porteros.slice(0,6).map(g=>`<tr${g.mio?' class="yo"':""}><td class="izq"><span class="eqc">${escudoDe(g.cod)?`<img src="${escudoDe(g.cod)}" alt="">`:""}<span>${esc(g.mio&&J[g.mio]?nomJ(J[g.mio]):g.jugador)}</span></span></td><td>${g.minutos}'</td><td><b>${g.encajados}</b></td></tr>`).join("")}</tbody></table></div>`:""}
-  <div class="bar" style="margin-top:12px"><button class="btn" id="paClasif">Ver la clasificación</button></div>`;
+`;
 }
 app.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t||!PA_VISTAS.includes(S.view))return;
   if(t.id==="paStats"){S.view="stats";render();window.scrollTo(0,0);return}
-  if(t.id==="paClasif"){S.view="clasif";render();window.scrollTo(0,0);return}
+  if(t.id==="paClasif"){S.view="clasif";render();window.scrollTo(0,0);if(!S.eq.resultados)sincronizar({forzar:true});return}
   if(t.id==="clasifVolver"){S.view="clasif";render();return}
   const P=S.eq.partidos[S.paId];if(!P||S.view!=="partido")return;
   if(t.id==="golCorregir"){S.golEdit=true;render();return}
@@ -903,7 +904,7 @@ let sincronizando=null;
 async function sincronizar({forzar=false,avisar=false}={}){
   const c=S.conex; if(!c) return false;
   if(sincronizando) return sincronizando;
-  if(!forzar&&c.ultima&&Date.now()-c.ultima<10*60*1000) return true;
+  if(!forzar&&c.ultima&&Date.now()-c.ultima<10*60*1000&&S.eq.resultados&&c.version===VERSION) return true;
   sincronizando=(async()=>{
     const dir="equipos/"+encodeURIComponent(c.equipo)+"/";
     try{
@@ -925,10 +926,10 @@ async function sincronizar({forzar=false,avisar=false}={}){
       const re_=await fetch(dir+"estadisticas.enc.json",{cache:"no-store"});
       if(re_.ok){const r=await re_.json();
         if(forzar||r.exportado!==c.estadisticas){try{S.eq.stats=await descifrar(r,c.clave);c.estadisticas=r.exportado}catch(e){}}}
-      c.error="";c.ultima=Date.now();c.calendario=cal.actualizado||"";eqGuardar();
+      c.error="";c.ultima=Date.now();c.version=VERSION;c.calendario=cal.actualizado||"";eqGuardar();
       if(avisar) toast("Equipo actualizado");return true
     }catch(e){if(avisar)toast("Sin conexión: se usan los datos guardados");return false}
-    finally{conexGuardar();sincronizando=null;if(["club","pa"].includes(S.view))render()}
+    finally{conexGuardar();sincronizando=null;if(["club","pa","clasif","stats","equipo"].includes(S.view))render()}
   })();
   return sincronizando;
 }

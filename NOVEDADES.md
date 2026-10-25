@@ -2,6 +2,10 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.7.1 · 25-oct-2026
+- Escudo de cada equipo en la clasificación y botón «Clasificación» arriba en Partidos.
+- Al estrenar versión se bajan al momento los datos nuevos del equipo.
+
 ## 1.7 · 25-oct-2026
 - Clasificación en su propia pantalla, con escudos, goles a favor y en contra, y la tabla tras cada jornada.
 - Ficha de cada equipo: sus resultados, su campo con foto y los partidos contra nosotros.
