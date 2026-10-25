@@ -88,12 +88,13 @@ def resultados(grupo, cod):
 
 def clasificacion(grupo, equipos, yo):
     """Tabla del grupo con los resultados de todos (como la RFAF: empatados a puntos,
-    diferencia y goles comparten puesto). None si falta algún equipo."""
+    diferencia y goles comparten puesto), y la lista de todos los partidos jugados.
+    (None, None) si falta algún equipo."""
     partidos = {}
     for nombre_eq, cod in equipos.items():
         pj = partidos_jugados(grupo, cod)
         if pj is None:
-            return None
+            return None, None
         for j, l, v, gl, gv in pj:
             partidos[(j, l, v)] = (gl, gv)
     t = {n: dict(pj=0, g=0, e=0, p=0, gf=0, gc=0, pts=0) for n in equipos}
@@ -110,7 +111,8 @@ def clasificacion(grupo, equipos, yo):
         clave = (x["pts"], x["gf"] - x["gc"], x["gf"])
         out.append(dict(pos=out[-1]["pos"] if clave == prev else i, equipo=nombre(n), yo=n == yo, **x))
         prev = clave
-    return out
+    lista = [[j, equipos.get(l, ""), equipos.get(v, ""), gl, gv] for (j, l, v), (gl, gv) in sorted(partidos.items())]
+    return out, lista
 
 
 def nombre(n):
@@ -138,10 +140,21 @@ def equipo(carpeta):
     viejo = json.load(open(ruta)) if os.path.exists(ruta) else {}
     antes = viejo.get("partidos", {})
     partidos, cod, res, fallos, equipos = {}, None, None, 0, {}
+    fichas = {}  # cod -> nombre, escudo y campo de casa de cada equipo del grupo
     for j in range(1, 40):
         js = jornada(grupo, j)
         for q in js or []:
             equipos[q["local"]] = q["cod_local"]; equipos[q["visitante"]] = q["cod_visitante"]
+            for lado in ("local", "visitante"):
+                c = q[f"cod_{lado}"]
+                f = fichas.setdefault(c, {"nombre": cfg["club"] if q[lado] == yo else nombre(q[lado]), "escudo": "", "campo": ""})
+                if not f["escudo"]:
+                    try:
+                        f["escudo"] = escudo(carpeta, c, q["esc_" + lado])
+                    except Exception:
+                        pass
+                if lado == "local" and q["campo"] and not f["campo"]:
+                    f["campo"] = q["campo"]
         if js is None:
             # Página vacía: se deja la jornada como estaba y se sigue
             fallos += 1
@@ -175,14 +188,20 @@ def equipo(carpeta):
         raise SystemExit(f"{carpeta}: no sale ningún partido (¿cambió la web?)")
     if fallos:
         print(f"{carpeta}: {fallos} jornadas sin leer, se quedan como estaban")
-    tabla = clasificacion(grupo, equipos, yo)
-    if tabla is None:  # si falla algún equipo, se queda la tabla que había
-        tabla = viejo.get("clasificacion", [])
+    tabla, todos = clasificacion(grupo, equipos, yo)
+    if tabla is None:  # si falla algún equipo, se queda lo que había
+        tabla, todos = viejo.get("clasificacion", []), viejo.get("resultados", [])
+    for c, f in viejo.get("equipos", {}).items():
+        if c in fichas:
+            fichas[c] = {k: fichas[c][k] or f.get(k, "") for k in fichas[c]}
+        else:
+            fichas[c] = f
     for f in tabla:
         if f["yo"]:
             f["equipo"] = cfg["club"]
     nuevo = {"club": cfg["club"], "categoria": cfg["categoria"], "escudo": cfg["escudo"],
-             "cod_equipo": cod or viejo.get("cod_equipo", ""), "partidos": partidos, "clasificacion": tabla}
+             "cod_equipo": cod or viejo.get("cod_equipo", ""), "partidos": partidos, "clasificacion": tabla,
+             "equipos": fichas, "resultados": todos}
     if {k: v for k, v in viejo.items() if k != "actualizado"} == nuevo:
         print(f"{carpeta}: sin cambios")
         return

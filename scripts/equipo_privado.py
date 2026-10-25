@@ -61,7 +61,8 @@ def licencias(cod):
 
 
 def tabla(pagina, cfg, yo):
-    """{nombre RFAF: (n, goles)} del equipo en NFG_CMP_Goleadores / NFG_CMP_Porteros, o None."""
+    """{nombre RFAF: (n, goles)} del equipo en NFG_CMP_Goleadores / NFG_CMP_Porteros, o None.
+    Con yo=None, de toda la liga: {nombre: (n, goles, equipo)}."""
     for _ in range(4):
         raw = get(f"{BASE}{pagina}?cod_primaria=1000120&codcompeticion={cfg['competicion']}&codgrupo={cfg['grupo']}")
         if raw is None:
@@ -69,8 +70,11 @@ def tabla(pagina, cfg, yo):
         out = {}
         for fila in re.findall(r"<tr>\s*(<td.*?)</tr>", raw, flags=re.S):
             c = [clean(x) for x in re.findall(r"<td[^>]*>(.*?)</td>", fila, flags=re.S)]
-            if len(c) >= 5 and c[3].isdigit() and c[4].isdigit() and c[1].strip() == yo:
-                out[c[0]] = (int(c[3]), int(c[4]))
+            if len(c) >= 5 and c[3].isdigit() and c[4].isdigit():
+                if yo is None:
+                    out[c[0]] = (int(c[3]), int(c[4]), c[1].strip())
+                elif c[1].strip() == yo:
+                    out[c[0]] = (int(c[3]), int(c[4]))
         if out or "Partidos Jugados" in raw or "Minutos" in raw:
             return out
     return None
@@ -178,6 +182,16 @@ def equipo(carpeta):
     est["temporada"] = {sl(n): {"pj": pj, "goles": g} for n, (pj, g) in gol.items() if sl(n)}
     if por is not None:
         est["porteros"] = {sl(n): {"minutos": m, "encajados": g} for n, (m, g) in por.items() if sl(n)}
+    # Toda la liga (pichichi y zamora), cifrado como lo demás: son nombres de chavales
+    liga_g, liga_p = tabla("NFG_CMP_Goleadores", cfg, None), tabla("NFG_CMP_Porteros", cfg, None)
+    eqs = {f["nombre"].upper(): c for c, f in cal.get("equipos", {}).items()}
+    cod = lambda n: cal.get("cod_equipo") if n == yo else next((c for k, c in eqs.items() if norm(k) <= norm(n)), "")
+    if liga_g is not None:
+        est["liga_goleadores"] = sorted([{"jugador": bonito(n), "cod": cod(e), "pj": pj, "goles": g, "mio": sl(n)}
+                                         for n, (pj, g, e) in liga_g.items()], key=lambda x: (-x["goles"], x["pj"]))[:20]
+    if liga_p is not None:
+        est["liga_porteros"] = sorted([{"jugador": bonito(n), "cod": cod(e), "minutos": m, "encajados": g, "mio": sl(n)}
+                                       for n, (m, g, e) in liga_p.items()], key=lambda x: (x["encajados"] / max(x["minutos"], 1), -x["minutos"]))[:12]
     viejo = descifrar(ruta, clave) if os.path.exists(ruta) else None
     if viejo is None or {k: v for k, v in viejo.items() if k != "exportado"} != {k: v for k, v in est.items() if k != "exportado"}:
         est.pop("exportado", None)

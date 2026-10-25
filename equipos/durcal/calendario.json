@@ -393,5 +393,181 @@
    "pts": 0
   }
  ],
- "actualizado": "2026-10-25T08:50:15Z"
+ "equipos": {
+  "48515716": {
+   "nombre": "Recreativo Cájar 2016",
+   "escudo": "equipos/durcal/escudos/48515716.png",
+   "campo": "Cájar - CÁJAR POLIDEPORTIVO MUNICIPAL (F11-F7 1)"
+  },
+  "561415": {
+   "nombre": "Unión Órgiva-Alpujarra",
+   "escudo": "equipos/durcal/escudos/561415.png",
+   "campo": "Órgiva - LA MANCANZUÑA POLIDEPORTIVO MUNICIPAL (F11-F7)"
+  },
+  "2697461": {
+   "nombre": "C.D. Dúrcal",
+   "escudo": "equipos/durcal/escudos/2697461.png",
+   "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)"
+  },
+  "24492801": {
+   "nombre": "Almuñécar 2021 A",
+   "escudo": "equipos/durcal/escudos/24492801.png",
+   "campo": "Almuñécar - RíO VERDE CAMPO de FÚTBOL (F11-F7)"
+  },
+  "30341006": {
+   "nombre": "Origen Valle de Lecrín",
+   "escudo": "equipos/durcal/escudos/30341006.png",
+   "campo": "Lecrín - LECRÍN BLAS INFANTE (F11-F7)"
+  },
+  "556118": {
+   "nombre": "Atlético Salobreña",
+   "escudo": "equipos/durcal/escudos/556118.png",
+   "campo": "Salobreña - LOS TRANCES ESTADIO MUNICIPAL (F11-F7)"
+  },
+  "44822776": {
+   "nombre": "Motril A",
+   "escudo": "equipos/durcal/escudos/44822776.png",
+   "campo": "Motril - PUNTALÓN CAMPO de FÚTBOL (F11-F7)"
+  },
+  "17856317": {
+   "nombre": "Padul Balompié B",
+   "escudo": "equipos/durcal/escudos/17856317.png",
+   "campo": "Padul - PADUL POLIDEPORTIVO MUNICIPAL (F11-F7)"
+  },
+  "25517390": {
+   "nombre": "Alborán",
+   "escudo": "equipos/durcal/escudos/25517390.png",
+   "campo": "Calahonda (Motril) - CALAHONDA CAMPO MUNICIPAL (F11-F7)"
+  },
+  "526518": {
+   "nombre": "Puerto de Motril C.F.",
+   "escudo": "equipos/durcal/escudos/526518.png",
+   "campo": "Motril - ANTONIO GONZALEZ RUIZ ESTADIO MUNICIPAL (F11-F7)"
+  },
+  "28636816": {
+   "nombre": "Costa Tropical",
+   "escudo": "equipos/durcal/escudos/28636816.png",
+   "campo": "Motril - HERMANOS CALLEJÓN CAMPO MUNICIPAL (F11-F7)"
+  },
+  "38963090": {
+   "nombre": "Almuñécar C.F.",
+   "escudo": "equipos/durcal/escudos/38963090.png",
+   "campo": "Almuñécar - RíO VERDE CAMPO de FÚTBOL (F11-F7)"
+  }
+ },
+ "resultados": [
+  [
+   1,
+   "28636816",
+   "38963090",
+   2,
+   7
+  ],
+  [
+   1,
+   "25517390",
+   "526518",
+   2,
+   2
+  ],
+  [
+   1,
+   "2697461",
+   "24492801",
+   3,
+   0
+  ],
+  [
+   1,
+   "48515716",
+   "561415",
+   1,
+   2
+  ],
+  [
+   1,
+   "44822776",
+   "17856317",
+   2,
+   1
+  ],
+  [
+   1,
+   "30341006",
+   "556118",
+   2,
+   2
+  ],
+  [
+   2,
+   "38963090",
+   "30341006",
+   3,
+   2
+  ],
+  [
+   2,
+   "556118",
+   "44822776",
+   2,
+   3
+  ],
+  [
+   2,
+   "17856317",
+   "48515716",
+   2,
+   2
+  ],
+  [
+   2,
+   "561415",
+   "2697461",
+   1,
+   7
+  ],
+  [
+   2,
+   "24492801",
+   "25517390",
+   3,
+   1
+  ],
+  [
+   2,
+   "526518",
+   "28636816",
+   3,
+   1
+  ],
+  [
+   3,
+   "2697461",
+   "17856317",
+   7,
+   2
+  ],
+  [
+   3,
+   "48515716",
+   "556118",
+   0,
+   6
+  ],
+  [
+   3,
+   "44822776",
+   "38963090",
+   3,
+   4
+  ],
+  [
+   3,
+   "526518",
+   "24492801",
+   0,
+   7
+  ]
+ ],
+ "actualizado": "2026-10-25T10:20:39Z"
 }

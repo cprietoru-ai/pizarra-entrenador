@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.7 · 25-oct-2026
+- Clasificación en su propia pantalla, con escudos, goles a favor y en contra, y la tabla tras cada jornada.
+- Ficha de cada equipo: sus resultados, su campo con foto y los partidos contra nosotros.
+- La imagen del resultado lleva la clasificación de esa jornada.
+
 ## 1.6 · 25-oct-2026
 - Nueva sección «Resultado» en cada partido: marcador y goleadores, que llegan solos de la federación, con su imagen para el grupo.
 - Estadísticas: convocatorias, titularidades, goles y clasificación.
