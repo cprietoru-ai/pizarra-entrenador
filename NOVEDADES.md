@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.6 · 25-oct-2026
+- Nueva sección «Resultado» en cada partido: marcador y goleadores, que llegan solos de la federación, con su imagen para el grupo.
+- Estadísticas: convocatorias, titularidades, goles y clasificación.
+- Plantilla con posición, bajas y fichas nuevas que llegan solas.
+
 ## 1.5.2 · 23-oct-2026
 - Lo que cambias en la plantilla (dorsal, foto, nombre, capitán) se queda aunque el club actualice la plantilla.
 

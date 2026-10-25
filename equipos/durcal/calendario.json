@@ -2,6 +2,7 @@
  "club": "C.D. Dúrcal",
  "categoria": "4ª Andaluza Cadete",
  "escudo": "equipos/durcal/escudo.png",
+ "cod_equipo": "2697461",
  "partidos": {
   "j01": {
    "jornada": 1,
@@ -246,5 +247,151 @@
    "escudo_rival": "equipos/durcal/escudos/526518.png"
   }
  },
- "actualizado": "2026-10-24T13:13:40Z"
+ "clasificacion": [
+  {
+   "pos": 1,
+   "equipo": "C.D. Dúrcal",
+   "yo": true,
+   "pj": 3,
+   "g": 3,
+   "e": 0,
+   "p": 0,
+   "gf": 17,
+   "gc": 3,
+   "pts": 9
+  },
+  {
+   "pos": 2,
+   "equipo": "Almuñécar C.F.",
+   "yo": false,
+   "pj": 3,
+   "g": 3,
+   "e": 0,
+   "p": 0,
+   "gf": 14,
+   "gc": 7,
+   "pts": 9
+  },
+  {
+   "pos": 3,
+   "equipo": "Almuñécar 2021 A",
+   "yo": false,
+   "pj": 3,
+   "g": 2,
+   "e": 0,
+   "p": 1,
+   "gf": 10,
+   "gc": 4,
+   "pts": 6
+  },
+  {
+   "pos": 4,
+   "equipo": "Motril A",
+   "yo": false,
+   "pj": 3,
+   "g": 2,
+   "e": 0,
+   "p": 1,
+   "gf": 8,
+   "gc": 7,
+   "pts": 6
+  },
+  {
+   "pos": 5,
+   "equipo": "Atlético Salobreña",
+   "yo": false,
+   "pj": 3,
+   "g": 1,
+   "e": 1,
+   "p": 1,
+   "gf": 10,
+   "gc": 5,
+   "pts": 4
+  },
+  {
+   "pos": 6,
+   "equipo": "Puerto de Motril C.F.",
+   "yo": false,
+   "pj": 3,
+   "g": 1,
+   "e": 1,
+   "p": 1,
+   "gf": 5,
+   "gc": 10,
+   "pts": 4
+  },
+  {
+   "pos": 7,
+   "equipo": "Unión Órgiva-Alpujarra",
+   "yo": false,
+   "pj": 2,
+   "g": 1,
+   "e": 0,
+   "p": 1,
+   "gf": 3,
+   "gc": 8,
+   "pts": 3
+  },
+  {
+   "pos": 8,
+   "equipo": "Origen Valle de Lecrín",
+   "yo": false,
+   "pj": 2,
+   "g": 0,
+   "e": 1,
+   "p": 1,
+   "gf": 4,
+   "gc": 5,
+   "pts": 1
+  },
+  {
+   "pos": 9,
+   "equipo": "Alborán",
+   "yo": false,
+   "pj": 2,
+   "g": 0,
+   "e": 1,
+   "p": 1,
+   "gf": 3,
+   "gc": 5,
+   "pts": 1
+  },
+  {
+   "pos": 10,
+   "equipo": "Padul Balompié B",
+   "yo": false,
+   "pj": 3,
+   "g": 0,
+   "e": 1,
+   "p": 2,
+   "gf": 5,
+   "gc": 11,
+   "pts": 1
+  },
+  {
+   "pos": 11,
+   "equipo": "Recreativo Cájar 2016",
+   "yo": false,
+   "pj": 3,
+   "g": 0,
+   "e": 1,
+   "p": 2,
+   "gf": 3,
+   "gc": 10,
+   "pts": 1
+  },
+  {
+   "pos": 12,
+   "equipo": "Costa Tropical",
+   "yo": false,
+   "pj": 2,
+   "g": 0,
+   "e": 0,
+   "p": 2,
+   "gf": 3,
+   "gc": 10,
+   "pts": 0
+  }
+ ],
+ "actualizado": "2026-10-25T08:50:15Z"
 }

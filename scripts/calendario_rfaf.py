@@ -67,17 +67,50 @@ def jornada(grupo, j):
     return out
 
 
-def resultados(grupo, cod):
+def partidos_jugados(grupo, cod):
+    """[(jornada, local, visitante, goles_local, goles_visitante)] de un equipo, o None si falla."""
     raw = get(f"{BASE}NFG_VisCompeticiones_Grupo?&cod_primaria=1000123&codequipo={cod}&codgrupo={grupo}")
     if raw is None:
         return None
     pat = r"<h5>(\d+)</h5></td>\s*<td[^>]*>\s*<h5>(.*?)</h5>\s*<h5>(.*?)</h5>.*?</td>\s*<td[^>]*>\s*<h5>(.*?)</h5>"
-    res = {}
+    out = []
     for j, l, v, r in re.findall(pat, raw, flags=re.S):
         m = re.search(r"<b>\s*(\d+)\s*</b>\s*-\s*<b>\s*(\d+)\s*</b>", r)
         if m:
-            res[int(j)] = f"{m[1]}-{m[2]}"
-    return res
+            out.append((int(j), clean(l), clean(v), int(m[1]), int(m[2])))
+    return out
+
+
+def resultados(grupo, cod):
+    pj = partidos_jugados(grupo, cod)
+    return None if pj is None else {j: f"{gl}-{gv}" for j, l, v, gl, gv in pj}
+
+
+def clasificacion(grupo, equipos, yo):
+    """Tabla del grupo con los resultados de todos (como la RFAF: empatados a puntos,
+    diferencia y goles comparten puesto). None si falta algún equipo."""
+    partidos = {}
+    for nombre_eq, cod in equipos.items():
+        pj = partidos_jugados(grupo, cod)
+        if pj is None:
+            return None
+        for j, l, v, gl, gv in pj:
+            partidos[(j, l, v)] = (gl, gv)
+    t = {n: dict(pj=0, g=0, e=0, p=0, gf=0, gc=0, pts=0) for n in equipos}
+    for (j, l, v), (gl, gv) in partidos.items():
+        for eq, gf, gc in ((l, gl, gv), (v, gv, gl)):
+            if eq not in t:
+                continue
+            x = t[eq]; x["pj"] += 1; x["gf"] += gf; x["gc"] += gc
+            k = "g" if gf > gc else "e" if gf == gc else "p"
+            x[k] += 1; x["pts"] += {"g": 3, "e": 1, "p": 0}[k]
+    orden = sorted(t.items(), key=lambda kv: (-kv[1]["pts"], -(kv[1]["gf"] - kv[1]["gc"]), -kv[1]["gf"]))
+    out, prev = [], None
+    for i, (n, x) in enumerate(orden, 1):
+        clave = (x["pts"], x["gf"] - x["gc"], x["gf"])
+        out.append(dict(pos=out[-1]["pos"] if clave == prev else i, equipo=nombre(n), yo=n == yo, **x))
+        prev = clave
+    return out
 
 
 def nombre(n):
@@ -104,9 +137,11 @@ def equipo(carpeta):
     ruta = f"{carpeta}/calendario.json"
     viejo = json.load(open(ruta)) if os.path.exists(ruta) else {}
     antes = viejo.get("partidos", {})
-    partidos, cod, res, fallos = {}, None, None, 0
+    partidos, cod, res, fallos, equipos = {}, None, None, 0, {}
     for j in range(1, 40):
         js = jornada(grupo, j)
+        for q in js or []:
+            equipos[q["local"]] = q["cod_local"]; equipos[q["visitante"]] = q["cod_visitante"]
         if js is None:
             # Página vacía: se deja la jornada como estaba y se sigue
             fallos += 1
@@ -140,7 +175,14 @@ def equipo(carpeta):
         raise SystemExit(f"{carpeta}: no sale ningún partido (¿cambió la web?)")
     if fallos:
         print(f"{carpeta}: {fallos} jornadas sin leer, se quedan como estaban")
-    nuevo = {"club": cfg["club"], "categoria": cfg["categoria"], "escudo": cfg["escudo"], "partidos": partidos}
+    tabla = clasificacion(grupo, equipos, yo)
+    if tabla is None:  # si falla algún equipo, se queda la tabla que había
+        tabla = viejo.get("clasificacion", [])
+    for f in tabla:
+        if f["yo"]:
+            f["equipo"] = cfg["club"]
+    nuevo = {"club": cfg["club"], "categoria": cfg["categoria"], "escudo": cfg["escudo"],
+             "cod_equipo": cod or viejo.get("cod_equipo", ""), "partidos": partidos, "clasificacion": tabla}
     if {k: v for k, v in viejo.items() if k != "actualizado"} == nuevo:
         print(f"{carpeta}: sin cambios")
         return

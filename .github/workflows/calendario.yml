@@ -16,8 +16,12 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install pillow
+      - run: pip install pillow cryptography
       - run: python3 -I scripts/calendario_rfaf.py
+      - name: Fichas nuevas y goleadores (cifrado)
+        env:
+          PIZARRA_CLAVE: ${{ secrets.PIZARRA_CLAVE }}
+        run: python3 -I scripts/equipo_privado.py
       - name: Subir si hay cambios
         run: |
           git config user.name "calendario-rfaf"

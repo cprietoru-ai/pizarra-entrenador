@@ -6,5 +6,7 @@
  "escudo": "equipos/durcal/escudo.png",
  "derbis": [
   "PADUL"
- ]
+ ],
+ "secreto": "PIZARRA_CLAVE",
+ "competicion": "48466327"
 }

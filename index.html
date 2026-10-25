@@ -156,6 +156,10 @@ ul{margin:4px 0 4px 18px;padding:0}
 .slot .vacio{background:rgba(0,0,0,.25);color:#fff;font-size:15px;border-style:dashed}
 .slot.sel .ph{box-shadow:0 0 0 4px var(--crema)}
 .sn{font-family:var(--label);font-weight:700;font-size:13px;color:#fff;text-shadow:0 1px 2px #000;max-width:76px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.golgrid{display:flex;flex-direction:column;gap:6px;margin-top:8px}
+.golrow{display:flex;align-items:center;gap:8px}.golrow .tot{min-width:22px;text-align:center}
+.tstats{width:100%;border-collapse:collapse;font-size:15px}.tstats th,.tstats td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
+.tstats th:first-child,.tstats td:first-child,.tstats .izq{text-align:left}.tstats tr.yo td{background:var(--chip);font-weight:700}
 .imgov{position:fixed;inset:0;z-index:30;background:rgba(0,0,0,.75);display:flex;align-items:center;justify-content:center;padding:16px}
 .imgbox{background:var(--surface);border-radius:12px;padding:12px;max-height:100%;overflow:auto;width:min(420px,100%)}
 .imgbox img{width:100%;height:auto;display:block;border-radius:8px}
@@ -460,8 +464,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.5.2";
+const VERSION="1.6";
 const NOVEDADES=[
+  ["1.6","25-oct-2026",["Nueva sección «Resultado» en cada partido: marcador y goleadores, que llegan solos de la federación, con su imagen para el grupo.","Estadísticas: convocatorias, titularidades, goles y clasificación.","Plantilla con posición, bajas y fichas nuevas que llegan solas."]],
   ["1.5.2","23-oct-2026",["Lo que cambias en la plantilla (dorsal, foto, nombre, capitán) se queda aunque el club actualice la plantilla."]],
   ["1.5.1","23-oct-2026",["Con cobertura se abre siempre la última versión, sin tener que cerrar y abrir."]],
   ["1.5","23-oct-2026",["Conectar con tu equipo: con el código y la contraseña, la plantilla y el calendario llegan y se actualizan solos, en cualquier móvil.","El calendario y los resultados se actualizan cada día desde la federación."]],
@@ -566,7 +571,7 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 // Módulo común a las dos apps (se pega antes de «Arranque» con app/_meter_partidos.py).
 // Todo se guarda en este dispositivo (localStorage "pizarra.equipo"), nunca en la
 // base de datos compartida: son datos de menores (nombres y fotos).
-const PA_VISTAS=["pa","plantilla","jugador","partido"];
+const PA_VISTAS=["pa","plantilla","jugador","partido","stats"];
 const EQ_KEY="pizarra.equipo";
 const EQ_VACIO={club:"",categoria:"",lema:"",escudo:"",jugadores:{},partidos:{},campos:{}};
 function eqLeer(){try{const v=localStorage.getItem(EQ_KEY);return v?{...EQ_VACIO,...JSON.parse(v)}:structuredClone(EQ_VACIO)}catch(e){return structuredClone(EQ_VACIO)}}
@@ -579,6 +584,7 @@ const SISTEMAS={
   "4-1-4-1":[["POR",50,92],["LI",13,70],["DFC",37,75],["DFC",63,75],["LD",87,70],["MCD",50,58],["MI",13,39],["MC",37,41],["MC",63,41],["MD",87,39],["DC",50,15]],
   "3-5-2":[["POR",50,92],["DFC",24,72],["DFC",50,76],["DFC",76,72],["CI",10,47],["MC",31,52],["MP",50,40],["MC",69,52],["CD",90,47],["DC",35,18],["DC",65,18]]};
 const MAX_CONV=18;
+const POSICIONES=[["POR","Portero"],["DEF","Defensa"],["MED","Centrocampista"],["DEL","Delantero"]];
 const hoyISO=()=>new Date().toISOString().slice(0,10);
 const jugOrden=(a,b)=>(a[1].dorsal??99)-(b[1].dorsal??99)||(a[1].corto||"").localeCompare(b[1].corto||"");
 const slugPA=t=>(t||"x").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^\w]+/g,"-").replace(/^-|-$/g,"").toLowerCase().slice(0,40);
@@ -594,9 +600,10 @@ function vistaPA(){
   if(S.view==="plantilla") return vistaPlantilla();
   if(S.view==="jugador") return vistaJugador();
   if(S.view==="partido") return vistaPartido();
+  if(S.view==="stats") return vistaStats();
   const l=partidosOrden(), nj=Object.keys(S.eq.jugadores).length, px=proximo();
   return `<div class="bar"><div class="grow note">${S.conex&&!S.conex.error?"Equipo conectado: la plantilla y el calendario se actualizan solos. Tus convocatorias y alineaciones se guardan en este móvil.":S.conex&&S.conex.error?`<span class="over">${esc(S.conex.error)}</span>: revísalo en «Mi club».`:"Plantilla, calendario, convocatoria y alineación. Se guardan <b>solo en este móvil</b>. Si tu club te ha dado un código de equipo, conéctalo en «Mi club»."}</div>
-    <button class="btn" id="paPlantilla">Plantilla (${nj})</button><button class="btn pri" id="paNuevo">+ Partido</button></div>
+    <button class="btn" id="paPlantilla">Plantilla (${nj})</button><button class="btn" id="paStats">Estadísticas</button><button class="btn pri" id="paNuevo">+ Partido</button></div>
     ${!nj&&!l.length?`<div class="empty"><b>Todavía no hay equipo</b>Mete la plantilla y los partidos a mano, o importa el archivo del equipo si te lo han pasado.
       <div class="bar" style="justify-content:center;margin-top:12px"><label class="btn pri filebtn">Importar equipo<input type="file" id="paImportar" accept=".json,application/json" hidden></label></div></div>`
     :l.length?`<div class="plist">${l.map(([id,p])=>{const r=p.resultado,act=id===px;
@@ -610,10 +617,10 @@ function vistaPA(){
 }
 function fmtCorta(f){if(!f)return"Sin fecha";const d=new Date(f+"T12:00:00");return d.toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"})}
 function vistaPlantilla(){
-  const l=Object.entries(S.eq.jugadores).sort(jugOrden);
+  const l=Object.entries(S.eq.jugadores).sort((a,b)=>(!!a[1].baja-!!b[1].baja)||jugOrden(a,b));
   return `<button class="back" id="paVolver">← Partidos</button>
   <div class="bar"><div class="grow"><h2 class="h2">Plantilla</h2><div class="note">${l.length} jugadores · toca uno para editarlo</div></div><button class="btn pri" id="juNuevo">+ Jugador</button></div>
-  ${l.length?`<div class="jgrid">${l.map(([id,j])=>`<button class="jcard" data-ju="${esc(id)}">${fotoHtml(j)}<span><b>${j.dorsal!=null?esc(j.dorsal)+" · ":""}${esc(nomJ(j))}</b>${j.capitan?' <span class="tag">C</span>':""}${j.portero?' <span class="tag">POR</span>':""}<br><span class="note">${esc(j.nombre||"")}</span></span></button>`).join("")}</div>`
+  ${l.length?`<div class="jgrid">${l.map(([id,j])=>`<button class="jcard" data-ju="${esc(id)}">${fotoHtml(j)}<span><b>${j.dorsal!=null?esc(j.dorsal)+" · ":""}${esc(nomJ(j))}</b>${j.capitan?' <span class="tag">C</span>':""}${j.pos?` <span class="tag">${esc(j.pos)}</span>`:j.portero?' <span class="tag">POR</span>':""}${j.nuevo?' <span class="tag rojo">Nuevo</span>':""}${j.baja?' <span class="tag">Baja</span>':""}<br><span class="note">${esc(j.nombre||"")}</span></span></button>`).join("")}</div>`
   :`<div class="empty"><b>Plantilla vacía</b>Añade a los jugadores con su dorsal y, si quieres, una foto.</div>`}`;
 }
 function vistaJugador(){
@@ -623,7 +630,9 @@ function vistaJugador(){
     <div class="bar">${fotoHtml(j,"ph big")}<label class="btn filebtn">${j.foto?"Cambiar foto":"Poner foto"}<input type="file" id="juFoto" accept="image/*" hidden></label>${j.foto?`<button class="btn sm" id="juSinFoto">Quitar foto</button>`:""}</div>
     <div class="row"><label>Nombre en la imagen<input type="text" id="j-corto" value="${esc(j.corto)}" placeholder="p. ej. LUCAS"></label><label>Dorsal<input type="number" inputmode="numeric" id="j-dorsal" value="${esc(j.dorsal??"")}" min="0" max="99"></label></div>
     <label>Nombre completo<input type="text" id="j-nombre" value="${esc(j.nombre)}"></label>
-    <div class="bar"><label class="chk"><input type="checkbox" id="j-portero" ${j.portero?"checked":""}> Portero</label><label class="chk"><input type="checkbox" id="j-capitan" ${j.capitan?"checked":""}> Capitán</label></div>
+    <div class="row"><label>Posición<select id="j-pos"><option value="">—</option>${POSICIONES.map(([k,n])=>`<option value="${k}" ${j.pos===k?"selected":""}>${n}</option>`).join("")}</select></label>
+      <div class="bar" style="align-self:end"><label class="chk"><input type="checkbox" id="j-capitan" ${j.capitan?"checked":""}> Capitán</label><label class="chk"><input type="checkbox" id="j-baja" ${j.baja?"checked":""}> Baja</label></div></div>
+    ${j.nuevo?`<p class="note">Ficha nueva que ha llegado de la federación: ponle el dorsal y, si quieres, la foto.</p>`:""}
     <div class="bar"><button class="btn pri" id="juGuardar">Guardar</button>
       ${nuevo?"":S.delConfirm===S.juId?`<span class="confirm">¿Quitar de la plantilla? <button class="btn dan sm" id="juBorrarSi">Sí</button><button class="btn sm" id="juBorrarNo">No</button></span>`:`<button class="btn dan" id="juBorrar">Quitar</button>`}</div>
   </form>`;
@@ -632,7 +641,7 @@ function vistaPartido(){
   const p=S.eq.partidos[S.paId]; if(!p) return `<button class="back" id="paVolver">← Partidos</button><div class="empty"><b>Este partido ya no existe</b></div>`;
   const J=S.eq.jugadores, conv=(p.convocados||[]).filter(id=>J[id]), sis=SISTEMAS[p.sistema]?p.sistema:"4-2-3-1", once=p.once||{};
   const enOnce=new Set(Object.values(once)), banq=conv.filter(id=>!enOnce.has(id)).sort((a,b)=>jugOrden([a,J[a]],[b,J[b]]));
-  const todos=Object.entries(J).sort(jugOrden);
+  const todos=Object.entries(J).filter(([id,j])=>!j.baja||(p.convocados||[]).includes(id)).sort(jugOrden);
   const slots=SISTEMAS[sis].map(([lab,x,y],i)=>{const j=J[once[i]];return `<button class="slot${S.slot===i?" sel":""}" data-slot="${i}" style="left:${x}%;top:${y}%" aria-label="${lab}${j?": "+esc(nomJ(j)):""}">${j?fotoHtml(j,"ph sm"):`<span class="ph sm vacio">${lab}</span>`}<span class="sn">${j?esc(nomJ(j)):""}</span></button>`}).join("");
   const libres=conv.filter(id=>!enOnce.has(id)||once[S.slot]===id).sort((a,b)=>jugOrden([a,J[a]],[b,J[b]]));
   return `<button class="back" id="paVolver">← Partidos</button>
@@ -648,6 +657,7 @@ function vistaPartido(){
     <label>Escudo del rival<input type="file" id="paEscudo" accept="image/*"></label>
     <div class="bar">${S.delConfirm===S.paId?`<span class="confirm">¿Borrar el partido? <button class="btn dan sm" id="paBorrarSi">Sí, borrar</button><button class="btn sm" id="paBorrarNo">No</button></span>`:`<button class="btn dan sm" id="paBorrar">Borrar partido</button>`}</div>
   </div></details>
+  ${p.resultado?htmlResultado(p):""}
   <section class="blk"><div class="bar"><div class="grow"><h3 class="h3">Convocatoria <span class="note tot${conv.length>MAX_CONV?" over":""}">${conv.length}/${MAX_CONV}</span></h3>
     <div class="note">Toca a cada jugador para convocarlo o quitarlo.</div></div><button class="btn sm" id="convTodos">Todos</button><button class="btn sm" id="convNadie">Ninguno</button></div>
     ${todos.length?`<div class="convgrid">${todos.map(([id,j])=>`<button class="cj" data-conv="${esc(id)}" aria-pressed="${conv.includes(id)}">${fotoHtml(j,"ph sm")}<span>${j.dorsal!=null?esc(j.dorsal)+" ":""}${esc(nomJ(j))}</span></button>`).join("")}</div>`
@@ -689,8 +699,8 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
     if(!j.corto) j.corto=j.nombre.split(" ")[0].toUpperCase();
     // Lo que cambia el entrenador queda marcado y la plantilla del club ya no lo pisa
     const prev=S.eq.jugadores[S.juId]||{},ed=new Set(j.editados||[]);
-    for(const k of ["corto","nombre","dorsal","portero","capitan","foto"]) if(JSON.stringify(prev[k])!==JSON.stringify(j[k])) ed.add(k);
-    j.editados=[...ed];
+    for(const k of ["corto","nombre","dorsal","portero","capitan","foto","pos","baja"]) if(JSON.stringify(prev[k])!==JSON.stringify(j[k])) ed.add(k);
+    j.editados=[...ed];delete j.nuevo;
     if(j.capitan) for(const [oid,o] of Object.entries(S.eq.jugadores)) if(oid!==S.juId&&o.capitan){delete o.capitan;o.editados=[...new Set([...(o.editados||[]),"capitan"])]}
     S.eq.jugadores[S.juId]=j;if(pGuardar()!==false){toast("Guardado")}S.view="plantilla";render();return}
   if(t.id==="juBorrar"){leerJu();S.delConfirm=S.juId;render();return}
@@ -715,9 +725,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
     const banq=(P.convocados||[]).filter(id=>J[id]&&!en.has(id)).sort((a,b)=>jugOrden([a,J[a]],[b,J[b]]));
     const txt=`⚽ ${P.jornada?"J"+P.jornada+" · ":""}${nombreClub()} ${P.casa?"vs":"en"} ${P.rival}\n${fmtFecha(P.fecha)}${P.hora?" · "+P.hora:""}${P.campo?"\n📍 "+P.campo:""}\n\nOnce (${P.sistema||"4-2-3-1"}): `+ids.map(id=>nomJ(J[id])+(capitanDe(P)===id?" (C)":"")).join(", ")+`\nBanquillo: ${banq.map(id=>nomJ(J[id])).join(", ")||"—"}${S.eq.lema?"\n\n"+S.eq.lema:""}`;
     try{await navigator.clipboard.writeText(txt);toast("Copiado")}catch(e){toast("No se pudo copiar")}return}
-  if(t.id==="imgConv"||t.id==="imgOnce"){t.disabled=true;try{const tipo=t.id==="imgConv"?"conv":"once";const blob=await dibujar(P,tipo);
+  if(t.id==="imgConv"||t.id==="imgOnce"||t.id==="imgRes"){t.disabled=true;try{const tipo={imgConv:"conv",imgOnce:"once",imgRes:"res"}[t.id];const blob=await dibujar(P,tipo);
       if(S.img) URL.revokeObjectURL(S.img.url);
-      S.img={blob,url:URL.createObjectURL(blob),nombre:(tipo==="conv"?"convocatoria":"alineacion")+"-"+(P.jornada?"j"+P.jornada+"-":"")+slugPA(P.rival)+".png"};render()}
+      S.img={blob,url:URL.createObjectURL(blob),nombre:{conv:"convocatoria",once:"alineacion",res:"resultado"}[tipo]+"-"+(P.jornada?"j"+P.jornada+"-":"")+slugPA(P.rival)+".png"};render()}
     catch(e){toast("No se pudo hacer la imagen");t.disabled=false}return}
   if(t.id==="imgCerrar"){URL.revokeObjectURL(S.img.url);S.img=null;render();return}
   if(t.id==="imgBajar"){bajarBlob(S.img.blob,S.img.nombre);return}
@@ -728,7 +738,7 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 function bajarBlob(b,nombre){const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=nombre;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)}
 function leerJu(){const j=S.juDraft,v=id=>$("#"+id);if(!v("j-corto"))return;
   j.corto=v("j-corto").value.trim().toUpperCase();j.nombre=v("j-nombre").value.trim();const d=v("j-dorsal").value;j.dorsal=d===""?null:+d;
-  j.portero=v("j-portero").checked;j.capitan=v("j-capitan").checked}
+  j.pos=v("j-pos").value;j.portero=j.pos==="POR";j.capitan=v("j-capitan").checked;j.baja=v("j-baja").checked}
 function reducir(file,lado,tipo="image/jpeg"){return new Promise((ok,ko)=>{const img=new Image();img.onload=()=>{const c=document.createElement("canvas"),k=Math.min(1,lado/Math.max(img.width,img.height));
   c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(img.src);ok(c.toDataURL(tipo,.82))};img.onerror=ko;img.src=URL.createObjectURL(file)})}
 app.addEventListener("change",async ev=>{const t=ev.target;if(!PA_VISTAS.includes(S.view))return;
@@ -762,10 +772,69 @@ function fusionarEquipo(e){
     eq.jugadores[id]=n}
   for(const [id,p] of Object.entries(e.partidos||{})){if(!p||typeof p!=="object")continue;const prev=eq.partidos[id]||{};
     // Lo del entrenador (convocatoria, once, capitán, citación) no se pisa al reimportar el calendario
-    eq.partidos[String(id).slice(0,60)]={...p,...pick(prev,["convocados","once","sistema","capitan","citacion"]),resultado:p.resultado||prev.resultado||""}}
+    eq.partidos[String(id).slice(0,60)]={...p,...pick(prev,["convocados","once","sistema","capitan","citacion","goles_manual","propia_manual"]),resultado:p.resultado||prev.resultado||""}}
   Object.assign(eq.campos,e.campos||{});
 }
 function pick(o,ks){const r={};ks.forEach(k=>{if(o[k]!==undefined&&o[k]!==""&&!(Array.isArray(o[k])&&!o[k].length))r[k]=o[k]});return r}
+
+// ---------- Resultado y estadísticas (1.6) ----------
+// Los goleadores de cada partido llegan de la federación (estadisticas.enc.json, los
+// calcula la tarea diaria); si el entrenador los corrige, manda lo suyo (goles_manual).
+function golesDe(p,id){
+  if(p.goles_manual) return {goleadores:p.goles_manual,propia:p.propia_manual||0,manual:true};
+  const e=S.eq.stats&&S.eq.stats.partidos&&S.eq.stats.partidos[id];
+  return e?{goleadores:e.goleadores||{},propia:e.propia||0,sin:!!e.sin_desglose}:null}
+function marcador(p){const m=String(p.resultado||"").match(/(\d+)\s*-\s*(\d+)/);if(!m)return null;const l=+m[1],v=+m[2];
+  return {l,v,mios:p.casa?l:v,suyos:p.casa?v:l}}
+function htmlResultado(p){
+  const J=S.eq.jugadores,m=marcador(p),g=golesDe(p,S.paId);if(!m) return "";
+  const lista=g?Object.entries(g.goleadores).filter(([id,n])=>J[id]&&n>0).sort((a,b)=>b[1]-a[1]||jugOrden([a[0],J[a[0]]],[b[0],J[b[0]]])):[];
+  const est=m.mios>m.suyos?"Victoria":m.mios<m.suyos?"Derrota":"Empate";
+  let gl="";
+  if(m.mios===0) gl=`<div class="note">Sin goles nuestros.</div>`;
+  else if(!g) gl=`<div class="note">Los goleadores llegan de la federación cuando actualice su tabla (suele ser el mismo día o el siguiente). Si quieres, ponlos tú con «Corregir».</div>`;
+  else if(g.sin&&!lista.length) gl=`<div class="note">De este partido la federación no permite separar los goleadores. Puedes ponerlos tú con «Corregir».</div>`;
+  else gl=`<div class="convgrid">${lista.map(([id,n])=>`<span class="cj" aria-pressed="true">${fotoHtml(J[id],"ph sm")}<span>${esc(nomJ(J[id]))} ${"⚽".repeat(n)}</span></span>`).join("")}</div>${g.propia?`<div class="note">+${g.propia} en propia puerta</div>`:""}`;
+  const ed=S.golEdit?(()=>{const cur=g?{...g.goleadores}:{};const base=(p.convocados||[]).length?p.convocados:Object.keys(J);
+    const ids=[...new Set([...base,...Object.keys(cur)])].filter(id=>J[id]).sort((a,b)=>jugOrden([a,J[a]],[b,J[b]]));
+    return `<div class="picker"><div class="note">Toca + o − en cada jugador. Lo que pongas aquí manda sobre lo de la federación.</div>
+      <div class="golgrid">${ids.map(id=>`<div class="golrow">${fotoHtml(J[id],"ph sm")}<span class="grow">${esc(nomJ(J[id]))}</span><button class="btn sm" data-gmenos="${esc(id)}">−</button><b class="tot">${cur[id]||0}</b><button class="btn sm" data-gmas="${esc(id)}">+</button></div>`).join("")}
+      <div class="golrow"><span class="ph sm sinfoto">PP</span><span class="grow">En propia puerta</span><button class="btn sm" data-gmenos="_pp">−</button><b class="tot">${g?g.propia:0}</b><button class="btn sm" data-gmas="_pp">+</button></div></div>
+      <div class="bar" style="margin-top:8px"><button class="btn sm" id="golListo">Listo</button>${p.goles_manual?`<button class="btn sm" id="golFed">Volver a los de la federación</button>`:""}</div></div>`})():"";
+  return `<section class="blk"><div class="bar"><div class="grow"><h3 class="h3">Resultado · ${est}</h3></div><span class="pres">${esc(p.resultado)}</span></div>
+    <div style="margin-top:6px"><b>Goles${g&&g.manual?" (puestos por ti)":""}:</b></div>${gl}${ed}
+    <div class="bar" style="margin-top:10px"><button class="btn pri" id="imgRes">Imagen del resultado</button>${S.golEdit?"":`<button class="btn" id="golCorregir">Corregir goleadores</button>`}</div></section>`;
+}
+function vistaStats(){
+  const J=S.eq.jugadores,P=Object.values(S.eq.partidos),st=S.eq.stats||{},T=st.temporada||{},POR=st.porteros||{};
+  const filas=Object.entries(J).filter(([id,j])=>!j.baja).map(([id,j])=>{
+    const conv=P.filter(p=>(p.convocados||[]).includes(id)).length,tit=P.filter(p=>Object.values(p.once||{}).includes(id)).length;
+    let gol=T[id]?T[id].goles:0;const man=Object.entries(S.eq.partidos).reduce((a,[pid,p])=>{const g=golesDe(p,pid);return a+(g&&g.manual?(g.goleadores[id]||0):0)},0);
+    return {id,j,conv,tit,gol:Math.max(gol,man)}}).sort((a,b)=>b.gol-a.gol||b.tit-a.tit||jugOrden([a.id,a.j],[b.id,b.j]));
+  const cl=S.eq.clasificacion||[],yo=cl.find(f=>f.yo);
+  return `<button class="back" id="paVolver">← Partidos</button>
+  <h2 class="h2">Estadísticas</h2>
+  ${yo?`<p class="note" style="margin:4px 0 10px"><b>${yo.pos}º</b> con ${yo.pts} puntos · ${yo.g} ganados, ${yo.e} empatados, ${yo.p} perdidos · ${yo.gf} goles a favor y ${yo.gc} en contra.</p>`:""}
+  <div class="blk" style="overflow-x:auto"><table class="tstats"><thead><tr><th>Jugador</th><th title="Convocado">Conv.</th><th title="Titular">Tit.</th><th>Goles</th></tr></thead><tbody>
+    ${filas.map(f=>`<tr><td>${f.j.dorsal!=null?`<span class="note">${esc(f.j.dorsal)}</span> `:""}${esc(nomJ(f.j))}${POR[f.id]?` <span class="note">· ${POR[f.id].minutos}' y ${POR[f.id].encajados} encajados</span>`:""}</td><td>${f.conv}</td><td>${f.tit}</td><td><b>${f.gol||""}</b></td></tr>`).join("")}
+  </tbody></table></div>
+  <p class="note">Convocatorias y titularidades: lo que haces en esta app. Goles y minutos de portero: la tabla oficial de la federación${st.exportado?` (${esc(new Date(st.exportado).toLocaleDateString("es-ES",{day:"numeric",month:"short"}))})`:""}.</p>
+  ${cl.length?`<h3 class="h3" style="margin-top:14px">Clasificación</h3><div class="blk" style="overflow-x:auto"><table class="tstats"><thead><tr><th>#</th><th class="izq">Equipo</th><th>PJ</th><th>Pts</th><th>GF-GC</th></tr></thead><tbody>
+    ${cl.map(f=>`<tr${f.yo?' class="yo"':""}><td>${f.pos}</td><td class="izq">${esc(f.yo?nombreClub():f.equipo)}</td><td>${f.pj}</td><td><b>${f.pts}</b></td><td>${f.gf}-${f.gc}</td></tr>`).join("")}</tbody></table></div>`:""}`;
+}
+app.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t||!PA_VISTAS.includes(S.view))return;
+  if(t.id==="paStats"){S.view="stats";render();window.scrollTo(0,0);return}
+  const P=S.eq.partidos[S.paId];if(!P||S.view!=="partido")return;
+  if(t.id==="golCorregir"){S.golEdit=true;render();return}
+  if(t.id==="golListo"){S.golEdit=false;render();return}
+  if(t.id==="golFed"){delete P.goles_manual;delete P.propia_manual;S.golEdit=false;eqGuardar();render();return}
+  const id=t.dataset.gmas||t.dataset.gmenos;if(!id)return;
+  if(!P.goles_manual){const g=golesDe(P,S.paId);P.goles_manual={...(g?g.goleadores:{})};P.propia_manual=g?g.propia:0}
+  const d=t.dataset.gmas?1:-1;
+  if(id==="_pp") P.propia_manual=Math.max(0,(P.propia_manual||0)+d);
+  else{P.goles_manual[id]=Math.max(0,(P.goles_manual[id]||0)+d);if(!P.goles_manual[id])delete P.goles_manual[id]}
+  eqGuardar();render();
+});
 
 // ---------- Equipo conectado (1.5) ----------
 // Con código y contraseña, la app baja sola de este mismo sitio:
@@ -794,6 +863,7 @@ async function sincronizar({forzar=false,avisar=false}={}){
       if(rc.status===404){c.error="No existe ese equipo";return false}
       const cal=await rc.json();
       fusionarEquipo({club:cal.club,categoria:cal.categoria,escudo:cal.escudo,partidos:cal.partidos});
+      if(Array.isArray(cal.clasificacion)) S.eq.clasificacion=cal.clasificacion;
       const rp=await fetch(dir+"plantilla.enc.json",{cache:"no-store"});
       if(rp.ok){const r=await rp.json();
         if(forzar||r.exportado!==c.plantilla){
@@ -801,6 +871,9 @@ async function sincronizar({forzar=false,avisar=false}={}){
           for(const id of Object.keys(S.eq.jugadores)) if(S.eq.jugadores[id].remoto&&!pl.jugadores[id]) delete S.eq.jugadores[id];
           for(const j of Object.values(pl.jugadores)) j.remoto=true;
           fusionarEquipo(pl);c.plantilla=r.exportado}}
+      const re_=await fetch(dir+"estadisticas.enc.json",{cache:"no-store"});
+      if(re_.ok){const r=await re_.json();
+        if(forzar||r.exportado!==c.estadisticas){try{S.eq.stats=await descifrar(r,c.clave);c.estadisticas=r.exportado}catch(e){}}}
       c.error="";c.ultima=Date.now();c.calendario=cal.actualizado||"";eqGuardar();
       if(avisar) toast("Equipo actualizado");return true
     }catch(e){if(avisar)toast("Sin conexión: se usan los datos guardados");return false}
@@ -848,10 +921,11 @@ async function dibujar(p,tipo){
   for(let i=0;i<12;i++){x.fillStyle=`rgba(255,255,255,${i%2?0:.025})`;x.fillRect(0,i*H/12,W,H/12)}
   const txt=(t,X,Y,f,col="#fff",al="center",st=0)=>{x.font=f;x.textAlign=al;x.textBaseline="alphabetic";if(st){x.lineWidth=st;x.strokeStyle="rgba(0,0,0,.6)";x.lineJoin="round";x.strokeText(t,X,Y)}x.fillStyle=col;x.fillText(t,X,Y)};
   const ajustar=(t,max,tam,fam)=>{let s=tam;x.font=`${s}px ${fam}`;while(x.measureText(t).width>max&&s>18){s-=2;x.font=`${s}px ${fam}`}return s};
-  // Cabecera: escudos y nombres
-  const loc=p.casa?{n:nombreClub(),e:escudoClub()}:{n:p.rival,e:p.escudo_rival}, vis=p.casa?{n:p.rival,e:p.escudo_rival}:{n:nombreClub(),e:escudoClub()};
+  // Cabecera: escudos y nombres (el resultado lleva la suya)
   const linea1=[p.jornada?"JORNADA "+p.jornada:"",S.eq.categoria].filter(Boolean).join(" · ").toUpperCase();
+  const loc=p.casa?{n:nombreClub(),e:escudoClub()}:{n:p.rival,e:p.escudo_rival}, vis=p.casa?{n:p.rival,e:p.escudo_rival}:{n:nombreClub(),e:escudoClub()};
   if(linea1) txt(linea1,W/2,92,`700 36px ${BC}`,CREMA);
+  if(tipo!=="res"){
   for(const [eq,cx] of [[loc,230],[vis,850]]){const im=await cargarImg(eq.e);
     x.save();x.beginPath();x.arc(cx,250,112,0,7);x.fillStyle="rgba(255,255,255,.95)";x.fill();x.restore();
     if(im){const k=Math.min(170/im.width,170/im.height);x.drawImage(im,cx-im.width*k/2,250-im.height*k/2,im.width*k,im.height*k)}
@@ -864,6 +938,7 @@ async function dibujar(p,tipo){
   const campo=(p.campo||"").replace(/\s*\(.*?\)\s*/g,"").toUpperCase();
   txt(fh,W/2,636,`700 44px ${BC}`,CREMA);
   if(campo) txt(campo,W/2,686,`600 ${ajustar(campo,960,34,BC)}px ${BC}`,"#fff");
+  }
   const ficha=async(j,cx,cy,r,cap)=>{const im=await cargarImg(j.foto);
     x.save();x.beginPath();x.arc(cx,cy,r,0,7);x.closePath();x.fillStyle="#0b4a20";x.fill();x.clip();
     // Las fotos salen de capturas con un círculo turquesa abajo: se toma el 84 % de arriba
@@ -889,6 +964,44 @@ async function dibujar(p,tipo){
       const items=banq.map(id=>(J[id].dorsal!=null?J[id].dorsal+" ":"")+nomJ(J[id]).toUpperCase());let lines=[""];x.font=`700 38px ${BC}`;
       for(const it of items){const t=lines[lines.length-1]?lines[lines.length-1]+"  ·  "+it:it;if(x.measureText(t).width>960)lines.push(it);else lines[lines.length-1]=t}
       lines.slice(0,3).forEach((l,k)=>txt(l,W/2,1716+k*48,`700 38px ${BC}`))}
+  } else if(tipo==="res"){
+    const m=marcador(p),g=golesDe(p,Object.keys(S.eq.partidos).find(k=>S.eq.partidos[k]===p))||{goleadores:{},propia:0};
+    const gano=m.mios>m.suyos,emp=m.mios===m.suyos;
+    const cinta=p.derbi?(gano?"EL DERBI ES NUESTRO":"DERBI"):"FINAL";
+    x.save();x.translate(W/2,150);x.rotate(-.035);x.font=`46px ${BE}`;const cw2=x.measureText(cinta).width+70;
+    x.fillStyle="#fff";x.fillRect(-cw2/2+7,-30+7,cw2,62);x.fillStyle=ROJO;x.fillRect(-cw2/2,-30,cw2,62);x.restore();
+    txt(cinta,W/2,168,`46px ${BE}`);
+    const [t1,t2]=gano?(p.derbi?["¡DERBI ","GANADO!"]:["¡","VICTORIA!"]):emp?["",  "EMPATE"]:["A POR ","LA SIGUIENTE"];
+    let fs=150;x.font=`${fs}px ${BE}`;while(x.measureText(t1+t2).width>990&&fs>60){fs-=4;x.font=`${fs}px ${BE}`}
+    const w1=x.measureText(t1).width,w2=x.measureText(t2).width,x1=W/2-(w1+w2)/2;
+    txt(t1,x1,340,`${fs}px ${BE}`,"#fff","left",10);txt(t2,x1+w1,340,`${fs}px ${BE}`,gano?CREMA:"#fff","left",10);
+    for(const [eq,cx,gl,gana] of [[loc,215,m.l,p.casa?gano:!gano&&!emp],[vis,865,m.v,p.casa?!gano&&!emp:gano]]){const im=await cargarImg(eq.e);
+      x.save();x.beginPath();x.arc(cx,560,108,0,7);x.fillStyle="#fff";x.fill();if(gana){x.lineWidth=12;x.strokeStyle=CREMA;x.stroke()}x.restore();
+      if(im){const k=Math.min(160/im.width,170/im.height);x.drawImage(im,cx-im.width*k/2,560-im.height*k/2,im.width*k,im.height*k)}
+      const n=(eq.n||"").toUpperCase();txt(n,cx,722,`${ajustar(n,300,40,BE)}px ${BE}`,"#fff","center",6);
+      txt(String(gl),cx<W/2?W/2-95:W/2+95,650,`260px ${BE}`,gana?CREMA:"#fff","center",12)}
+    txt("-",W/2,600,`120px ${BE}`,"rgba(255,255,255,.7)");
+    const fh=[p.fecha?new Date(p.fecha+"T12:00:00").toLocaleDateString("es-ES",{weekday:"short",day:"numeric",month:"short"}).replace(/\./g,""):"",(p.campo||"").replace(/\s*\(.*?\)\s*/g,"").replace(/^.*? - /,"")].filter(Boolean).join(" · ").toUpperCase();
+    txt(fh,W/2,800,`700 ${ajustar(fh,980,34,BC)}px ${BC}`,"#d8f5df");
+    const lista=Object.entries(g.goleadores).filter(([id,n])=>J[id]&&n>0).sort((a,b)=>b[1]-a[1]||jugOrden([a[0],J[a[0]]],[b[0],J[b[0]]]));
+    let y=880;
+    if(lista.length){txt("GOLES DEL "+nombreClub().toUpperCase(),W/2,y,`${ajustar("GOLES DEL "+nombreClub().toUpperCase(),900,62,BE)}px ${BE}`,CREMA);
+      const por=Math.min(5,lista.length),r=lista.length>5?56:68,cw=W/por;
+      for(const [k,[id,n]] of lista.entries()){const row=Math.floor(k/por),inRow=Math.min(por,lista.length-row*por),off=(W-inRow*cw)/2,cx=off+cw*(k%por)+cw/2,cy=y+40+r+row*(2*r+110);
+        await ficha(J[id],cx,cy,r,false);txt("⚽".repeat(n),cx,cy+r+84,`30px sans-serif`)}
+      y+=40+Math.ceil(lista.length/por)*(2*r+110);
+      if(g.propia){txt(`+${g.propia} EN PROPIA PUERTA`,W/2,y,`700 30px ${BC}`,"#d8f5df");y+=30}}
+    const cl=S.eq.clasificacion||[];
+    if(cl.length){const yo=cl.find(f=>f.yo),top=cl.slice(0,4);if(yo&&!top.includes(yo))top.push(yo);
+      let ty=Math.max(y+60,1300),badge=yo?(yo.pos===1?"LÍDERES":yo.pos+"º CLASIFICADOS"):"CLASIFICACIÓN";
+      if(ty+90+top.length*62>1780){top.splice(3,top.length-(yo&&yo.pos>4?4:4));ty=Math.min(ty,1780-90-top.length*62)}
+      x.save();x.translate(W/2,ty);x.font=`64px ${BE}`;const bw=x.measureText(badge).width+70;x.fillStyle=ROJO;x.fillRect(-bw/2+8,-50+8,bw,74);x.fillStyle=CREMA;x.fillRect(-bw/2,-50,bw,74);x.restore();
+      txt(badge,W/2,ty+12,`64px ${BE}`,"#0b4a20");
+      for(const [i,f] of top.entries()){const fy=ty+80+i*62;
+        if(f.yo){x.fillStyle="rgba(243,231,164,.16)";x.fillRect(120,fy-42,840,58);x.fillStyle=CREMA;x.fillRect(120,fy-42,6,58)}
+        const col=f.yo?CREMA:"#fff";txt(String(f.pos),150,fy,`42px ${BE}`,col,"left");
+        const ne=(f.yo?nombreClub():f.equipo).toUpperCase();txt(ne,200,fy,`700 ${ajustar(ne,520,32,BC)}px ${BC}`,col,"left");
+        txt(f.pj+" PJ",820,fy,`600 26px ${BC}`,"#b9d6c1","right");txt(String(f.pts),940,fy,`46px ${BE}`,col,"right")}}
   } else {
     const ids=(p.convocados||[]).filter(id=>J[id]).sort((a,b)=>jugOrden([a,J[a]],[b,J[b]])),n=ids.length,cols=n<=12?4:5,rows=Math.ceil(n/cols);
     const top=760,bot=p.citacion?1650:1740,ch=Math.min(270,(bot-top)/rows),r=Math.min(cols===4?84:70,ch*.31),cw=W/cols;
