@@ -310,6 +310,30 @@
   },
   {
    "pos": 6,
+   "equipo": "Origen Valle de Lecrín",
+   "yo": false,
+   "pj": 3,
+   "g": 1,
+   "e": 1,
+   "p": 1,
+   "gf": 7,
+   "gc": 6,
+   "pts": 4
+  },
+  {
+   "pos": 7,
+   "equipo": "Alborán",
+   "yo": false,
+   "pj": 3,
+   "g": 1,
+   "e": 1,
+   "p": 1,
+   "gf": 7,
+   "gc": 7,
+   "pts": 4
+  },
+  {
+   "pos": 8,
    "equipo": "Puerto de Motril C.F.",
    "yo": false,
    "pj": 3,
@@ -321,40 +345,16 @@
    "pts": 4
   },
   {
-   "pos": 7,
+   "pos": 9,
    "equipo": "Unión Órgiva-Alpujarra",
    "yo": false,
-   "pj": 2,
+   "pj": 3,
    "g": 1,
    "e": 0,
-   "p": 1,
-   "gf": 3,
-   "gc": 8,
+   "p": 2,
+   "gf": 5,
+   "gc": 12,
    "pts": 3
-  },
-  {
-   "pos": 8,
-   "equipo": "Origen Valle de Lecrín",
-   "yo": false,
-   "pj": 2,
-   "g": 0,
-   "e": 1,
-   "p": 1,
-   "gf": 4,
-   "gc": 5,
-   "pts": 1
-  },
-  {
-   "pos": 9,
-   "equipo": "Alborán",
-   "yo": false,
-   "pj": 2,
-   "g": 0,
-   "e": 1,
-   "p": 1,
-   "gf": 3,
-   "gc": 5,
-   "pts": 1
   },
   {
    "pos": 10,
@@ -384,12 +384,12 @@
    "pos": 12,
    "equipo": "Costa Tropical",
    "yo": false,
-   "pj": 2,
+   "pj": 3,
    "g": 0,
    "e": 0,
-   "p": 2,
-   "gf": 3,
-   "gc": 10,
+   "p": 3,
+   "gf": 4,
+   "gc": 13,
    "pts": 0
   }
  ],
@@ -542,6 +542,20 @@
   ],
   [
    3,
+   "28636816",
+   "30341006",
+   1,
+   3
+  ],
+  [
+   3,
+   "25517390",
+   "561415",
+   4,
+   2
+  ],
+  [
+   3,
    "2697461",
    "17856317",
    7,
@@ -569,5 +583,5 @@
    7
   ]
  ],
- "actualizado": "2026-10-25T10:20:39Z"
+ "actualizado": "2026-10-25T21:52:48Z"
 }
