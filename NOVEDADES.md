@@ -2,6 +2,10 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.38.1 · 31-oct-2026
+- Entreno extra con un solo botón, debajo de los días fijos: eliges cualquier día y entra en su semana como uno más (por ejemplo, para tener tres esa semana).
+- Iconos del logo renovados con otro nombre para que el móvil y el ordenador cojan el escudo nuevo.
+
 ## 1.38 · 31-oct-2026
 - 🎬 Animar un ejercicio: lo pasa a la Pizarra con sus fichas, conos y zonas; si el dibujo tiene flechas, ya sale con 2 pasos. Lo sigues con +, arrastrando o dictando, y lo compartes como cualquier jugada. Está en el ⋯ de cada ejercicio y arriba al abrirlo.
 - 🎤 Dictar la descripción y las consignas del ejercicio.
