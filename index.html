@@ -348,6 +348,9 @@ details.grp[open]>summary{border-bottom:1.5px solid var(--line);background:linea
 .ses.sesc.pasada{opacity:.75}
 .jlchips .sep{width:1px;background:var(--line);margin:4px 2px;flex:0 0 1px}
 @media (min-width:1000px){.ejgrid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}}
+.ejtools{grid-template-columns:repeat(6,1fr)!important}.jtsym{font-size:17px;line-height:1}
+.jgtitv{font-family:var(--display);font-weight:400;font-size:32px;line-height:1.05;letter-spacing:.5px;margin:4px 0 10px}
+.sesvbar{height:86px;border-radius:16px;overflow:hidden;margin-bottom:14px}.sesvbar .sesth{border-radius:16px}
 .btn.gen{background:var(--surface);color:var(--club);border:2px solid var(--club)}
 .jgtools{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding:2px}
 .jgtools::-webkit-scrollbar{display:none}
@@ -632,20 +635,26 @@ const HERR=[["mover","✋ Mover"],["A",'<span class="sw" style="background:#fff"
 function vistaEditor(){
   const d=S.draft, ro=!S.canWrite;
   const campo=Object.entries(CAMPOS).map(([k,v])=>`<option value="${k}" ${d.diagrama.tipo===k?"selected":""}>${v.n} (${v.w}×${v.h} m)</option>`).join("");
-  return `<button class="back" id="volver">← Ejercicios</button>
+  const cat=CAT_INFO[d.categoria]||["📋"];
+  return `<div class="jghead"><button class="back" id="volver">← Ejercicios</button>
+    ${ro?"":`<div class="jgicons">${S.editId?`<button class="hic" id="duplicar" aria-label="Duplicar" title="Duplicar">${IC2.duplicar}</button><button class="hic" id="compEj" aria-label="Compartir" title="Compartir">${IC2.compartir}</button>`:""}
+      <button class="hic" id="guardar" aria-label="Guardar ejercicio" title="Guardar">${IC.guardar}<i class="hdot${S.editId?" ok":""}"></i></button>
+      ${S.editId?`<button class="hic dan" id="borrar" aria-label="Borrar ejercicio" title="Borrar">${IC.borrar}</button>`:""}</div>`}</div>
+  ${S.delConfirm===S.editId&&S.editId?`<div class="jgconf"><span>¿Borrar <b>${esc(d.nombre||"el ejercicio")}</b>? También se quita de las sesiones.</span><button class="btn dan sm" id="borrarSi">Sí, borrar</button><button class="btn sm" id="borrarNo">No</button></div>`:""}
+  <span class="jgpartido">${cat[0]} ${esc(d.categoria||"")}${d.tiempo?" · ⏱ "+esc(d.tiempo):""}</span>
+  <label class="jgtit"><input type="text" id="f-nombre" style="font-size:${tamTit(d.nombre)}px" value="${esc(d.nombre)}" placeholder="Ponle nombre al ejercicio" ${ro?"disabled":""} enterkeyhint="done" aria-label="Nombre del ejercicio">${ro?"":'<span class="lapiz" aria-hidden="true">✎</span>'}</label>
   <div class="ed">
-    <div class="board">
-      <div id="edwrap">${svgDiagrama(d.diagrama,{editable:true,uid:"e"})}</div>
-      ${ro?"":`<div class="tools" role="toolbar" aria-label="Herramientas de la pizarra">${HERR.map(([k,l])=>`<button class="tool" data-tool="${k}" aria-pressed="${S.tool===k}">${l}</button>`).join("")}</div>
-      <div class="bar" style="margin:8px 0 0">${S.tool==="texto"?`<input type="text" id="textoTool" class="grow" placeholder="Escribe el texto y toca el campo" value="${esc(S.textoTool)}">`:""}
-        <button class="btn sm" id="deshacer" ${S.hist.length?"":"disabled"}>↶ Deshacer</button>
-        <button class="btn sm" id="limpiar">Vaciar pizarra</button></div>
-      <p class="note" style="margin:6px 0 0">${{mover:"Arrastra jugadores, conos o el balón para moverlos.",pase:"Arrastra desde el origen hasta el destino para dibujar la flecha.",carrera:"Arrastra para dibujar la carrera.",conduccion:"Arrastra para dibujar la conducción.",borrar:"Toca un elemento para quitarlo.",texto:"Escribe arriba y toca donde va el texto."}[S.tool]||"Toca el campo para colocarlo."}</p>`}
+    <div class="board" id="ejboard">
+      ${ro?"":`<div class="jgtools ejtools" role="toolbar" aria-label="Herramientas de la pizarra">${HERR.map(([k,l])=>{const m=l.match(/^(<span[^>]*><\/span>|\S+)\s*(.*)$/)||[0,"",l];return `<button class="jt" data-tool="${k}" aria-pressed="${S.tool===k}"><span class="jtic">${m[1].startsWith("<span")?m[1].replace('class="sw"','class="ficha"'):`<b class="jtsym">${m[1]}</b>`}</span><span>${m[2]||""}</span></button>`}).join("")}</div>`}
+      <div class="jgfield"><div id="edwrap">${svgDiagrama(d.diagrama,{editable:true,uid:"e"})}</div>
+        ${ro?"":`<label class="jgesq izq" title="Campo">${IC.campo}<b>${{f7:"F7",medio:"½",area:"Área",completo:"F11",rect:"Libre"}[d.diagrama.tipo]||""}</b><select id="f-campo" aria-label="Campo">${campo}</select></label>`}</div>
+      ${ro?"":`<div class="bar" style="margin:8px 0 0;align-items:center">${S.tool==="texto"?`<input type="text" id="textoTool" class="grow" placeholder="Escribe el texto y toca el campo" value="${esc(S.textoTool)}">`:`<span class="grow"></span>`}
+        <button class="ib" id="deshacer" aria-label="Deshacer" ${S.hist.length?"":"disabled"}>↶</button>
+        <button class="ib dan" id="limpiar" aria-label="Vaciar la pizarra" title="Vaciar pizarra">🧹</button></div>`}
+      ${ro?"":`<p class="jghint">${{mover:"Arrastra jugadores, conos o el balón para moverlos.",pase:"Arrastra desde el origen hasta el destino para dibujar la flecha.",carrera:"Arrastra para dibujar la carrera.",conduccion:"Arrastra para dibujar la conducción.",borrar:"Toca un elemento para quitarlo.",texto:"Escribe arriba y toca donde va el texto."}[S.tool]||"Toca el campo para colocarlo."}</p>`}
     </div>
     <form class="form" id="fe" onsubmit="return false">
-      <label>Nombre<input type="text" id="f-nombre" value="${esc(d.nombre)}" placeholder="p. ej. Rondo 4 contra 2" ${ro?"disabled":""}></label>
-      <div class="row"><label>Categoría<select id="f-categoria" ${ro?"disabled":""}>${CATS.map(c=>`<option ${d.categoria===c?"selected":""}>${c}</option>`).join("")}</select></label>
-        <label>Campo<select id="f-campo" ${ro?"disabled":""}>${campo}</select></label></div>
+      <div class="row"><label>Categoría<select id="f-categoria" ${ro?"disabled":""}>${CATS.map(c=>`<option ${d.categoria===c?"selected":""}>${c}</option>`).join("")}</select></label></div>
       <div class="row"><label>Tiempo<input type="text" id="f-tiempo" value="${esc(d.tiempo)}" placeholder="4 x 4'" ${ro?"disabled":""}></label>
         <label>Series y descanso<input type="text" id="f-series" value="${esc(d.series)}" placeholder="Descanso 1'30&quot;" ${ro?"disabled":""}></label></div>
       <label>Espacio<input type="text" id="f-espacio" value="${esc(d.espacio)}" placeholder="Campo de F7 transversal" ${ro?"disabled":""}></label>
@@ -655,11 +664,6 @@ function vistaEditor(){
       <label>Consignas (una por línea)<textarea id="f-consignas" ${ro?"disabled":""}>${esc((d.consignas||[]).join("\n"))}</textarea></label>
       <label>Variantes (16 / 20 jugadores)<input type="text" id="f-variantes" value="${esc(d.variantes)}" ${ro?"disabled":""}></label>
       <label>Fuente o fundamento<input type="text" id="f-fuente" value="${esc(d.fuente)}" placeholder="FIFA 11+, juegos reducidos…" ${ro?"disabled":""}></label>
-      ${ro?``:`<div class="bar">
-        <button class="btn pri" id="guardar">Guardar ejercicio</button>
-        ${S.editId?`<button class="btn" id="duplicar">Duplicar</button><button class="btn" id="compEj">Compartir</button>
-        ${S.delConfirm===S.editId?`<span class="confirm">¿Borrar el ejercicio? <button class="btn dan sm" id="borrarSi">Sí, borrar</button><button class="btn sm" id="borrarNo">No</button></span>`:`<button class="btn dan" id="borrar">Borrar</button>`}`:""}
-      </div>`}
     </form>
   </div>`;
 }
@@ -769,9 +773,13 @@ function tareasDe(s){return (s.tareas||[]).map(id=>[id,S.ej[id]]).filter(x=>x[1]
 function vistaSesion(){
   const s=S.se[S.sesId]; if(!s) return `<button class="back" id="volverSes">← Entrenos</button><div class="empty"><b>Esta sesión ya no existe</b></div>`;
   const ts=tareasDe(s),tot=ts.reduce((a,[,e])=>a+minutos(e.tiempo),0);
-  return `<button class="back" id="volverSes">← Entrenos</button>
-  <div class="vista"><div class="bar"><div class="grow"><h2>${esc(s.nombre||"Sesión")}</h2><div class="meta" style="margin-top:6px"><span>${esc(fmtFecha(s.fecha))}</span><span class="tot">· ${tot}' de trabajo</span><span class="carga ${claseCarga(s.carga)}">${esc(s.carga||"")}</span></div></div>
-    <button class="btn" id="copiar">Copiar texto</button><button class="btn" id="compSes">Compartir</button><button class="btn" id="imprimir">Imprimir</button>${S.canWrite?`<button class="btn pri" id="editarSes">Editar sesión</button>`:""}</div>
+  return `<div class="jghead"><button class="back" id="volverSes">← Entrenos</button><div class="jgicons">
+    <button class="hic" id="copiar" aria-label="Copiar el texto" title="Copiar texto">${IC2.copiar}</button><button class="hic" id="compSes" aria-label="Compartir" title="Compartir">${IC2.compartir}</button><button class="hic" id="imprimir" aria-label="Imprimir" title="Imprimir">${IC2.imprimir}</button>
+    ${S.canWrite?`<button class="hic on" id="editarSes" aria-label="Editar sesión" title="Editar">${IC2.editar}</button>`:""}</div></div>
+  <span class="jgpartido">📅 ${esc(fmtFecha(s.fecha))} · ⏱ ${tot}' de trabajo${s.carga?" · "+esc(s.carga):""}</span>
+  <h2 class="jgtitv" style="font-size:${tamTit(s.nombre)}px">${esc(s.nombre||"Sesión")}</h2>
+  <div class="sesvbar">${miniSes(s)}</div>
+  <div class="vista">
     ${s.idea?`<div class="idea">«${esc(s.idea)}»</div>`:""}
     ${s.notas?`<p class="note">${esc(s.notas)}</p>`:""}
     ${ts.length?ts.map(([id,e],i)=>`<article class="tarea"><div class="th"><span class="n" style="width:30px;height:30px;border-radius:50%;background:var(--rojo);color:#fff;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:20px">${i+1}</span><h3>${esc(e.nombre)}</h3><span class="tag">${esc(e.tiempo)}</span></div>
@@ -786,10 +794,13 @@ function vistaSesion(){
 function vistaSesionEdit(){
   const d=S.sesDraft, ts=d.tareas.map(id=>[id,S.ej[id]]).filter(x=>x[1]), tot=ts.reduce((a,[,e])=>a+minutos(e.tiempo),0);
   const disp=Object.entries(S.ej).sort((a,b)=>CATS.indexOf(a[1].categoria)-CATS.indexOf(b[1].categoria));
-  return `<button class="back" id="volverSes">← Entrenos</button>
+  return `<div class="jghead"><button class="back" id="volverSes">← Entrenos</button><div class="jgicons">
+    <button class="hic" id="guardarSes" aria-label="Guardar sesión" title="Guardar">${IC.guardar}<i class="hdot${S.nueva?"":" ok"}"></i></button>
+    ${!S.nueva?`<button class="hic dan" id="borrarSes" aria-label="Borrar sesión" title="Borrar">${IC.borrar}</button>`:""}</div></div>
+  ${!S.nueva&&S.delConfirm===S.sesId?`<div class="jgconf"><span>¿Borrar esta sesión? Los ejercicios no se borran.</span><button class="btn dan sm" id="borrarSesSi">Sí, borrar</button><button class="btn sm" id="borrarSesNo">No</button></div>`:""}
+  <label class="jgtit"><input type="text" id="s-nombre" style="font-size:${tamTit(d.nombre)}px" value="${esc(d.nombre)}" placeholder="Ponle nombre: Lunes · Presión arriba" enterkeyhint="done" aria-label="Nombre de la sesión"><span class="lapiz" aria-hidden="true">✎</span></label>
   <form class="form" onsubmit="return false" style="max-width:760px">
     <div class="row"><label>Fecha<input type="date" id="s-fecha" value="${esc(d.fecha)}"></label><label>Carga<select id="s-carga">${CARGAS.map(c=>`<option ${d.carga===c?"selected":""}>${c}</option>`).join("")}</select></label></div>
-    <label>Nombre<input type="text" id="s-nombre" value="${esc(d.nombre)}" placeholder="Lunes · Presión arriba"></label>
     <label>Idea de la sesión<input type="text" id="s-idea" value="${esc(d.idea)}" placeholder="Presionamos juntos y robamos arriba"></label>
     <label>Notas<textarea id="s-notas" placeholder="Material, quién falta, lesiones…">${esc(d.notas)}</textarea></label>
     <div class="bar" style="margin:4px 0 0"><div class="grow"><b>Ejercicios</b> <span class="note tot">· ${ts.length} · ${tot}' de trabajo</span></div><button class="btn" id="sesGenBtn">${S.sesGen?"Cerrar":"✨ Generar"}</button><button class="btn" id="anadir">${S.picking?"Cerrar biblioteca":"+ Añadir ejercicio"}</button></div>
@@ -798,8 +809,7 @@ function vistaSesionEdit(){
     ${S.picking?`<div class="picker"><div class="note">Toca un ejercicio para añadirlo al final.</div><div class="list">${disp.map(([id,e])=>`<button data-add="${esc(id)}"><span class="tag">${esc(e.categoria)}</span> ${esc(e.nombre)} <span class="note">· ${esc(e.tiempo)}</span></button>`).join("")||'<div class="note">La biblioteca está vacía.</div>'}</div></div>`:""}
     <div class="tl">${ts.map(([id,e],i)=>`<div class="ti"><span class="n">${i+1}</span><div style="min-width:0"><b>${esc(e.nombre)}</b><div class="note">${esc(e.categoria)} · ${esc(e.tiempo)}</div></div>
       <div class="acts"><button data-up="${i}" aria-label="Subir" ${i===0?"disabled":""}>↑</button><button data-down="${i}" aria-label="Bajar" ${i===ts.length-1?"disabled":""}>↓</button><button data-rm="${i}" aria-label="Quitar">✕</button></div></div>`).join("")||'<div class="note">Todavía sin ejercicios.</div>'}</div>
-    <div class="bar" style="margin-top:8px"><button class="btn pri" id="guardarSes">Guardar sesión</button>
-      ${!S.nueva?(S.delConfirm===S.sesId?`<span class="confirm">¿Borrar la sesión? <button class="btn dan sm" id="borrarSesSi">Sí, borrar</button><button class="btn sm" id="borrarSesNo">No</button></span>`:`<button class="btn dan" id="borrarSes">Borrar sesión</button>`):""}</div>
+    <div class="bar" style="margin-top:8px"><button class="btn pri" id="guardarSes2">💾 Guardar sesión</button></div>
   </form>`;
 }
 function leerSes(){const d=S.sesDraft,v=id=>$("#"+id)?.value??"";Object.assign(d,{fecha:v("s-fecha"),carga:v("s-carga"),nombre:v("s-nombre").trim(),idea:v("s-idea").trim(),notas:v("s-notas").trim()})}
@@ -822,6 +832,7 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   if(t.dataset.up){leerSes();const i=+t.dataset.up,a=S.sesDraft.tareas;[a[i-1],a[i]]=[a[i],a[i-1]];render();return}
   if(t.dataset.down){leerSes();const i=+t.dataset.down,a=S.sesDraft.tareas;[a[i+1],a[i]]=[a[i],a[i+1]];render();return}
   if(t.dataset.rm){leerSes();S.sesDraft.tareas.splice(+t.dataset.rm,1);render();return}
+  if(t.id==="guardarSes2"){$("#guardarSes")?.click();return}
   if(t.id==="borrarSes"){leerSes();S.delConfirm=S.sesId;render();return}
   if(t.id==="borrarSesNo"){leerSes();S.delConfirm=null;render();return}
   if(t.id==="borrarSesSi"){try{await S.db.doc("sesiones/"+S.sesId).delete();toast("Sesión borrada");S.view="se";S.delConfirm=null;render()}catch(e){S.error="No se pudo borrar ("+(e.code||"error")+").";render()}return}
@@ -832,8 +843,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.36";
+const VERSION="1.37";
 const NOVEDADES=[
+  ["1.37","31-oct-2026",["Ejercicios y sesiones, por dentro, como la Pizarra: «←» y los iconos arriba (💾 guardar, ⧉ duplicar, 📤 compartir, 🗑 borrar…), el nombre como título que se toca para cambiarlo y las herramientas en una rejilla con su icono.","En el ejercicio, el campo se cambia con el botón de la esquina del dibujo, y ↶ y 🧹 (vaciar) van debajo del campo.","La sesión se ve con su día y la tira de colores de sus ejercicios arriba."]],
   ["1.36","31-oct-2026",["Pizarra, Ejercicios y Sesiones con el mismo aspecto: las mismas tarjetas, la misma cabecera, los mismos grupos que se abren y se cierran y los mismos filtros.","Pizarra por tipos (balón parado, salida de balón, presión, transiciones, ataque), igual que los ejercicios y las sesiones.","Arriba, destacado, el próximo partido (cambia solo cuando pasa el partido) con sus jugadas; y aparte, «En preparación», las que aún tienen un paso o no tienen nombre. Filtro por partido para ver las de cualquier otro.","Las sesiones se ven con su día y una tira de colores con sus ejercicios (el largo es el tiempo). En cada tarjeta, ⋯ para duplicar."]],
   ["1.35","31-oct-2026",["Logo nuevo: un escudo de los de siempre, con franjas verdes, tres estrellas y el balón clásico. Se ve bien en la pantalla del móvil, también en Android con iconos redondos."]],
   ["1.34","31-oct-2026",["20 ejercicios nuevos del FIFA Training Centre: sesiones de la selección sub-15 de México (posesión, salida de balón, presión tras pérdida, víspera de partido y balón parado) y de fútbol base de 12 a 15 años.","Cada uno con su dibujo, consignas, variantes y la fuente exacta. Donde la FIFA no da tiempos, se indica que son una propuesta para cadetes.","Se añaden solos a tu biblioteca, sin tocar tus ejercicios. ✨ Generar ya tiene más donde elegir."]],
@@ -2047,6 +2059,12 @@ function vistaJugadas(){
     ${club.length?grupo("jg:club","🏟️","Del club","Jugadas que comparte el club.",club.length,"",`<div class="jcarr">${club.map(([id,j])=>tarjetaJug(id,j,{tipo:"club"})).join("")}</div>`):""}
     ${grupo("jg:plant","📚","Para empezar","Plantillas para copiar y cambiar a tu gusto.",Object.keys(P).length,"",`<div class="jcarr">${Object.entries(P).map(([id,j])=>tarjetaJug(id,j,{tipo:"plant"})).join("")}</div>`,{porDefecto:!todas.length||todas.length<4})}`;
 }
+const tamTit=t=>{const n=(t||"").length;return n>30?20:n>24?24:n>18?28:32};
+const IC2={compartir:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg>',
+  duplicar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>',
+  copiar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 4h12v16H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>',
+  imprimir:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M7 9V3h10v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg>',
+  editar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>'};
 const IC={campo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="M12 5v14"/><circle cx="12" cy="12" r="2.6"/><path d="M2.5 9.5h2.5v5H2.5M21.5 9.5H19v5h2.5"/></svg>',
   colocar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9.5" r="2.4"/><path d="M2.5 20c.6-3.6 2.8-5.6 5.5-5.6s4.9 2 5.5 5.6M14.2 15.2c.8-.6 1.8-.9 2.8-.9 2.3 0 4 1.6 4.5 4.7"/></svg>',
   guardar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 3h11l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a1 1 0 0 1 1-2z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/></svg>',
@@ -2068,7 +2086,7 @@ function vistaJugEdit(){
       <button class="hic dan" id="jgBorrar" aria-label="${guardada?"Borrar jugada":"Descartar jugada"}" title="Borrar">${IC.borrar}</button></div>`}</div>
   ${S.delConfirm==="jg"?`<div class="jgconf"><span>${guardada?`¿Borrar <b>${esc(j.nombre||"la jugada")}</b>? No se puede deshacer.`:"¿Descartar esta jugada sin guardarla?"}</span><button class="btn dan sm" id="jgBorrarSi">Sí, borrar</button><button class="btn sm" id="jgBorrarNo">No</button></div>`:""}
   ${pj?`<div class="jgpartido">⚽ Para la J${esc(pj.jornada)} · ${esc(pj.rival)}</div>`:""}
-  <label class="jgtit"><input type="text" id="jg-nombre" value="${esc(j.nombre)}" placeholder="Ponle nombre a la jugada" ${ro?"disabled":""} enterkeyhint="done" aria-label="Nombre de la jugada">${ro?"":'<span class="lapiz" aria-hidden="true">✎</span>'}</label>
+  <label class="jgtit"><input type="text" id="jg-nombre" style="font-size:${tamTit(j.nombre)}px" value="${esc(j.nombre)}" placeholder="Ponle nombre a la jugada" ${ro?"disabled":""} enterkeyhint="done" aria-label="Nombre de la jugada">${ro?"":'<span class="lapiz" aria-hidden="true">✎</span>'}</label>
   ${S.jgAvisos&&S.jgAvisos.length?`<div class="err" style="margin-bottom:10px">No he entendido: ${S.jgAvisos.map(a=>`«${esc(a)}»`).join(", ")}. Añade esos pasos a mano o escríbelos más sencillo (dorsal + acción + adónde).</div>`:""}
   <div class="ed">
     <div class="board${S.jgCharla?" charla":""}" id="jgboard">

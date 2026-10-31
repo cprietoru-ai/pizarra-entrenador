@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.37 · 31-oct-2026
+- Ejercicios y sesiones, por dentro, como la Pizarra: «←» y los iconos arriba (💾 guardar, ⧉ duplicar, 📤 compartir, 🗑 borrar…), el nombre como título que se toca para cambiarlo y las herramientas en una rejilla con su icono.
+- En el ejercicio, el campo se cambia con el botón de la esquina del dibujo, y ↶ y 🧹 (vaciar) van debajo del campo.
+- La sesión se ve con su día y la tira de colores de sus ejercicios arriba.
+
 ## 1.36 · 31-oct-2026
 - Pizarra, Ejercicios y Sesiones con el mismo aspecto: las mismas tarjetas, la misma cabecera, los mismos grupos que se abren y se cierran y los mismos filtros.
 - Pizarra por tipos (balón parado, salida de balón, presión, transiciones, ataque), igual que los ejercicios y las sesiones.
