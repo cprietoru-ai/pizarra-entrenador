@@ -26,7 +26,8 @@
   --bg:#0d1610; --surface:#152219; --ink:#e7efe6; --muted:#9db3a2; --line:#2a3b2f;
   --club:#1b6a33; --club-ink:#ffffff; --crema:#f3e7a4; --rojo:#ff5a50; --pitch:#1d6e37; --chip:#1e3024; color-scheme:dark}
 *{box-sizing:border-box}
-html{-webkit-text-size-adjust:100%}
+html{-webkit-text-size-adjust:100%;overscroll-behavior-y:contain}
+body{overscroll-behavior-y:contain}
 :root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 [hidden]{display:none!important}img{max-width:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.4;margin:0}
@@ -288,7 +289,9 @@ function render(){
   $("#tab-pa").setAttribute("aria-selected",PA_VISTAS.includes(S.view));
   $("#tab-club").setAttribute("aria-selected",S.view==="club");
   if(S.view==="edit") montarEditor();
-  if(S.view==="jugEdit") montarJug();
+  if(S.view==="jugEdit"){montarJug();autoGuardarJg()}
+  else if(S.jgEd){guardarJgYa();S.jgEd=false}
+  marcarAbierta();
 }
 $("#tab-ej").onclick=()=>{S.jgPlay=false;S.view="ej";render()};
 $("#tab-jg").onclick=()=>{S.jgPlay=false;S.img=null;S.view="jug";render()};
@@ -504,8 +507,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.16";
+const VERSION="1.17";
 const NOVEDADES=[
+  ["1.17","31-oct-2026",["Las jugadas se guardan solas mientras las haces: ya no se pierden.","Si la app se cierra o se recarga con una jugada abierta, vuelve a ella y al mismo paso.","Mientras editas, ni una versión nueva ni deslizar hacia abajo recargan la app."]],
   ["1.16","31-oct-2026",["Al compartir, sin las sombras de las fichas al final de cada paso: el movimiento no se corta.","Animación con más definición (960 px y el doble de colores) y un estilo plano y nítido."]],
   ["1.15","31-oct-2026",["«✨ Generar este paso» en el editor: escribes qué pasa en el paso y la app coloca y mueve las fichas.","«Describir jugada» arreglado: cada pase, conducción, centro o remate va en su propio paso, aunque esté todo en una frase con comas.","Las frases funcionan en cualquier campo: entero, medio campo, área y F7."]],
   ["1.14","31-oct-2026",["Sin zoom: el campo se ve fijo y entero.","Balón más real: el pase sale fuerte y frena, llega al compañero justo cuando llega a su sitio, solo los pases largos y centros van por el aire, en la conducción va por delante del jugador y el remate es seco."]],
@@ -1561,7 +1565,7 @@ function vistaJugEdit(){
       ${f&&!ro?`<div class="picker"><div class="row"><label>Número o nombre de la ficha<input type="text" id="jg-lab" value="${esc(f.lab||"")}" maxlength="10"></label>
         <label>De la plantilla<select id="jg-labpl"><option value="">—</option>${Object.entries(S.eq.jugadores).sort(jugOrden).map(([id,x])=>`<option value="${esc(x.dorsal!=null?x.dorsal:nomJ(x))}">${x.dorsal!=null?esc(x.dorsal)+" · ":""}${esc(nomJ(x))}</option>`).join("")}</select></label></div>
         <div class="bar" style="margin-top:6px"><button class="btn dan sm" id="jgQuitar">Quitar la ficha</button><button class="btn sm" id="jgDesel">Listo</button></div></div>`:""}
-      ${ro?"":`<div class="bar"><button class="btn pri" id="jgGuardar">Guardar jugada</button><button class="btn pri" id="jgGif">Compartir</button>
+      ${ro?"":`<div class="bar"><span class="note" id="jgEstado">${S.jgId&&S.jug[S.jgId]?"✓ Guardada automáticamente":"Se guarda sola en cuanto la cambies"}</span><button class="btn pri" id="jgGuardar">Guardar jugada</button><button class="btn pri" id="jgGif">Compartir</button>
         ${n>1?`<button class="btn sm" id="jgBorrarPaso">Borrar este paso</button>`:""}
         ${S.jgId&&S.jug[S.jgId]?(S.delConfirm==="jg"?`<span class="confirm">¿Borrar la jugada? <button class="btn dan sm" id="jgBorrarSi">Sí</button><button class="btn sm" id="jgBorrarNo">No</button></span>`:`<button class="btn dan sm" id="jgBorrar">Borrar jugada</button>`):""}</div>`}
     </form>
@@ -1569,11 +1573,31 @@ function vistaJugEdit(){
   ${S.img?`<div class="imgov" role="dialog" aria-label="Archivo"><div class="imgbox"><img src="${S.img.url}" alt="">
     <div class="bar" style="justify-content:center;margin-top:10px"><button class="btn pri" id="jgCompartir">Compartir</button><button class="btn" id="jgBajar">Descargar</button><button class="btn" id="jgCerrar">Cerrar</button></div></div></div>`:""}`;
 }
+// ---------- Que no se pierda nada (1.17) ----------
+// La jugada se guarda sola medio segundo después de cada cambio. Una plantilla o jugada del club
+// que solo se abre para mirarla no se guarda hasta que se cambia algo. Si la app se recarga
+// (volver de WhatsApp, deslizar hacia abajo, versión nueva), se vuelve a la misma jugada y paso.
+const JG_ABIERTA="pizarra.jgAbierta";let jgTimer=null;
+function marcarAbierta(){try{if(S.jgEd&&S.jgId)localStorage.setItem(JG_ABIERTA,JSON.stringify({id:S.jgId,paso:S.jgPaso}));else if(!S.jgEd)localStorage.removeItem(JG_ABIERTA)}catch(e){}}
+function guardarJgYa(){clearTimeout(jgTimer);if(!S.jgEd||!S.jgDraft||!S.canWrite)return;
+  const txt=JSON.stringify(S.jgDraft);if(txt===S.jgOrig)return marcarAbierta();
+  if(!S.jgId) S.jgId="jg-"+Date.now().toString(36);
+  if(!S.jgDraft.nombre) S.jgDraft.nombre="Jugada del "+new Date().toLocaleDateString("es-ES",{day:"numeric",month:"short"});
+  S.jug[S.jgId]={...S.jgDraft,actualizado:ahora()};S.jgOrig=JSON.stringify(S.jgDraft);
+  if(jugGuardar()){const e=$("#jgEstado");if(e)e.textContent="✓ Guardada automáticamente"}marcarAbierta()}
+function autoGuardarJg(){clearTimeout(jgTimer);jgTimer=setTimeout(guardarJgYa,500)}
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")guardarJgYa()});
+window.addEventListener("pagehide",guardarJgYa);
 function abrirJugada(id,plantilla){
   const base=plantilla&&typeof plantilla==="object"?structuredClone(plantilla):plantilla?structuredClone(jugPlantillas()[plantilla]):id?structuredClone(S.jug[id]):{nombre:"",campo:"medio",fichas:[],pasos:[{texto:"",pos:{},balon:null}]};
-  S.jgId=plantilla?null:id;S.jgDraft=base;S.jgPaso=0;S.jgSel=null;S.jgTool="mover";S.jgPlay=false;S.jgCharla=false;S.img=null;S.delConfirm=null;S.view="jugEdit";render();window.scrollTo(0,0)}
+  base.partido=base.partido||null;  // como lo deja leerJg(), para que abrir y mirar no cuente como cambio
+  S.jgId=plantilla?null:id;S.jgDraft=base;S.jgOrig=JSON.stringify(base);S.jgPaso=0;S.jgSel=null;S.jgTool="mover";S.jgPlay=false;S.jgCharla=false;S.img=null;S.delConfirm=null;S.view="jugEdit";S.jgEd=true;render();window.scrollTo(0,0)}
+// Al arrancar: si había una jugada abierta, se vuelve a ella
+(()=>{try{const a=JSON.parse(localStorage.getItem(JG_ABIERTA)||"null");if(a&&S.jug[a.id]){const j=structuredClone(S.jug[a.id]);
+  S.jgId=a.id;S.jgDraft=j;S.jgOrig=JSON.stringify(j);S.jgPaso=Math.min(a.paso||0,j.pasos.length-1);S.jgSel=null;S.jgTool="mover";S.view="jugEdit";S.jgEd=true;
+  setTimeout(()=>toast("He recuperado la jugada que estabas haciendo"),900)}}catch(e){}})();
 function leerJg(){const j=S.jgDraft,v=id=>$("#"+id);if(!v("jg-nombre"))return;j.nombre=v("jg-nombre").value.trim();j.partido=v("jg-partido").value||null;const tx=v("jg-texto");if(tx)j.pasos[S.jgPaso].texto=tx.value.trim()}
-function redibujarJg(){const w=$("#jgwrap");if(w) w.innerHTML=svgJugada(S.jgDraft,S.jgPaso,{uid:"e",sel:S.jgSel,editable:true})}
+function redibujarJg(){const w=$("#jgwrap");if(w) w.innerHTML=svgJugada(S.jgDraft,S.jgPaso,{uid:"e",sel:S.jgSel,editable:true});autoGuardarJg()}
 
 // ---------- Gestos en la pizarra de jugadas (un dedo, como la de ejercicios) ----------
 let jgDrag=null;
@@ -1675,7 +1699,7 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   if(t.dataset.jgplant){abrirJugada(null,t.dataset.jgplant);toast("Plantilla abierta: cámbiala y guárdala como tuya");return}
   if(S.view!=="jugEdit")return;
   const j=S.jgDraft;
-  if(t.id==="jgVolver"){S.jgPlay=false;S.jgAvisos=null;S.view="jug";S.img=null;render();return}
+  if(t.id==="jgVolver"){leerJg();guardarJgYa();S.jgPlay=false;S.jgAvisos=null;S.view="jug";S.img=null;render();return}
   if(t.dataset.jt){leerJg();S.jgTool=t.dataset.jt;S.jgSel=null;render();return}
   if(t.dataset.jpaso){leerJg();S.jgPaso=+t.dataset.jpaso;S.jgSel=null;render();return}
   if(t.id==="jgGenPaso"){const tx=($("#jg-texto")?.value||"").trim();if(!tx){toast("Escribe primero qué pasa en este paso");$("#jg-texto")?.focus();return}
@@ -1692,10 +1716,10 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   if(t.id==="jgQuitar"){const id=S.jgSel;j.fichas=j.fichas.filter(f=>f.id!==id);for(const p of j.pasos){delete p.pos[id];if(p.balon?.con===id){const q=bPos(j,0);p.balon=null}}S.jgSel=null;render();return}
   if(t.id==="jgDesel"){leerJg();S.jgSel=null;render();return}
   if(t.id==="jgGuardar"){leerJg();if(!j.nombre){toast("Ponle nombre a la jugada");$("#jg-nombre")?.focus();return}
-    const id=S.jgId||("jg-"+Date.now().toString(36));S.jug[id]={...j,actualizado:ahora()};if(jugGuardar()){S.jgId=id;toast("Jugada guardada")}render();return}
+    S.jgOrig=null;guardarJgYa();toast("Jugada guardada");render();return}
   if(t.id==="jgBorrar"){S.delConfirm="jg";render();return}
   if(t.id==="jgBorrarNo"){S.delConfirm=null;render();return}
-  if(t.id==="jgBorrarSi"){delete S.jug[S.jgId];jugGuardar();S.delConfirm=null;S.view="jug";render();toast("Jugada borrada");return}
+  if(t.id==="jgBorrarSi"){S.jgEd=false;clearTimeout(jgTimer);delete S.jug[S.jgId];jugGuardar();S.delConfirm=null;S.view="jug";render();toast("Jugada borrada");return}
   if(t.id==="jgGif"){leerJg();t.disabled=true;t.textContent="Preparando…";
     try{const blob=await grabarGif();if(!blob){render();return}
       const nombre=slugPA(j.nombre||"jugada")+".gif",f=new File([blob],nombre,{type:"image/gif"});
@@ -1713,8 +1737,9 @@ app.addEventListener("change",ev=>{const t=ev.target;if(S.view!=="jugEdit")retur
   if(t.id==="jg-lab"){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){f.lab=t.value.trim();redibujarJg()}return}
   if(t.id==="jg-labpl"&&t.value){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){f.lab=t.value;const i=$("#jg-lab");if(i)i.value=t.value;redibujarJg()}return}
 });
-app.addEventListener("input",ev=>{if(ev.target.id==="jgdTexto")S.jgdTexto=ev.target.value});
-app.addEventListener("input",ev=>{if(S.view==="jugEdit"&&ev.target.id==="jg-texto"){S.jgDraft.pasos[S.jgPaso].texto=ev.target.value;const tx=$("#jgtexto");if(tx)tx.textContent=ev.target.value}});
+app.addEventListener("input",ev=>{if(ev.target.id==="jgdTexto")S.jgdTexto=ev.target.value;
+  if(S.view==="jugEdit"&&ev.target.id==="jg-nombre"){S.jgDraft.nombre=ev.target.value.trim();autoGuardarJg()}});
+app.addEventListener("input",ev=>{if(S.view==="jugEdit"&&ev.target.id==="jg-texto"){S.jgDraft.pasos[S.jgPaso].texto=ev.target.value;autoGuardarJg();const tx=$("#jgtexto");if(tx)tx.textContent=ev.target.value}});
 
 // ---------- Arranque ----------
 (async()=>{
@@ -1725,7 +1750,10 @@ app.addEventListener("input",ev=>{if(S.view==="jugEdit"&&ev.target.id==="jg-text
   db.collection("ejercicios").onSnapshot(snap=>{S.ej={};snap.docs.forEach(d=>S.ej[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
   db.collection("sesiones").onSnapshot(snap=>{S.se={};snap.docs.forEach(d=>S.se[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
   if("serviceWorker" in navigator){const habia=!!navigator.serviceWorker.controller;
-    navigator.serviceWorker.addEventListener("controllerchange",()=>{if(habia&&!sessionStorage.getItem("pizarra.recargada")){sessionStorage.setItem("pizarra.recargada","1");location.reload()}});
+    const editando=()=>["jugEdit","edit","sesion","jugador"].includes(S.view);
+    const recargar=()=>{if(!sessionStorage.getItem("pizarra.recargada")){sessionStorage.setItem("pizarra.recargada","1");guardarJgYa();location.reload()}};
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!habia)return;if(!editando())return recargar();
+      const espera=setInterval(()=>{if(!editando()){clearInterval(espera);recargar()}},2000)});
     navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{})}
   sincronizar();
   const vista=LS.get("pizarra.version",null);

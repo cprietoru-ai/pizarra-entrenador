@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.17 · 31-oct-2026
+- Las jugadas se guardan solas mientras las haces: ya no se pierden.
+- Si la app se cierra o se recarga con una jugada abierta, vuelve a ella y al mismo paso.
+- Mientras editas, ni una versión nueva ni deslizar hacia abajo recargan la app.
+
 ## 1.16 · 31-oct-2026
 - Al compartir, sin las sombras de las fichas al final de cada paso: el movimiento no se corta.
 - Animación con más definición (960 px y el doble de colores) y un estilo plano y nítido.
