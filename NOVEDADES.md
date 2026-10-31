@@ -1,6 +1,11 @@
 # Novedades de la Pizarra del Entrenador
 
-La versión en uso sale en la cabecera de la app y en «Mi club».
+La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
+
+## 1.20 · 31-oct-2026
+- Manual y novedades salen de Mi club: ahora están en el botón ? de arriba a la derecha, en cualquier pestaña.
+- Se abren en una hoja que sube desde abajo, con Manual y Novedades a un toque. Se cierra con ✕, tocando fuera, arrastrando hacia abajo o con el botón atrás.
+- Un punto amarillo en el ? avisa cuando hay una versión nueva sin ver.
 
 ## 1.19 · 31-oct-2026
 - «¿Qué pasa después?»: escribe o dicta lo siguiente y la app crea el paso siguiente sola.

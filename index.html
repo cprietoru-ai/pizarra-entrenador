@@ -215,6 +215,42 @@ ul{margin:4px 0 4px 18px;padding:0}
 .imgbox{background:var(--surface);border-radius:12px;padding:12px;max-height:100%;overflow:auto;width:min(420px,100%)}
 .imgbox img{width:100%;height:auto;display:block;border-radius:8px}
 /* ==== /PARTIDOS ==== */
+/* ==== AYUDA (manual y novedades en hoja) ==== */
+.hd .ayb{margin-left:auto;position:relative;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:var(--club-ink);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .15s,background .15s;flex:0 0 auto}
+.hd .ayb:active{transform:scale(.92);background:rgba(255,255,255,.26)}
+.hd .ayb svg{width:22px;height:22px}
+.hd .ayb .punto{position:absolute;top:1px;right:1px;width:12px;height:12px;border-radius:50%;background:#ffcf33;border:2px solid var(--club);animation:latido 1.6s ease-in-out infinite}
+@keyframes latido{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+.sheetbg{position:fixed;inset:0;z-index:40;background:rgba(5,15,8,.45);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);opacity:0;transition:opacity .25s}
+.sheetbg.on{opacity:1}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:41;max-width:720px;margin:0 auto;height:min(88dvh,820px);background:var(--bg);border-radius:22px 22px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.3);display:flex;flex-direction:column;transform:translateY(100%);transition:transform .32s cubic-bezier(.2,.9,.25,1);padding-bottom:env(safe-area-inset-bottom,0px)}
+.sheet.on{transform:none}
+.sheet .asa{width:44px;height:5px;border-radius:3px;background:var(--line);margin:8px auto 2px}
+.sheet .shd{display:flex;align-items:center;gap:10px;padding:6px 16px 10px}
+.sheet .shd h2{font-family:var(--display);font-weight:400;font-size:28px;letter-spacing:1px;margin:0;flex:1}
+.sheet .x{width:36px;height:36px;border-radius:50%;border:0;background:var(--chip);font-size:18px;line-height:1}
+.seg{display:flex;margin:0 16px 10px;padding:4px;border-radius:14px;background:var(--chip);position:relative}
+.seg button{flex:1;border:0;background:none;padding:9px 6px;border-radius:10px;font-family:var(--label);font-weight:700;font-size:16px;letter-spacing:.5px;color:var(--muted);position:relative;z-index:1;transition:color .2s}
+.seg button[aria-selected="true"]{color:var(--ink)}
+.seg .pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:10px;background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,.12);transition:transform .25s cubic-bezier(.2,.9,.25,1)}
+.seg[data-t="nov"] .pill{transform:translateX(100%)}
+.seg .nuevo{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#ffcf33;color:#3a2c00;font-size:11px;letter-spacing:.5px;vertical-align:2px}
+.sheet .sbody{flex:1;overflow:auto;overscroll-behavior:contain;padding:2px 16px 24px}
+.sheet .sbody>*{animation:entra .25s ease}
+@keyframes entra{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.nvhero{border-radius:18px;padding:16px;color:#fff;background:radial-gradient(120% 140% at 100% 0%,#2fbf63 0%,var(--club) 55%,#0f3d1e 100%);box-shadow:0 8px 24px rgba(20,90,45,.3);margin-bottom:18px}
+.nvhero .v{font-family:var(--display);font-size:34px;letter-spacing:1px;line-height:1}
+.nvhero .f{font-family:var(--label);letter-spacing:1.5px;text-transform:uppercase;font-size:13px;opacity:.85}
+.nvhero ul{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:8px}
+.nvhero li{background:rgba(255,255,255,.12);border-radius:12px;padding:9px 12px;line-height:1.35}
+.nvline{position:relative;margin-left:8px;padding-left:20px;border-left:2px solid var(--line)}
+.nvit{position:relative;margin-bottom:16px}
+.nvit::before{content:"";position:absolute;left:-27px;top:4px;width:12px;height:12px;border-radius:50%;background:var(--surface);border:2px solid #2fbf63}
+.nvit b{font-family:var(--label);font-size:17px;letter-spacing:.5px}
+.nvit ul{margin:4px 0 0;padding-left:18px;color:var(--ink)}
+.nvit li{margin:3px 0}
+.ayclub{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:14px;background:var(--surface);padding:12px 14px}
+@media (prefers-reduced-motion:reduce){.sheet,.sheetbg,.seg .pill{transition:none}.hd .ayb .punto,.sheet .sbody>*{animation:none}}
 </style>
 
 </head><body>
@@ -222,6 +258,7 @@ ul{margin:4px 0 4px 18px;padding:0}
   <div class="wrap hd">
     <img id="clubImg" alt="Pizarra del Entrenador" src="icons/icon-192.png">
     <div><h1 id="clubName">Pizarra del Entrenador</h1><div class="sub" id="clubSub">Entrenos y partidos</div></div>
+    <button class="ayb" id="ayudaBtn" aria-label="Manual y novedades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><circle cx="12" cy="17.4" r=".6" fill="currentColor"/></svg><span class="punto" id="ayudaPunto" hidden></span></button>
   </div>
   <nav class="wrap tabs" role="tablist">
     <button role="tab" id="tab-jg" aria-selected="true">Pizarra</button>
@@ -235,6 +272,13 @@ ul{margin:4px 0 4px 18px;padding:0}
   <div class="empty" id="boot"><b>Cargando la pizarra…</b>Tus ejercicios y sesiones aparecerán aquí.</div>
 </main>
 <div class="toast" id="toast" hidden></div>
+<div class="sheetbg" id="ayudaFondo" hidden></div>
+<section class="sheet" id="ayuda" role="dialog" aria-modal="true" aria-labelledby="ayudaTit" hidden>
+  <div class="asa"></div>
+  <div class="shd"><h2 id="ayudaTit">Ayuda</h2><button class="x" id="ayudaX" aria-label="Cerrar">✕</button></div>
+  <div class="seg" id="ayudaSeg" role="tablist"><span class="pill"></span><button role="tab" data-at="man">📖 Manual</button><button role="tab" data-at="nov">✨ Novedades</button></div>
+  <div class="sbody" id="ayudaBody"></div>
+</section>
 
 <script>
 // ---------- Datos y estado ----------
@@ -525,8 +569,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.19";
+const VERSION="1.20";
 const NOVEDADES=[
+  ["1.20","31-oct-2026",["Manual y novedades salen de Mi club: ahora están en el botón ? de arriba a la derecha, en cualquier pestaña.","Se abren en una hoja que sube desde abajo, con Manual y Novedades a un toque. Se cierra con ✕, tocando fuera, arrastrando hacia abajo o con el botón atrás.","Un punto amarillo en el ? avisa cuando hay una versión nueva sin ver."]],
   ["1.19","31-oct-2026",["«¿Qué pasa después?»: escribe o dicta lo siguiente y la app crea el paso siguiente sola.","🎤 Dictar dentro de la app: hablas y al terminar se añade el paso. Entiende los números dichos («el cuatro la da al ocho»).","Manual: cómo se hace una jugada paso a paso."]],
   ["1.18","31-oct-2026",["Deshacer, rehacer y borrar paso en la Pizarra, al lado del campo.","«Generar este paso» arreglado: usa las fichas que ya tengas puestas, en el primer paso crea la posición inicial y el movimiento, y entiende los nombres de la plantilla.","Manual de uso en Mi club, por secciones que se abren y cierran, con buscador."]],
   ["1.17","31-oct-2026",["Las jugadas se guardan solas mientras las haces: ya no se pierden.","Si la app se cierra o se recarga con una jugada abierta, vuelve a ella y al mismo paso.","Mientras editas, ni una versión nueva ni deslizar hacia abajo recargan la app."]],
@@ -552,7 +597,9 @@ const NOVEDADES=[
   ["1.2","18-oct-2026",["Número de versión y esta lista de novedades.","Aviso la primera vez que se abre una versión nueva."]],
   ["1.1","18-oct-2026",["Pases, carreras y conducciones se dibujan arrastrando con un dedo en el móvil.","Mover jugadores y conos ya no desplaza la página."]],
   ["1.0","18-oct-2026",["Primera versión: biblioteca de ejercicios con pizarra táctil, sesiones, compartir e importar, «Mi club» y uso sin conexión."]]];
-function htmlNovedades(){return NOVEDADES.map(([v,f,l])=>`<div><b>Versión ${v}</b> <span class="note">· ${f}</span><ul>${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}
+function htmlNovedades(){const [h,...r]=NOVEDADES;
+  return `<div class="nvhero"><div class="f">Lo nuevo · ${esc(h[1])}</div><div class="v">Versión ${h[0]}</div><ul>${h[2].map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>
+  <div class="nvline">${r.map(([v,f,l])=>`<div class="nvit"><b>Versión ${v}</b> <span class="note">· ${esc(f)}</span><ul>${l.map(x=>`<li>${esc(x)}</li>`).join("")}</ul></div>`).join("")}</div>`}
 // ---------- Almacén en este dispositivo ----------
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
   set(k,v){try{localStorage.setItem(k,JSON.stringify(v));return true}catch(e){return false}}};
@@ -582,7 +629,7 @@ let promptInstalar=null;
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();promptInstalar=e;if(S.view==="club")render()});
 function vistaClub(){
   const n=Object.keys(S.ej).length,m=Object.keys(S.se).length;
-  return htmlManual()+`<div class="clubgrid" style="margin-top:14px">
+  return `<button class="ayclub" data-ayuda="man"><span class="manic">📖</span><span class="grow"><b>Manual y novedades</b><br><span class="note">También en el botón ? de arriba, en cualquier pestaña.</span></span><span class="chev">›</span></button><div class="clubgrid" style="margin-top:14px">
   <section class="form ses" style="gap:10px"><h3>Mi club</h3>
     <p class="note">El nombre y el escudo solo se guardan en este móvil y salen en la cabecera.</p>
     <label>Nombre del club o del equipo<input type="text" id="c-nombre" value="${esc(S.club.nombre)}" placeholder="p. ej. C.D. Ejemplo"></label>
@@ -603,7 +650,6 @@ function vistaClub(){
     ${promptInstalar?`<div class="bar"><button class="btn pri" id="instalar">Instalar la app</button></div>`:""}
     <p class="note"><b>Android (Chrome):</b> menú ⋮ → «Instalar aplicación» o «Añadir a pantalla de inicio».<br><b>iPhone (Safari):</b> botón Compartir → «Añadir a pantalla de inicio».<br>Queda un icono como el de cualquier app y funciona sin cobertura en el campo.</p>
   </section>
-  <section class="form ses" style="gap:8px"><h3>Versión ${VERSION} · novedades</h3>${htmlNovedades()}</section>
   <section class="form ses" style="gap:8px"><h3>Cómo se comparte</h3>
     <p class="note">En un ejercicio o en una sesión, pulsa <b>Compartir</b>: se envía un archivo por WhatsApp, correo o lo que tengas. Quien lo reciba lo abre aquí con <b>Importar archivo</b> y le aparece en su biblioteca. Los ejercicios con el mismo nombre interno se actualizan, no se duplican.</p>
   </section></div>`;
@@ -1821,8 +1867,8 @@ const MANUAL=[
  {ic:"🚀",t:"Primeros pasos",r:"Instalar la app, conectar tu equipo y saber qué versión tienes.",a:[
   ["Instalarla en el móvil",`<ul><li><b>Android (Chrome):</b> menú ⋮ → «Instalar aplicación».</li><li><b>iPhone:</b> ábrela en <b>Safari</b> (no en Brave ni dentro de WhatsApp) → botón Compartir (cuadrado con flecha) → «Añadir a pantalla de inicio».</li><li>Queda un icono como cualquier app y funciona sin cobertura en el campo.</li></ul>`],
   ["Conectar tu equipo",`En <b>Mi club → Mi equipo</b> pon el <b>código del equipo</b> y la <b>contraseña</b> que te ha dado el club. Una sola vez: desde entonces te llegan solos la plantilla con fotos, el calendario, los resultados, los goleadores y la clasificación.`],
-  ["Qué versión tengo y qué hay de nuevo",`Arriba, debajo del nombre, pone <b>v1.x</b>. Más abajo en Mi club está la lista de novedades de cada versión. Las versiones nuevas llegan solas al abrir la app con cobertura; si no la ves, ciérrala y ábrela otra vez.`],
-  ["Las pestañas",`<ul><li><b>Pizarra:</b> jugadas animadas para la charla.</li><li><b>Ejercicios:</b> tu biblioteca de ejercicios dibujados.</li><li><b>Sesiones:</b> calendario de entrenos y sesiones.</li><li><b>Partidos:</b> convocatoria, alineación, resultado, informe del rival, clasificación y estadísticas.</li><li><b>Mi club:</b> tu club, tu equipo, copias, instalar y este manual.</li></ul>`]]},
+  ["Qué versión tengo y qué hay de nuevo",`Arriba, debajo del nombre, pone <b>v1.x</b>. Toca el botón <b>?</b> de arriba a la derecha → <b>✨ Novedades</b>: ahí está lo nuevo de cada versión (sale un punto amarillo cuando hay algo sin ver). Las versiones nuevas llegan solas al abrir la app con cobertura; si no la ves, ciérrala y ábrela otra vez.`],
+  ["Las pestañas",`<ul><li><b>Pizarra:</b> jugadas animadas para la charla.</li><li><b>Ejercicios:</b> tu biblioteca de ejercicios dibujados.</li><li><b>Sesiones:</b> calendario de entrenos y sesiones.</li><li><b>Partidos:</b> convocatoria, alineación, resultado, informe del rival, clasificación y estadísticas.</li><li><b>Mi club:</b> tu club, tu equipo, copias e instalar.</li><li><b>Botón ? (arriba a la derecha):</b> este manual y las novedades, desde cualquier pestaña.</li></ul>`]]},
  {ic:"🎬",t:"Pizarra: jugadas animadas",r:"Jugadas paso a paso con carreras, conducciones y pases, para enseñarlas y compartirlas.",a:[
   ["Crear una jugada",`<b>+ Nueva jugada</b>, o abre una de <b>Para empezar</b> (córner, falta, salida de balón, presión) o <b>Del club</b> y cámbiala a tu gusto. Elige el campo: entero, medio campo, área o F7.`],
   ["Poner y mover fichas",`<ul><li>Elige <b>Nuestro</b>, <b>Portero</b>, <b>Rival</b>, <b>Portero rival</b> o <b>Balón</b> y toca el campo.</li><li>Con <b>Mover</b>, arrastra con un dedo. Si sueltas el balón encima de un jugador, se le pega.</li><li>Toca una ficha para cambiarle el número, elegir un jugador de tu plantilla o quitarla.</li></ul>`],
@@ -1871,13 +1917,36 @@ function htmlManual(){
   const secc=MANUAL.map((s,i)=>{const items=s.a.filter(([t,h])=>ok(s.t+" "+t,h));if(q&&!items.length)return "";
     return `<details class="man" ${q||S.manAbierto==="todo"?"open":""}><summary><span class="manic">${s.ic}</span><span class="grow"><b>${esc(s.t)}</b><br><span class="note">${esc(s.r)}</span></span><span class="chev">›</span></summary>
       <div class="manin">${items.map(([t,h])=>`<details class="mani" ${q?"open":""}><summary>${esc(t)}<span class="chev">›</span></summary><div class="manbody">${h}</div></details>`).join("")}</div></details>`}).join("");
-  return `<section class="form ses manual"><div class="bar"><h3 class="grow">📖 Manual de la Pizarra</h3><button class="btn sm" id="manTodo">Abrir todo</button><button class="btn sm" id="manNada">Cerrar todo</button></div>
+  return `<section class="form ses manual"><div class="bar" style="justify-content:flex-end;margin-bottom:0"><button class="btn sm" id="manTodo">Abrir todo</button><button class="btn sm" id="manNada">Cerrar todo</button></div>
     <input type="search" id="manQ" placeholder="Buscar en el manual (p. ej. compartir, convocatoria…)" value="${esc(S.manQ||"")}">
     ${secc||`<div class="note">No hay nada con «${esc(S.manQ)}».</div>`}</section>`}
-app.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t||S.view!=="club")return;
+// ---------- Hoja de ayuda: manual y novedades ----------
+function pintarAyuda(){const t=S.ayuda||"man";$("#ayudaSeg").dataset.t=t;
+  document.querySelectorAll("#ayudaSeg button").forEach(b=>b.setAttribute("aria-selected",b.dataset.at===t));
+  const nb=$('#ayudaSeg [data-at="nov"]');nb.innerHTML="✨ Novedades"+(LS.get("pizarra.novVista",null)!==VERSION?'<span class="nuevo">NUEVO</span>':"");
+  $("#ayudaBody").innerHTML=t==="nov"?htmlNovedades():htmlManual();$("#ayudaBody").scrollTop=0;
+  if(t==="nov"){LS.set("pizarra.novVista",VERSION);marcarAyuda()}}
+function marcarAyuda(){const p=$("#ayudaPunto");if(p)p.hidden=LS.get("pizarra.novVista",null)===VERSION}
+function abrirAyuda(t){S.ayuda=t||S.ayuda||"man";const h=$("#ayuda"),f=$("#ayudaFondo");pintarAyuda();h.hidden=f.hidden=false;
+  document.documentElement.style.overflow="hidden";requestAnimationFrame(()=>requestAnimationFrame(()=>{h.classList.add("on");f.classList.add("on")}));
+  try{history.pushState({ayuda:1},"")}catch(e){}}
+function cerrarAyuda(desdeAtras){const h=$("#ayuda"),f=$("#ayudaFondo");if(h.hidden)return;h.classList.remove("on");f.classList.remove("on");
+  document.documentElement.style.overflow="";setTimeout(()=>{h.hidden=f.hidden=true},320);if(!desdeAtras&&history.state&&history.state.ayuda)history.back()}
+$("#ayudaBtn").addEventListener("click",()=>abrirAyuda(LS.get("pizarra.novVista",null)!==VERSION?"nov":S.ayuda));
+$("#ayudaX").addEventListener("click",()=>cerrarAyuda());$("#ayudaFondo").addEventListener("click",()=>cerrarAyuda());
+addEventListener("popstate",()=>cerrarAyuda(true));
+addEventListener("keydown",e=>{if(e.key==="Escape")cerrarAyuda()});
+$("#ayudaSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.ayuda=b.dataset.at;pintarAyuda()});
+app.addEventListener("click",e=>{const b=e.target.closest("[data-ayuda]");if(b)abrirAyuda(b.dataset.ayuda)});
+$("#ayuda").addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t)return;
   if(t.id==="manTodo"){document.querySelectorAll("details.man,details.mani").forEach(d=>d.open=true)}
   if(t.id==="manNada"){document.querySelectorAll("details.man,details.mani").forEach(d=>d.open=false)}});
-app.addEventListener("input",ev=>{if(ev.target.id!=="manQ")return;S.manQ=ev.target.value;const pos=ev.target.selectionStart;render();const i=$("#manQ");if(i){i.focus();i.setSelectionRange(pos,pos)}});
+$("#ayuda").addEventListener("input",ev=>{if(ev.target.id!=="manQ")return;S.manQ=ev.target.value;const pos=ev.target.selectionStart;pintarAyuda();const i=$("#manQ");if(i){i.focus();i.setSelectionRange(pos,pos)}});
+// arrastrar la hoja hacia abajo la cierra
+(()=>{let y0=null;const h=$("#ayuda");
+  h.addEventListener("touchstart",e=>{const enCab=e.target.closest(".asa,.shd");if(enCab||$("#ayudaBody").scrollTop<=0)y0=e.touches[0].clientY;else y0=null},{passive:true});
+  h.addEventListener("touchmove",e=>{if(y0==null)return;const d=e.touches[0].clientY-y0;if(d>0){h.style.transition="none";h.style.transform=`translateY(${d}px)`}},{passive:true});
+  h.addEventListener("touchend",e=>{if(y0==null)return;const d=e.changedTouches[0].clientY-y0;y0=null;h.style.transition="";h.style.transform="";if(d>110)cerrarAyuda()})})();
 
 // ---------- Arranque ----------
 (async()=>{
@@ -1895,7 +1964,8 @@ app.addEventListener("input",ev=>{if(ev.target.id!=="manQ")return;S.manQ=ev.targ
     navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{})}
   sincronizar();
   const vista=LS.get("pizarra.version",null);
-  if(vista!==VERSION){LS.set("pizarra.version",VERSION);if(vista){const n=NOVEDADES[0][2][0];setTimeout(()=>toast("Novedades de la versión "+VERSION+": "+n),800)}}
+  if(vista!==VERSION){LS.set("pizarra.version",VERSION);if(vista)setTimeout(()=>toast("Versión "+VERSION+": toca el ? de arriba para ver lo nuevo"),800);else LS.set("pizarra.novVista",VERSION)}
+  marcarAyuda();
 })();
 </script>
 
