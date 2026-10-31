@@ -2,6 +2,12 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.23 · 31-oct-2026
+- El nombre de la jugada es el título de arriba: tócalo y escribe.
+- El campo se cambia con el botón que hay encima del dibujo, arriba a la izquierda.
+- Al tocar una ficha sale su menú justo encima: número, jugadores de la plantilla para elegir con un toque, 🗑 para quitarla y ✓.
+- Velocidad de la animación: 🐢 Lenta, Normal o ⚡ Rápida, para reproducir y para compartir. Por defecto ahora va más despacio que antes.
+
 ## 1.22 · 31-oct-2026
 - Fichas en una fila de seis que se ven todas a la vez, con su color.
 - ↶ Deshacer y ↷ Rehacer junto a la 🗑, en la línea de pasos.
