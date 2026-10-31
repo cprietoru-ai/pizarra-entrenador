@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.33 · 31-oct-2026
+- Ejercicios por tipo (calentamiento, técnica, táctica…) en grupos que se abren y se cierran, cada uno con su criterio en una línea. Se recuerda cuáles dejas abiertos.
+- Filtro por lo que trabaja (presión, posesión, finalización…) y buscador; «Abrir todo» y «Cerrar todo».
+- Sesiones agrupadas por lo que trabajan, con filtros de próximas o pasadas y de carga, y buscador (también busca en sus ejercicios).
+
 ## 1.32 · 31-oct-2026
 - En la jugada, el campo y 👥 Colocar van en las dos esquinas de arriba del campo, a la vista.
 - La 🗑 vuelve a estar siempre arriba (si la jugada no está guardada, la descarta).
