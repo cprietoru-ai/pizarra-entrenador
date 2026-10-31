@@ -504,8 +504,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.13";
+const VERSION="1.14";
 const NOVEDADES=[
+  ["1.14","31-oct-2026",["Sin zoom: el campo se ve fijo y entero.","Balón más real: el pase sale fuerte y frena, llega al compañero justo cuando llega a su sitio, solo los pases largos y centros van por el aire, en la conducción va por delante del jugador y el remate es seco."]],
   ["1.13","31-oct-2026",["Al compartir, cada paso lleva una franja con «Paso n de N» y la frase en grande.","En el editor, el texto del paso está arriba, justo debajo de los pasos."]],
   ["1.12","31-oct-2026",["Animación más dinámica: primero arrancan los desmarques y luego sale el pase; el balón vuela en los pases largos con su sombra; la cámara se acerca a la jugada; onda al recibir y «¡GOL!» al marcar."]],
   ["1.11","31-oct-2026",["«✨ Describir jugada»: escribe la jugada con frases sencillas (dorsal, acción y adónde) y la Pizarra la monta animada, con rivales que reaccionan."]],
@@ -1340,19 +1341,24 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
     if(f.id===conB) pl+=`<circle class="halo" cx="${q[0]}" cy="${q[1]}" r="${r*1.55}" fill="#ffd84a" fill-opacity=".18" stroke="#ffd84a" stroke-opacity=".8" stroke-width="${sw*1.4}"/>`;
     pl+=`<g data-f="${f.id}" filter="url(#${uid}sh)"><circle cx="${q[0]}" cy="${q[1]}" r="${r}" fill="url(#${uid}g${f.t})" stroke="${sel===f.id?"#ffd84a":c2}" stroke-width="${sel===f.id?sw*3.5:sw*1.6}"/>${f.lab?`<text x="${q[0]}" y="${q[1]+r*.38}" font-size="${fs*(String(f.lab).length>2?.62:1)}" fill="${c3}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif">${esc(f.lab)}</text>`:""}</g>`}
   // Balón: en un pase viaja de un sitio a otro; si no, va con su jugador
-  let b=bPos(j,k),escB=1,fx="";
+  let b=bPos(j,k),escB=1,fx="",sombra=null;
   if(anim!=null){const b2=bPos(j,k2),a=j.pasos[k].balon,c=j.pasos[k2].balon;
-    if(a?.con&&a.con===c?.con){const q=pos(a.con);b=[q[0]+.9,q[1]+.9]}
-    else if(b&&b2){const b0=b,gol=b2[0]>w||b2[1]>h||b2[0]<0||b2[1]<0,L=Math.hypot(b2[0]-b0[0],b2[1]-b0[1]),aereo=!gol&&L>16;
-      // el remate sale más tarde y más rápido; el pase, cuando ya han arrancado los desmarques
-      const tb=gol?(t=>t*t)(cl01((anim-.35)/.45)):(t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2)(cl01((anim-.22)/.7));
-      const alto=t=>(aereo?L*.16:L*.04)*Math.sin(Math.PI*t),en=t=>[b0[0]+(b2[0]-b0[0])*t,b0[1]+(b2[1]-b0[1])*t-alto(t)];
-      if(tb>0&&tb<1){const s0=[b0[0]+(b2[0]-b0[0])*tb,b0[1]+(b2[1]-b0[1])*tb];pl+=`<ellipse cx="${s0[0]}" cy="${s0[1]}" rx="${r*.55}" ry="${r*.3}" fill="#000" opacity="${.3-.15*Math.sin(Math.PI*tb)}"/>`;
-        for(let i=1;i<=5;i++){const q=en(Math.max(0,tb-i*.05));pl+=`<circle cx="${q[0]}" cy="${q[1]}" r="${r*.5*(1-i*.13)}" fill="#fff" opacity="${.4-i*.07}"/>`}}
-      b=en(tb);escB=1+(aereo?.7:.15)*Math.sin(Math.PI*tb);
-      // onda cuando llega al compañero, y «¡GOL!» cuando entra
-      if(c?.con&&tb>=1&&anim<1){const q=pos(c.con),u=cl01((anim-.9)/.1);fx+=`<circle cx="${q[0]}" cy="${q[1]}" r="${r*(1.2+u*1.8)}" fill="none" stroke="#fff" stroke-width="${sw*2}" opacity="${1-u}"/>`}
-      if(gol&&anim>=.78){const u=cl01((anim-.78)/.14);fx+=`<text x="${w/2}" y="${h/2+h*.1}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif" font-size="${h*(.18+.1*u)}" fill="#ffd84a" stroke="#0b3a19" stroke-width="${h*.012}" paint-order="stroke" opacity="${u}">¡GOL!</text>`}}}
+    if(a?.con&&a.con===c?.con){const p0=j.pasos[k].pos[a.con],p1=j.pasos[k2].pos[a.con],q=pos(a.con),L=Math.hypot(p1[0]-p0[0],p1[1]-p0[1]);
+      if(L>.8){const ux=(p1[0]-p0[0])/L,uy=(p1[1]-p0[1])/L,toque=r*(.85+.35*Math.abs(Math.sin(lt(a.con)*Math.PI*Math.max(2,Math.round(L/4)))));b=[q[0]+ux*toque,q[1]+uy*toque]}
+      else b=[q[0]+.9,q[1]+.9]}
+    else if(b&&b2){const b0=b,gol=b2[0]>w||b2[1]>h||b2[0]<0||b2[1]<0;
+      // destino: el compañero donde esté en cada momento (así le llega justo cuando llega)
+      const dest=()=>c?.con&&j.pasos[k2].pos[c.con]?(q=>[q[0]+.6,q[1]+.6])(pos(c.con)):b2;
+      const d0=dest(),L=Math.hypot(d0[0]-b0[0],d0[1]-b0[1]),aereo=!gol&&L>22;
+      const ini=gol?.4:.3,dur=gol?.22:Math.max(.28,Math.min(.62,L/48)),tb=cl01((anim-ini)/dur),te=1-Math.pow(1-tb,2.2);  // sale fuerte y frena
+      const fin=dest(),suelo=[b0[0]+(fin[0]-b0[0])*te,b0[1]+(fin[1]-b0[1])*te],alto=aereo?r*1.6*Math.sin(Math.PI*te):0;
+      b=[suelo[0],suelo[1]-alto];escB=1+(aereo?.75*Math.sin(Math.PI*te):0);if(aereo&&tb>0&&tb<1)sombra=suelo;
+      if(tb>0&&tb<1) for(let i=1;i<=5;i++){const t2=Math.max(0,te-i*.045),q=[b0[0]+(fin[0]-b0[0])*t2,b0[1]+(fin[1]-b0[1])*t2-(aereo?r*1.6*Math.sin(Math.PI*t2):0)];
+        pl+=`<circle cx="${q[0]}" cy="${q[1]}" r="${r*.48*(1-i*.14)}" fill="#fff" opacity="${.42-i*.075}"/>`}
+      // onda en el que recibe, y «¡GOL!» cuando entra
+      if(c?.con&&tb>=1){const q=pos(c.con),u=cl01((anim-ini-dur)/.16);if(u<1)fx+=`<circle cx="${q[0]}" cy="${q[1]}" r="${r*(1.2+u*1.8)}" fill="none" stroke="#fff" stroke-width="${sw*2}" opacity="${1-u}"/>`}
+      if(gol&&tb>=1){const u=cl01((anim-ini-dur)/.14);fx+=`<text x="${w/2}" y="${h/2+h*.1}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif" font-size="${h*(.18+.1*u)}" fill="#ffd84a" stroke="#0b3a19" stroke-width="${h*.012}" paint-order="stroke" opacity="${u}">¡GOL!</text>`}}}
+  if(sombra) pl+=`<ellipse cx="${sombra[0]}" cy="${sombra[1]}" rx="${r*.5}" ry="${r*.28}" fill="#000" opacity=".35"/>`;
   if(b) pl+=`<circle data-f="balon" cx="${b[0]}" cy="${b[1]}" r="${r*.52*escB}" fill="url(#${uid}gbal)" stroke="#111" stroke-width="${sw*1.1}" filter="url(#${uid}sh)"/>`;
   const marks=["pase","carrera","conduccion"].map(t=>`<marker id="${uid}${t}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${col[t]}"/></marker>`).join("");
   let rayas="";for(let i=0;i<10;i++) rayas+=`<rect x="${i*w/10}" y="${-pad}" width="${w/20}" height="${h+2*pad}" fill="#fff" fill-opacity=".05"/>`;
@@ -1361,9 +1367,7 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
     <radialGradient id="${uid}vin" cx="50%" cy="50%" r="70%"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
     <filter id="${uid}sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="${r*.22}" stdDeviation="${r*.22}" flood-color="#000" flood-opacity=".45"/></filter>
     ${grad("A","#ffffff","#dfe9e0")}${grad("PT","#ffe680","#e8b800")}${grad("B","#ff6a5e","#c11d16")}${grad("PR","#3a3a3a","#0a0a0a")}${grad("bal","#ffffff","#cfcfcf")}`;
-  let vb=[-pad,-pad,w+2*pad,h+2*pad];
-  if(anim!=null&&b){const s=Math.sin(Math.PI*anim),z=1+.16*s,VW=vb[2]/z,VH=vb[3]/z,fc=[w/2+(b[0]-w/2)*.7*s,h/2+(b[1]-h/2)*.7*s];
-    vb=[Math.max(-pad,Math.min(w+pad-VW,fc[0]-VW/2)),Math.max(-pad,Math.min(h+pad-VH,fc[1]-VH/2)),VW,VH]}
+  const vb=[-pad,-pad,w+2*pad,h+2*pad];
   return `<svg viewBox="${vb.join(" ")}" ${editable?'id="jgsvg"':""} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Jugada"><defs>${defs}</defs>
     <rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="url(#${uid}cesped)"/>${rayas}
     <g stroke="#fff" stroke-opacity=".8" stroke-width="${sw*1.4}" fill="none">${lineasCampo(j.campo,w,h)}</g>

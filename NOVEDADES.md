@@ -2,6 +2,10 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.14 · 31-oct-2026
+- Sin zoom: el campo se ve fijo y entero.
+- Balón más real: el pase sale fuerte y frena, llega al compañero justo cuando llega a su sitio, solo los pases largos y centros van por el aire, en la conducción va por delante del jugador y el remate es seco.
+
 ## 1.13 · 31-oct-2026
 - Al compartir, cada paso lleva una franja con «Paso n de N» y la frase en grande.
 - En el editor, el texto del paso está arriba, justo debajo de los pasos.
