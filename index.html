@@ -316,6 +316,13 @@ button.jgcampo{cursor:pointer}
 .jcard:has(.jmenu){z-index:5;content-visibility:visible}.jcard .th svg{width:100%;height:100%;display:block;box-shadow:none!important;border-radius:0!important}
 .jcard .bd{display:flex;flex-direction:column;gap:2px;padding:8px 10px 10px}.jcard .bd b{font-size:14.5px;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .jcard .bd small{color:var(--muted);font-size:12px}
+.sesth{position:relative;display:flex;flex-direction:column;justify-content:space-between;width:100%;height:100%;padding:10px;background:linear-gradient(135deg,#1f8b45,#0f5a2a);color:#fff}
+.sesth.c-alta{background:linear-gradient(135deg,#c2453c,#7a1f1a)}.sesth.c-baja{background:linear-gradient(135deg,#2d8fb3,#155a73)}
+.sesdia{font-family:var(--label);font-weight:700;font-size:14px;letter-spacing:.4px;text-transform:uppercase;line-height:1.05;text-align:right}.sesdia b{display:block;font-family:var(--display);font-weight:400;font-size:30px;letter-spacing:1px}
+.sestira{display:flex;gap:2px;height:26px;border-radius:8px;overflow:hidden}.sestira i{display:flex;align-items:center;justify-content:center;font-style:normal;font-size:12px;min-width:0;overflow:hidden}
+.jcard.pasada{opacity:.72}.jbadge.b2{left:auto;right:46px}
+.jlprox{border:2px solid var(--acc);border-radius:18px;padding:10px;margin-bottom:12px;background:color-mix(in srgb,var(--acc) 8%,var(--surface))}
+.jlproxhd{display:flex;gap:10px;align-items:center;margin-bottom:8px}
 .jbadge{position:absolute;top:8px;left:8px;background:var(--acc);color:var(--acc-ink);font-family:var(--label);font-weight:700;font-size:12px;border-radius:8px;padding:2px 7px;pointer-events:none}
 .jmas{position:absolute;top:6px;right:6px;width:34px;height:34px;border-radius:50%;border:0;background:rgba(8,30,15,.55);color:#fff;font-size:18px;line-height:1;backdrop-filter:blur(4px)}
 .jmenu{position:absolute;top:44px;right:6px;z-index:3;display:flex;flex-direction:column;gap:2px;min-width:140px;padding:6px;border-radius:12px;background:var(--surface);border:1.5px solid var(--line);box-shadow:0 10px 24px rgba(0,0,0,.25);animation:popin .15s ease}
@@ -550,6 +557,10 @@ $("#tab-se").onclick=()=>{S.view="se";render()};
 $("#tab-pa").onclick=()=>{S.view="pa";S.slot=null;S.img=null;S.delConfirm=null;render();if(typeof sincronizar==="function")sincronizar()};
 $("#tab-club").onclick=()=>{S.view="club";S.delConfirm=null;render()};
 
+// Menú ⋯ de las tarjetas: un solo manejador para toda la app; se cierra al tocar fuera
+app.addEventListener("click",ev=>{const t=ev.target.closest("button");
+  if(t&&t.dataset.tmenu){ev.stopImmediatePropagation();const id=t.dataset.tmenu;S.tMenu=S.tMenu===id&&!S.jgDelConf?null:id;S.jgDelConf=null;render();return}
+  if(S.tMenu&&!(t&&t.closest(".jmenu"))){S.tMenu=null;S.jgDelConf=null;if(!t||!t.closest(".jopen")){ev.stopImmediatePropagation();render()}}},true);
 // ---------- Grupos plegables (1.33): Ejercicios y Sesiones ----------
 // Cada categoría con su criterio (de FUENTES.md del skill: FIFA 11+, juegos reducidos, Castillo 2019…)
 const CAT_INFO={"Calentamiento":["🔥","FIFA 11+: unos 20', al menos 2 veces por semana. Baja entre un 30 y un 50 % las lesiones."],
@@ -569,6 +580,16 @@ function grupo(clave,ic,titulo,desc,n,extra,cuerpo,{forzar=false,porDefecto=true
 function botonesPleg(pref){return `<button class="btn sm" data-plegtodo="${pref}" data-v="1">Abrir todo</button><button class="btn sm" data-plegtodo="${pref}" data-v="0">Cerrar todo</button>`}
 const MINI_EJ=new Map();
 function miniEj(id,e){const k=id+"|"+(e.actualizado||"");let v=MINI_EJ.get(k);if(!v){v=svgDiagrama(e.diagrama,{uid:"c"+id.replace(/\W/g,"").slice(-18)});MINI_EJ.set(k,v)}return v}
+// Tarjeta común (1.37): la misma en Pizarra, Ejercicios y Sesiones
+function tarjeta_({abrir,thumb,titulo,meta,badge="",badge2="",menuId="",menu="",clase=""}){
+  return `<div class="jcard ${clase}"><button class="jopen" ${abrir} aria-label="Abrir ${esc(titulo)}"><span class="th">${thumb}</span>
+    <span class="bd"><b>${esc(titulo)}</b><small>${meta}</small></span></button>${badge?`<span class="jbadge">${badge}</span>`:""}${badge2?`<span class="jbadge b2">${badge2}</span>`:""}
+    ${menuId?`<button class="jmas" data-tmenu="${esc(menuId)}" aria-label="Más opciones">⋯</button>${S.tMenu===menuId?`<div class="jmenu">${menu}</div>`:""}`:""}</div>`}
+const CAT_COLOR={"Calentamiento":"#f2994a","Técnica":"#56ccf2","Táctica":"#bb6bd9","Finalización":"#eb5757","Físico":"#f2c94c","Balón parado":"#6fcf97","Partido":"#2f80ed","Vuelta a la calma":"#9ad0b4","Charla":"#bdbdbd"};
+// Miniatura de una sesión: su fecha y una tira con los ejercicios (largo = minutos, color = tipo)
+function miniSes(s){const ts=(s.tareas||[]).map(t=>S.ej[t]).filter(Boolean),tot=ts.reduce((a,e)=>a+Math.max(5,minutos(e.tiempo)),0)||1,d=s.fecha?new Date(s.fecha+"T12:00:00"):null;
+  return `<span class="sesth c-${claseCarga(s.carga)}"><span class="sesdia">${d?`<b>${DIAS_N[d.getDay()].slice(0,3)}</b>${d.getDate()} ${d.toLocaleDateString("es-ES",{month:"short"}).replace(".","")}`:"<b>—</b>sin fecha"}</span>
+    <span class="sestira">${ts.map(e=>`<i style="flex:${Math.max(5,minutos(e.tiempo))/tot};background:${CAT_COLOR[e.categoria]||"#ccc"}" title="${esc(e.nombre)}">${(CAT_INFO[e.categoria]||[""])[0]}</i>`).join("")||'<i style="flex:1;background:rgba(255,255,255,.25)"></i>'}</span></span>`}
 // Qué trabaja un ejercicio o una sesión (mismas palabras que el generador)
 function objetivosDe(txt){const t=nrm(txt);return OBJ_GEN.filter(([,,ks])=>ks.some(k=>t.includes(nrm(k)))).map(([k])=>k)}
 function vistaEjercicios(){
@@ -577,21 +598,23 @@ function vistaEjercicios(){
     .sort((a,b)=>a[1].nombre.localeCompare(b[1].nombre));
   const filtrando=!!(q||fo),porCat={};for(const x of lista)(porCat[x[1].categoria]=porCat[x[1].categoria]||[]).push(x);
   const objs=OBJ_GEN.filter(([k])=>todos.some(([,e])=>objetivosDe([e.nombre,e.objetivo].join(" ")).includes(k)));
-  const tarjeta=([id,e])=>`<button class="card ejc" data-open="${esc(id)}"><div class="dg">${e.diagrama?miniEj(id,e):`<span class="nodg">${esc((CAT_INFO[e.categoria]||["📋"])[0])}</span>`}</div>
-    <div class="bd"><h3>${esc(e.nombre)}</h3><div class="meta"><span>⏱ ${esc(e.tiempo||"—")}</span>${e.jugadores?`<span>· ${esc(e.jugadores.split("·")[0].slice(0,40))}</span>`:""}</div></div></button>`;
+  const tarjeta=([id,e])=>tarjeta_({abrir:`data-open="${esc(id)}"`,thumb:e.diagrama?miniEj(id,e):`<span class="nodg">${esc((CAT_INFO[e.categoria]||["📋"])[0])}</span>`,titulo:e.nombre,
+    meta:`⏱ ${esc(e.tiempo||"—")}${e.jugadores?" · "+esc(e.jugadores.split("·")[0].slice(0,34)):""}`,badge:/^fifa-|^fifa11/.test(id)?"FIFA":"",
+    menuId:S.canWrite?"ej:"+id:"",menu:`<button data-ejdup="${esc(id)}">⧉ Duplicar</button>`});
   return `<div class="jlhd"><div class="grow"><h2 class="h2" style="margin:0">Ejercicios</h2><div class="note">${todos.length} en tu biblioteca</div></div>${S.canWrite?`<button class="btn pri" id="nuevo">+ Nuevo</button>`:""}</div>
     <div class="jlfiltros"><input type="search" id="q" placeholder="🔍 Buscar ejercicio u objetivo" value="${esc(S.q||"")}">
       ${objs.length?`<div class="chips jlchips"><button class="chip" data-ejobj="" aria-pressed="${!fo}">Todo</button>${objs.map(([k,n])=>`<button class="chip" data-ejobj="${k}" aria-pressed="${fo===k}">${n}</button>`).join("")}</div>`:""}</div>
     ${todos.length===0?`<div class="empty"><b>Todavía no hay ejercicios</b>Pulsa «+ Nuevo» para crear el primero y dibujarlo en la pizarra.</div>`
       :lista.length?`<div class="bar grpbar"><span class="note grow">${filtrando?`${lista.length} con ese filtro`:"Por tipo de ejercicio"}</span>${botonesPleg("ej")}</div>
-        ${CATS.filter(c=>porCat[c]).map(c=>grupo("ej:"+c,(CAT_INFO[c]||["📋"])[0],c,(CAT_INFO[c]||[])[1],porCat[c].length,"",`<div class="grid ejgrid">${porCat[c].map(tarjeta).join("")}</div>`,{forzar:filtrando})).join("")}
-        ${Object.keys(porCat).filter(c=>!CATS.includes(c)).map(c=>grupo("ej:"+c,"📋",c,"",porCat[c].length,"",`<div class="grid ejgrid">${porCat[c].map(tarjeta).join("")}</div>`,{forzar:filtrando})).join("")}`
+        ${CATS.filter(c=>porCat[c]).map(c=>grupo("ej:"+c,(CAT_INFO[c]||["📋"])[0],c,(CAT_INFO[c]||[])[1],porCat[c].length,"",`<div class="jlgrid">${porCat[c].map(tarjeta).join("")}</div>`,{forzar:filtrando})).join("")}
+        ${Object.keys(porCat).filter(c=>!CATS.includes(c)).map(c=>grupo("ej:"+c,"📋",c,"",porCat[c].length,"",`<div class="jlgrid">${porCat[c].map(tarjeta).join("")}</div>`,{forzar:filtrando})).join("")}`
       :`<div class="empty"><b>Nada con ese filtro</b>Prueba con otra palabra o toca «Todo».</div>`}`;
 }
 app.addEventListener("click",ev=>{
   const t=ev.target.closest("button"); if(!t) return;
   if(t.dataset.f){S.filtro=t.dataset.f;render();return}
   if(t.dataset.ejobj!=null&&S.view==="ej"){S.ejObj=t.dataset.ejobj;render();return}
+  if(t.dataset.ejdup){const o=S.ej[t.dataset.ejdup];if(o){const id="ej-"+Date.now().toString(36);S.db.doc("ejercicios/"+id).set({...structuredClone(o),nombre:o.nombre+" (copia)",actualizado:ahora()});S.tMenu=null;toast("Ejercicio duplicado")}return}
   if(t.dataset.plegtodo){const v=t.dataset.v==="1";document.querySelectorAll(`details[data-pleg^="${t.dataset.plegtodo}:"]`).forEach(d=>{d.open=v;PLEG[d.dataset.pleg]=v});try{localStorage.setItem(PLEG_KEY,JSON.stringify(PLEG))}catch(e){}return}
   if(t.id==="nuevo"){abrirEditor(null);return}
   if(t.dataset.open){abrirEditor(t.dataset.open);return}
@@ -725,9 +748,9 @@ function vistaSesiones(){
   const ICO={presion:"⚡",posesion:"🔁",salida:"🧱",finalizacion:"⚽",transiciones:"↔️",parado:"🚩",fisico:"💪",otras:"📋"};
   const DESC={presion:"Robar arriba y rápido tras pérdida.",posesion:"Tener el balón con paciencia: rondos y juegos de posición.",salida:"Sacar el balón jugado desde atrás.",finalizacion:"Llegar al área y acabar.",transiciones:"Los segundos después de robar o perder.",parado:"Córners, faltas y saques ensayados.",fisico:"Fuerza, velocidad y prevención.",otras:"Sesiones mixtas o sin un objetivo claro."};
   const filtrando=!!(q||fc||fp);
-  const tarjeta=([id,s])=>{const ts=(s.tareas||[]).map(t=>S.ej[t]).filter(Boolean),tot=ts.reduce((a,e)=>a+minutos(e.tiempo),0),pas=(s.fecha||"")<hoy;
-    return `<button class="ses sesc${pas?" pasada":""}" data-ses="${esc(id)}"><div class="top"><h3>${esc(s.nombre||"Sesión")}</h3><span class="carga ${claseCarga(s.carga)}">${esc(s.carga||"")}</span></div>
-      <div class="meta"><span>📅 ${esc(fmtFecha(s.fecha))}</span><span>· ${ts.length} ejercicios</span><span class="tot">· ${tot}'</span></div>${s.idea?`<div class="note">«${esc(s.idea)}»</div>`:""}</button>`};
+  const tarjeta=([id,s])=>{const ts=(s.tareas||[]).map(t=>S.ej[t]).filter(Boolean),tot=ts.reduce((a,e)=>a+minutos(e.tiempo),0),pas=s.fecha&&s.fecha<hoy;
+    return tarjeta_({abrir:`data-ses="${esc(id)}"`,thumb:miniSes(s),titulo:s.nombre||"Sesión",meta:`${ts.length} ejercicios · ${tot}'${s.carga?" · "+esc(s.carga):""}`,clase:pas?"pasada":"",
+      badge:!s.fecha?"Plantilla":"",menuId:S.canWrite?"se:"+id:"",menu:`<button data-sedup="${esc(id)}">⧉ Duplicar</button>`})};
   const orden=[...OBJ_GEN.map(x=>x[0]),"otras"].filter(k=>grupos[k]);
   return tabs+`<div class="jlhd"><div class="grow"><div class="note">${todas.length} sesion${todas.length===1?"":"es"} · agrupadas por lo que trabajan</div></div>${S.canWrite?`<button class="btn pri" id="nuevaSes">+ Nueva</button>`:""}</div>
     ${todas.length?`<div class="jlfiltros"><input type="search" id="seQ" placeholder="🔍 Buscar sesión o ejercicio" value="${esc(S.seQ||"")}">
@@ -735,7 +758,7 @@ function vistaSesiones(){
         <span class="sep"></span>${["Alta","Media","Baja"].map(c=>`<button class="chip" data-secarga="${c}" aria-pressed="${fc===c}">Carga ${c.toLowerCase()}</button>`).join("")}</div></div>`:""}
     ${!todas.length?`<div class="empty"><b>Aún no hay sesiones</b>Crea una con «+ Nueva sesión» (dentro tienes ✨ Generar) o desde el 📅 Calendario.</div>`
       :l.length?`<div class="bar grpbar"><span class="note grow">${filtrando?`${l.length} con ese filtro`:"Por lo que trabajan"}</span>${botonesPleg("se")}</div>
-        ${orden.map(k=>{const n=(OBJ_GEN.find(x=>x[0]===k)||[0,"Otras"])[1];return grupo("se:"+k,ICO[k],n,DESC[k],grupos[k].length,"",`<div class="grid">${grupos[k].map(tarjeta).join("")}</div>`,{forzar:filtrando})}).join("")}`
+        ${orden.map(k=>{const n=(OBJ_GEN.find(x=>x[0]===k)||[0,"Otras"])[1];return grupo("se:"+k,ICO[k],n,DESC[k],grupos[k].length,"",`<div class="jlgrid">${grupos[k].map(tarjeta).join("")}</div>`,{forzar:filtrando})}).join("")}`
       :`<div class="empty"><b>Nada con ese filtro</b>Prueba con otra palabra o toca «Todas».</div>`}`;
 }
 app.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t)return;
@@ -809,8 +832,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.35";
+const VERSION="1.36";
 const NOVEDADES=[
+  ["1.36","31-oct-2026",["Pizarra, Ejercicios y Sesiones con el mismo aspecto: las mismas tarjetas, la misma cabecera, los mismos grupos que se abren y se cierran y los mismos filtros.","Pizarra por tipos (balón parado, salida de balón, presión, transiciones, ataque), igual que los ejercicios y las sesiones.","Arriba, destacado, el próximo partido (cambia solo cuando pasa el partido) con sus jugadas; y aparte, «En preparación», las que aún tienen un paso o no tienen nombre. Filtro por partido para ver las de cualquier otro.","Las sesiones se ven con su día y una tira de colores con sus ejercicios (el largo es el tiempo). En cada tarjeta, ⋯ para duplicar."]],
   ["1.35","31-oct-2026",["Logo nuevo: un escudo de los de siempre, con franjas verdes, tres estrellas y el balón clásico. Se ve bien en la pantalla del móvil, también en Android con iconos redondos."]],
   ["1.34","31-oct-2026",["20 ejercicios nuevos del FIFA Training Centre: sesiones de la selección sub-15 de México (posesión, salida de balón, presión tras pérdida, víspera de partido y balón parado) y de fútbol base de 12 a 15 años.","Cada uno con su dibujo, consignas, variantes y la fuente exacta. Donde la FIFA no da tiempos, se indica que son una propuesta para cadetes.","Se añaden solos a tu biblioteca, sin tocar tus ejercicios. ✨ Generar ya tiene más donde elegir."]],
   ["1.33","31-oct-2026",["Ejercicios por tipo (calentamiento, técnica, táctica…) en grupos que se abren y se cierran, cada uno con su criterio en una línea. Se recuerda cuáles dejas abiertos.","Filtro por lo que trabaja (presión, posesión, finalización…) y buscador; «Abrir todo» y «Cerrar todo».","Sesiones agrupadas por lo que trabajan, con filtros de próximas o pasadas y de carga, y buscador (también busca en sus ejercicios)."]],
@@ -1416,6 +1440,7 @@ app.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t||S.v
   if(t.id==="seCal"){S.seModo="cal";render();return}
   if(t.id==="seLista"){S.seModo="lista";render();return}
   if(t.dataset.seper!=null){S.sePer=t.dataset.seper;render();return}
+  if(t.dataset.sedup){const o=S.se[t.dataset.sedup];if(o){const id="ses-"+Date.now().toString(36);S.db.doc("sesiones/"+id).set({...structuredClone(o),nombre:(o.nombre||"Sesión")+" (copia)",actualizado:ahora()});S.tMenu=null;toast("Sesión duplicada")}return}
   if(t.dataset.secarga){S.seCarga=S.seCarga===t.dataset.secarga?"":t.dataset.secarga;render();return}
   if(t.dataset.plegtodo){const v=t.dataset.v==="1";document.querySelectorAll(`details[data-pleg^="${t.dataset.plegtodo}:"]`).forEach(d=>{d.open=v;PLEG[d.dataset.pleg]=v});try{localStorage.setItem(PLEG_KEY,JSON.stringify(PLEG))}catch(e){}return}
   if(t.dataset.dia){const d=+t.dataset.dia;S.dias=S.dias.includes(d)?S.dias.filter(x=>x!==d):[...S.dias,d].sort();try{localStorage.setItem("pizarra.dias",JSON.stringify(S.dias))}catch(e){}render();return}
@@ -1977,23 +2002,31 @@ function mini(clave,j){const k=clave+"|"+(j.actualizado||"")+"|"+j.campo+"|"+j.p
   if(!v){v=svgJugada(j,j.pasos.length-1,{uid:"m"+clave.replace(/\W/g,"").slice(-16)});MINI.set(k,v);if(MINI.size>200)MINI.delete(MINI.keys().next().value)}return v}
 const CAMPO_CORTO={completo:"F11",medio:"½ campo",area:"Área",f7:"F7"};
 function proxPartido(){const hoy=hoyISO();return partidosOrden().find(([id,p])=>p.fecha&&p.fecha>=hoy)}
+const TIPOS_JUG=[["parado","🚩","Balón parado","Córners, faltas, saques y penaltis.",/corner|falta|saque|penalti|barrera|balon parado/],
+  ["salida","🧱","Salida de balón","Sacar el balón jugado desde el portero y la defensa.",/salida|salir jugando|desde atras|saque de puerta|inicio/],
+  ["presion","⚡","Presión y defensa","Robar arriba, presión tras pérdida y defender juntos.",/presi|robo|roba|repliegue|defens|marcaje|vigilan/],
+  ["transicion","↔️","Transiciones y contras","Los segundos después de robar o de perder.",/contra|transici|tras robo|al robar/],
+  ["ataque","⚽","Ataque y finalización","Llegar al área y acabar: centros, desmarques y remates.",/centr|remat|desmarc|finaliz|tiro|banda|espalda|gol|ataque/]];
+function tipoJug(j){const t=nrm([j.nombre,...(j.pasos||[]).map(p=>p.texto||"")].join(" "));const x=TIPOS_JUG.find(([,,,,re])=>re.test(t));return x?x[0]:"otras"}
+// «En preparación»: la jugada aún tiene un paso o el nombre que pone la app
+const enPrep=j=>(j.pasos||[]).length<2||!j.nombre||/^Jugada del /.test(j.nombre);
 function tarjetaJug(id,j,{tipo="mia"}={}){const P=j.partido&&S.eq.partidos[j.partido];
   const abrir=tipo==="mia"?`data-jg="${esc(id)}"`:tipo==="club"?`data-jgclub="${esc(id)}"`:`data-jgplant="${esc(id)}"`;
-  return `<div class="jcard${tipo!=="mia"?" mini":""}"><button class="jopen" ${abrir} aria-label="Abrir ${esc(j.nombre||"jugada")}">
-    <span class="th">${mini(tipo+id,j)}</span>
-    <span class="bd"><b>${esc(j.nombre||"Jugada")}</b><small>${j.pasos.length} paso${j.pasos.length===1?"":"s"} · ${esc(CAMPO_CORTO[j.campo]||"")}${tipo==="club"&&j.nota?" · "+esc(j.nota):""}</small></span></button>
-    ${P?`<span class="jbadge">J${esc(P.jornada)}</span>`:""}
-    ${tipo==="mia"&&S.canWrite?`<button class="jmas" data-jgmenu="${esc(id)}" aria-label="Más opciones">⋯</button>
-      ${S.jgMenu===id?`<div class="jmenu">${S.jgDelConf===id?`<span>¿Borrar?</span><button class="dan" data-jgdelsi="${esc(id)}">Sí, borrar</button><button data-jgmenu="${esc(id)}">No</button>`
-        :`<button data-jgdup="${esc(id)}">⧉ Duplicar</button><button class="dan" data-jgdel="${esc(id)}">🗑 Borrar</button>`}</div>`:""}`:""}</div>`}
+  return tarjeta_({abrir,thumb:mini(tipo+id,j),titulo:j.nombre||"Jugada",meta:`${j.pasos.length} paso${j.pasos.length===1?"":"s"} · ${esc(CAMPO_CORTO[j.campo]||"")}${tipo==="club"&&j.nota?" · "+esc(j.nota):""}`,
+    badge:P?"J"+esc(P.jornada):"",clase:tipo!=="mia"?"mini":"",menuId:tipo==="mia"&&S.canWrite?"jg:"+id:"",
+    menu:S.jgDelConf===id?`<span>¿Borrar?</span><button class="dan" data-jgdelsi="${esc(id)}">Sí, borrar</button><button data-tmenu="jg:${esc(id)}">No</button>`:`<button data-jgdup="${esc(id)}">⧉ Duplicar</button><button class="dan" data-jgdel="${esc(id)}">🗑 Borrar</button>`})}
 function vistaJugadas(){
   const todas=Object.entries(S.jug).sort((a,b)=>(b[1].actualizado||"").localeCompare(a[1].actualizado||""));
   const P=jugPlantillas(),club=Object.entries(S.eq.jugadasClub||{}),px=proxPartido();
   const q=nrm(S.jgQ||""),f=S.jgFiltro||"todas";
-  const cuenta={todas:todas.length,partido:todas.filter(([,j])=>j.partido).length};for(const c of Object.keys(CAMPO_CORTO))cuenta[c]=todas.filter(([,j])=>j.campo===c).length;
-  const l=todas.filter(([,j])=>(!q||nrm(j.nombre||"").includes(q)||nrm((j.pasos||[]).map(p=>p.texto||"").join(" ")).includes(q))&&(f==="todas"||(f==="partido"?!!j.partido:j.campo===f)));
-  const delProx=px?l.filter(([,j])=>j.partido===px[0]):[],resto=l.filter(x=>!delProx.includes(x));
-  const chips=[["todas","Todas"],["partido","Con partido"],...Object.entries(CAMPO_CORTO)].filter(([k])=>k==="todas"||cuenta[k]);
+  const partidosCon=[...new Set(todas.map(([,j])=>j.partido).filter(id=>id&&S.eq.partidos[id]))].sort((a,b)=>(S.eq.partidos[a].fecha||"").localeCompare(S.eq.partidos[b].fecha||""));
+  const l=todas.filter(([,j])=>(!q||nrm(j.nombre||"").includes(q)||nrm((j.pasos||[]).map(p=>p.texto||"").join(" ")).includes(q))&&(f==="todas"||(f.startsWith("p:")?j.partido===f.slice(2):j.campo===f)));
+  const filtrando=!!(q||f!=="todas");
+  const delProx=px?l.filter(([,j])=>j.partido===px[0]):[],prep=l.filter(([,j])=>!delProx.some(x=>x[1]===j)&&enPrep(j)),resto=l.filter(([,j])=>!delProx.some(x=>x[1]===j)&&!enPrep(j));
+  const porTipo={};for(const x of resto)(porTipo[tipoJug(x[1])]=porTipo[tipoJug(x[1])]||[]).push(x);
+  const camposCon=Object.keys(CAMPO_CORTO).filter(c=>todas.some(([,j])=>j.campo===c));
+  const chips=[["todas","Todas"],...partidosCon.map(id=>["p:"+id,`J${S.eq.partidos[id].jornada} ${S.eq.partidos[id].rival}`]),...(camposCon.length>1?camposCon.map(c=>[c,CAMPO_CORTO[c]]):[])];
+  const T=([id,j])=>tarjetaJug(id,j),G=lista=>`<div class="jlgrid">${lista.map(T).join("")}</div>`;
   return `<div class="jlhd"><div class="grow"><h2 class="h2" style="margin:0">Pizarra</h2><div class="note">${todas.length?`${todas.length} jugada${todas.length===1?"":"s"}`:"Jugadas por pasos para la charla"}</div></div>
     ${S.canWrite?`<button class="btn" id="jgDescribir">✨ Describir</button><button class="btn pri" id="jgNueva">+ Nueva</button>`:""}</div>
     ${S.jgDesc?`<div class="picker desc"><b>Describe la jugada</b><div class="note" style="margin:4px 0 8px">Una frase por paso, con dorsales: <i>«el 4 la da al 8»</i>, <i>«el 7 se desmarca a la espalda»</i>, <i>«el 9 remata al primer palo»</i>. Entiende pasar, conducir, desmarcarse, centrar y rematar; y banda, espalda, dentro, frontal, primer y segundo palo, punto de penalti. Córner, falta, saque de banda y de puerta. Cuantos más dorsales y menos adornos, mejor la entiende.</div>
@@ -2001,14 +2034,18 @@ function vistaJugadas(){
       <textarea id="jgdTexto" rows="6" placeholder="El 4 la da al 8.&#10;El 8 conduce hacia dentro.&#10;El 8 abre a banda derecha al 7...">${esc(S.jgdTexto||"")}</textarea>
       <div class="bar" style="margin-top:8px"><label class="chk"><input type="checkbox" id="jgdRiv" ${S.jgdRiv===false?"":"checked"}> Poner rivales que reaccionan</label></div>
       <div class="bar" style="margin-top:6px"><button class="btn pri" id="jgdGenerar">Generar jugada</button><button class="btn sm" id="jgdCerrar">Cancelar</button></div></div>`:""}
-    ${todas.length>3?`<div class="jlfiltros"><input type="search" id="jgQ" placeholder="🔍 Buscar por nombre o por lo que pasa" value="${esc(S.jgQ||"")}">
-      ${chips.length>2?`<div class="chips jlchips">${chips.map(([k,n])=>`<button class="chip" data-jgf="${k}" aria-pressed="${f===k}">${n}${k!=="todas"?` <small>${cuenta[k]}</small>`:""}</button>`).join("")}</div>`:""}</div>`:""}
-    ${delProx.length?`<h3 class="h3 jlsec">⚽ Para el próximo partido · J${esc(px[1].jornada)} ${esc(px[1].rival)}</h3><div class="jlgrid">${delProx.map(([id,j])=>tarjetaJug(id,j)).join("")}</div>`:""}
-    ${todas.length?(resto.length?`${delProx.length?`<h3 class="h3 jlsec">Otras jugadas</h3>`:""}<div class="jlgrid">${resto.map(([id,j])=>tarjetaJug(id,j)).join("")}</div>`
-        :(!delProx.length?`<div class="empty"><b>Nada con ese filtro</b>Prueba con otra palabra o toca «Todas».</div>`:""))
+    ${todas.length?`<div class="jlfiltros"><input type="search" id="jgQ" placeholder="🔍 Buscar por nombre o por lo que pasa" value="${esc(S.jgQ||"")}">
+      ${chips.length>1?`<div class="chips jlchips">${chips.map(([k,n])=>`<button class="chip" data-jgf="${esc(k)}" aria-pressed="${f===k}">${esc(n)}</button>`).join("")}</div>`:""}</div>`:""}
+    ${px&&!filtrando?`<div class="jlprox"><div class="jlproxhd"><span class="grpic">⭐</span><span class="grow"><b>Próximo partido · J${esc(px[1].jornada)} ${px[1].casa?"vs":"en"} ${esc(px[1].rival)}</b><br><span class="note">${esc(fmtFecha(px[1].fecha))} · ${delProx.length?`${delProx.length} jugada${delProx.length===1?"":"s"} preparada${delProx.length===1?"":"s"}`:"todavía sin jugadas: dale 📅 a una para este partido"}</span></span></div>${delProx.length?G(delProx):""}</div>`
+      :delProx.length?grupo("jg:prox","⭐",`Próximo partido · J${px[1].jornada}`,"",delProx.length,"",G(delProx),{forzar:true}):""}
+    ${todas.length?(l.length?`
+      ${prep.length?grupo("jg:prep","🛠","En preparación","Con un solo paso o sin nombre todavía. Cuando tengan dos pasos y nombre, pasan a su tipo.",prep.length,"",G(prep),{forzar:filtrando}):""}
+      ${resto.length?`<div class="bar grpbar"><span class="note grow">${filtrando?`${l.length} con ese filtro`:"Por tipo de jugada"}</span>${botonesPleg("jg")}</div>`:""}
+      ${[...TIPOS_JUG,["otras","📋","Otras","Jugadas que no encajan en un tipo."]].filter(([k])=>porTipo[k]).map(([k,ic,n,d])=>grupo("jg:"+k,ic,n,d,porTipo[k].length,"",G(porTipo[k]),{forzar:filtrando})).join("")}`
+        :`<div class="empty"><b>Nada con ese filtro</b>Prueba con otra palabra o toca «Todas».</div>`)
       :`<div class="jlvacio"><b>Tu primera jugada</b><span>Tres formas de empezar:</span><ol><li><b>+ Nueva</b>: colocas las fichas y vas paso a paso.</li><li><b>✨ Describir</b>: la escribes y la app la dibuja.</li><li>Una de <b>Para empezar</b>, aquí abajo, y la cambias.</li></ol></div>`}
-    ${club.length?`<h3 class="h3 jlsec">Del club</h3><div class="jcarr">${club.map(([id,j])=>tarjetaJug(id,j,{tipo:"club"})).join("")}</div>`:""}
-    <h3 class="h3 jlsec">Para empezar</h3><div class="jcarr">${Object.entries(P).map(([id,j])=>tarjetaJug(id,j,{tipo:"plant"})).join("")}</div>`;
+    ${club.length?grupo("jg:club","🏟️","Del club","Jugadas que comparte el club.",club.length,"",`<div class="jcarr">${club.map(([id,j])=>tarjetaJug(id,j,{tipo:"club"})).join("")}</div>`):""}
+    ${grupo("jg:plant","📚","Para empezar","Plantillas para copiar y cambiar a tu gusto.",Object.keys(P).length,"",`<div class="jcarr">${Object.entries(P).map(([id,j])=>tarjetaJug(id,j,{tipo:"plant"})).join("")}</div>`,{porDefecto:!todas.length||todas.length<4})}`;
 }
 const IC={campo:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="1.5"/><path d="M12 5v14"/><circle cx="12" cy="12" r="2.6"/><path d="M2.5 9.5h2.5v5H2.5M21.5 9.5H19v5h2.5"/></svg>',
   colocar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><circle cx="17" cy="9.5" r="2.4"/><path d="M2.5 20c.6-3.6 2.8-5.6 5.5-5.6s4.9 2 5.5 5.6M14.2 15.2c.8-.6 1.8-.9 2.8-.9 2.3 0 4 1.6 4.5 4.7"/></svg>',
@@ -2275,7 +2312,7 @@ async function grabarGif(){
 app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!t)return;
   if(t.dataset.jgp){abrirJugada(t.dataset.jgp);return}
   if(!JV.includes(S.view))return;
-  if(S.jgMenu&&!(t.dataset.jgmenu||t.dataset.jgdup||t.dataset.jgdel||t.dataset.jgdelsi)){S.jgMenu=null;S.jgDelConf=null;if(!t.dataset.jg){render();return}}
+
   if(t.id==="jgNueva"){abrirJugada(null);return}
   if(t.id==="jgDescribir"){S.jgDesc=!S.jgDesc;render();if(S.jgDesc)$("#jgdTexto")?.focus();return}
   if(t.id==="jgdCerrar"){S.jgDesc=false;render();return}
@@ -2287,10 +2324,10 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
     toast(r.avisos.length?`Jugada lista. ${r.avisos.length===1?"Una frase":r.avisos.length+" frases"} sin entender: míralo arriba`:"Jugada lista: dale a Reproducir");return}
   if(t.dataset.jg){abrirJugada(t.dataset.jg);return}
   if(t.dataset.jgf){S.jgFiltro=t.dataset.jgf;render();return}
-  if(t.dataset.jgmenu){const id=t.dataset.jgmenu;S.jgMenu=S.jgMenu===id&&!S.jgDelConf?null:id;S.jgDelConf=null;render();return}
-  if(t.dataset.jgdup){const o=S.jug[t.dataset.jgdup];if(o){const id="jg-"+Date.now().toString(36);S.jug[id]={...structuredClone(o),nombre:(o.nombre||"Jugada")+" (copia)",actualizado:ahora()};jugGuardar();S.jgMenu=null;render();toast("Jugada duplicada")}return}
+
+  if(t.dataset.jgdup){const o=S.jug[t.dataset.jgdup];if(o){const id="jg-"+Date.now().toString(36);S.jug[id]={...structuredClone(o),nombre:(o.nombre||"Jugada")+" (copia)",actualizado:ahora()};jugGuardar();S.tMenu=null;render();toast("Jugada duplicada")}return}
   if(t.dataset.jgdel){S.jgDelConf=t.dataset.jgdel;render();return}
-  if(t.dataset.jgdelsi){delete S.jug[t.dataset.jgdelsi];jugGuardar();S.jgMenu=null;S.jgDelConf=null;render();toast("Jugada borrada");return}
+  if(t.dataset.jgdelsi){delete S.jug[t.dataset.jgdelsi];jugGuardar();S.tMenu=null;S.jgDelConf=null;render();toast("Jugada borrada");return}
   if(t.dataset.jgclub){const o=S.eq.jugadasClub[t.dataset.jgclub];if(o){abrirJugada(null,o);toast("Jugada del club: puedes cambiarla y guardarla como tuya")}return}
   if(t.dataset.jgplant){abrirJugada(null,t.dataset.jgplant);toast("Plantilla abierta: cámbiala y guárdala como tuya");return}
   if(S.view!=="jugEdit")return;
@@ -2370,7 +2407,7 @@ const MANUAL=[
   ["Modo claro y oscuro",`Toca el <b>☀️/🌙</b> de arriba, al lado del <b>?</b>, para cambiar entre claro y oscuro. Se queda guardado en el móvil.`],
   ["Las pestañas",`<ul><li><b>Pizarra:</b> jugadas animadas para la charla.</li><li><b>Ejercicios:</b> tu biblioteca de ejercicios dibujados.</li><li><b>Entrenos:</b> el 📅 calendario de entrenos y las 📚 sesiones.</li><li><b>Partidos:</b> convocatoria, alineación, resultado, informe del rival, clasificación y estadísticas.</li><li><b>Mi club:</b> tu club, tu equipo, copias e instalar.</li><li><b>Botón ? (arriba a la derecha):</b> este manual y las novedades, desde cualquier pestaña.</li></ul>`]]},
  {ic:"🎬",t:"Pizarra: jugadas animadas",r:"Jugadas paso a paso con carreras, conducciones y pases, para enseñarlas y compartirlas.",a:[
-  ["La lista de jugadas",`Arriba salen las jugadas del <b>próximo partido</b> (las que tienen el 📅 de ese partido) y luego las demás, de la más reciente a la más antigua. Con más de tres, aparece un <b>buscador</b> (busca en el nombre y en lo que pasa en cada paso) y <b>filtros</b>: con partido, F11, medio campo, área, F7. El <b>⋯</b> de cada tarjeta duplica la jugada (para hacer una variante) o la borra sin abrirla.`],
+  ["La lista de jugadas",`Igual que Ejercicios y Sesiones: tarjetas, grupos que se abren y se cierran, buscador y filtros.<ul><li><b>⭐ Próximo partido</b>, destacado arriba: el siguiente partido del calendario y las jugadas que tienen su 📅. Cambia solo cuando ese partido pasa.</li><li><b>🛠 En preparación</b>: las que aún tienen un solo paso o el nombre que pone la app. Cuando tengan dos pasos y nombre, pasan a su tipo.</li><li><b>Por tipo</b>: balón parado, salida de balón, presión y defensa, transiciones y ataque, según el nombre y lo que pasa en los pasos.</li><li><b>Filtros</b>: por partido (para ver las de cualquier jornada) y por campo.</li></ul>El <b>⋯</b> de cada tarjeta duplica la jugada (para hacer una variante) o la borra sin abrirla.`],
   ["Crear una jugada",`<b>+ Nueva</b>, o abre una de <b>Para empezar</b> (córner, falta, salida de balón, presión) o <b>Del club</b> y cámbiala a tu gusto. Arriba, <b>toca el título</b> para ponerle nombre. El campo (entero, medio campo, área o F7) se cambia con el botón de la <b>esquina de arriba a la izquierda del campo</b> (lleva «F11», «½», «Área» o «F7»). Arriba a la derecha, a la altura de «← Pizarra»: <b>📅</b> para decir para qué partido es (sale «J6» en el icono), <b>💾</b> para guardar (el punto se pone verde cuando está guardada; también se guarda sola) y <b>🗑</b> para borrar la jugada, o descartarla si aún no estaba guardada (pregunta antes).`],
   ["Poner y mover fichas",`<ul><li>Elige <b>Nuestro</b>, <b>Portero</b>, <b>Rival</b>, <b>Portero rival</b> o <b>Balón</b> en la fila de encima del campo y toca el campo.</li><li>Con <b>Mover</b>, arrastra con un dedo. Si sueltas el balón encima de un jugador, se le pega.</li><li><b>Subir y bajar la pantalla:</b> con <b>Mover</b>, desliza empezando en el césped (no encima de una ficha). Con las demás fichas elegidas, el campo se queda quieto para que no se te escape nada.</li><li><b>Toca una ficha</b> sin arrastrarla: sale su menú justo encima, con su número, los jugadores de tu plantilla para elegir con un toque, <b>🗑</b> para quitarla y <b>✓</b> para cerrar.</li><li><b>Sin dorsales repetidos:</b> en cada equipo no puede haber dos fichas con el mismo número. Los jugadores que ya están en el campo salen apagados («en el campo») y una ficha nueva coge el primer número libre.</li></ul>`],
   ["Los pasos",`Una jugada es una serie de pasos. Debajo del campo está el reproductor (⏮ ◀ ▶ ▶) y la <b>línea de pasos</b>: toca un número para ir a ese paso (con muchos pasos, la línea se desliza con el dedo y se centra sola en el paso en el que estás), <b>+</b> copia el paso actual (luego arrastras las fichas a donde van) y <b>🗑</b> borra el paso en el que estás. <b>⛶</b> pone el campo a pantalla completa para la charla. La app dibuja sola lo que pasa entre un paso y otro:<ul><li><b>Línea amarilla:</b> carrera sin balón.</li><li><b>Línea azul ondulada:</b> conducción (se mueve con el balón).</li><li><b>Línea blanca discontinua:</b> pase.</li></ul>En el cuadro de abajo escribes qué pasa en ese paso: sale en la charla y al compartir.`],

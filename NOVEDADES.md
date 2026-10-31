@@ -2,6 +2,12 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.36 · 31-oct-2026
+- Pizarra, Ejercicios y Sesiones con el mismo aspecto: las mismas tarjetas, la misma cabecera, los mismos grupos que se abren y se cierran y los mismos filtros.
+- Pizarra por tipos (balón parado, salida de balón, presión, transiciones, ataque), igual que los ejercicios y las sesiones.
+- Arriba, destacado, el próximo partido (cambia solo cuando pasa el partido) con sus jugadas; y aparte, «En preparación», las que aún tienen un paso o no tienen nombre. Filtro por partido para ver las de cualquier otro.
+- Las sesiones se ven con su día y una tira de colores con sus ejercicios (el largo es el tiempo). En cada tarjeta, ⋯ para duplicar.
+
 ## 1.35 · 31-oct-2026
 - Logo nuevo: un escudo de los de siempre, con franjas verdes, tres estrellas y el balón clásico. Se ve bien en la pantalla del móvil, también en Android con iconos redondos.
 
