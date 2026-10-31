@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.9 · 31-oct-2026
+- Jugadas animadas (Ejercicios → Jugadas): mueve las fichas paso a paso y la app dibuja carreras, conducciones y pases.
+- Reproducir la jugada, modo charla a pantalla completa, imagen de cada paso y vídeo para el grupo.
+- Cuatro jugadas para empezar (córner, falta lateral, salida de balón y presión tras pérdida) y jugadas asignadas a cada partido.
+
 ## 1.8 · 25-oct-2026
 - Informe del rival en cada partido, con los datos de la federación de ese día, y su imagen.
 - Calendario de entrenamientos en Sesiones: tus días de entreno con el partido de cada semana.

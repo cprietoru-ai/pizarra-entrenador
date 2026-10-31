@@ -166,6 +166,13 @@ ul{margin:4px 0 4px 18px;padding:0}
 .fG{background:#2f8f50}.fE{background:#b98a00}.fP{background:var(--rojo)}
 .semcab{margin:12px 0 2px;font-family:var(--label);letter-spacing:.5px}.pcard.dia{grid-template-columns:52px minmax(0,1fr) auto}.pcard.pasado{opacity:.6}
 .pcard .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.lnk{background:none;border:0;padding:0;color:var(--club);font-weight:700;text-decoration:underline;text-align:left}
+#jgwrap{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+#jgwrap svg{width:100%;height:auto;display:block;border-radius:8px}
+.jgpasos{margin-top:8px;align-items:center}.board.charla .jgpasos{display:none}
+.jgtexto{min-height:2.6em;margin-top:8px;font-family:var(--label);font-weight:700;font-size:18px;line-height:1.25;text-align:center}
+.board.charla{position:fixed;inset:0;z-index:40;border-radius:0;display:flex;flex-direction:column;justify-content:center;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));background:#0b2e17}
+.board.charla #jgwrap{max-height:72vh;display:flex;justify-content:center}.board.charla #jgwrap svg{max-height:72vh;width:auto;max-width:100%}
+.board.charla .jgtexto{color:#fff;font-size:24px}.board.charla .tools,.board.charla>p{display:none}.board.charla .note{color:#cfe9d6}
 .golgrid{display:flex;flex-direction:column;gap:6px;margin-top:8px}
 .golrow{display:flex;align-items:center;gap:8px}.golrow .tot{min-width:22px;text-align:center}
 .tstats{width:100%;border-collapse:collapse;font-size:15px}.tstats th,.tstats td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:right}
@@ -249,7 +256,7 @@ function svgDiagrama(dg,{editable=false,preview=null,uid="d"}={}){
 
 // ---------- Render general ----------
 function render(){
-  $("#tab-ej").setAttribute("aria-selected",S.view==="ej"||S.view==="edit");
+  $("#tab-ej").setAttribute("aria-selected",S.view==="ej"||S.view==="edit"||JV.includes(S.view));
   $("#tab-se").setAttribute("aria-selected",S.view==="se"||S.view==="sesion"||S.view==="vista");
   const err=S.error?`<div class="err">${esc(S.error)}</div>`:"";
   if(S.view==="ej") app.innerHTML=err+vistaEjercicios();
@@ -259,11 +266,14 @@ function render(){
   else if(S.view==="vista") app.innerHTML=err+vistaSesion();
   else if(PA_VISTAS.includes(S.view)) app.innerHTML=err+vistaPA();
   else if(S.view==="club") app.innerHTML=err+vistaClub();
+  else if(S.view==="jug") app.innerHTML=err+vistaJugadas();
+  else if(S.view==="jugEdit") app.innerHTML=err+vistaJugEdit();
   $("#tab-pa").setAttribute("aria-selected",PA_VISTAS.includes(S.view));
   $("#tab-club").setAttribute("aria-selected",S.view==="club");
   if(S.view==="edit") montarEditor();
+  if(S.view==="jugEdit") montarJug();
 }
-$("#tab-ej").onclick=()=>{S.view="ej";render()};
+$("#tab-ej").onclick=()=>{S.jgPlay=false;S.view=S.ejModo==="jug"?"jug":"ej";render()};
 $("#tab-se").onclick=()=>{S.view="se";render()};
 $("#tab-pa").onclick=()=>{S.view="pa";S.slot=null;S.img=null;S.delConfirm=null;render();if(typeof sincronizar==="function")sincronizar()};
 $("#tab-club").onclick=()=>{S.view="club";S.delConfirm=null;render()};
@@ -274,7 +284,7 @@ function vistaEjercicios(){
   const chips=["Todas",...CATS].map(c=>`<button class="chip" aria-pressed="${S.filtro===c}" data-f="${esc(c)}">${esc(c)}</button>`).join("");
   const cards=lista.map(([id,e])=>`<button class="card" data-open="${esc(id)}"><div class="dg">${e.diagrama?svgDiagrama(e.diagrama,{uid:"c"+id.replace(/\W/g,"")}):`<span class="nodg">${esc(e.categoria)}</span>`}</div>
     <div class="bd"><span class="tag">${esc(e.categoria)}</span><h3>${esc(e.nombre)}</h3><div class="meta"><span>${esc(e.tiempo)}</span>${e.jugadores?`<span>· ${esc(e.jugadores.split("·")[0])}</span>`:""}</div></div></button>`).join("");
-  return `<div class="bar"><input class="grow" type="search" id="q" placeholder="Buscar ejercicio u objetivo" value="${esc(S.q)}">
+  return `${tabsEj()}<div class="bar"><input class="grow" type="search" id="q" placeholder="Buscar ejercicio u objetivo" value="${esc(S.q)}">
     ${S.canWrite?`<button class="btn pri" id="nuevo">+ Nuevo ejercicio</button>`:""}</div>
     <div class="chips" style="margin-bottom:14px">${chips}</div>
     ${Object.keys(S.ej).length===0?`<div class="empty"><b>Todavía no hay ejercicios</b>Pulsa «Nuevo ejercicio» para crear el primero y dibujarlo en la pizarra.</div>`
@@ -476,8 +486,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.8";
+const VERSION="1.9";
 const NOVEDADES=[
+  ["1.9","31-oct-2026",["Jugadas animadas (Ejercicios → Jugadas): mueve las fichas paso a paso y la app dibuja carreras, conducciones y pases.","Reproducir la jugada, modo charla a pantalla completa, imagen de cada paso y vídeo para el grupo.","Cuatro jugadas para empezar (córner, falta lateral, salida de balón y presión tras pérdida) y jugadas asignadas a cada partido."]],
   ["1.8","25-oct-2026",["Informe del rival en cada partido, con los datos de la federación de ese día, y su imagen.","Calendario de entrenamientos en Sesiones: tus días de entreno con el partido de cada semana.","«Generar sesión»: una propuesta con tus ejercicios según el rival, los días que faltan al partido y tus indicaciones."]],
   ["1.7.2","25-oct-2026",["Las fotos de los campos salen todas del mismo tamaño en la ficha de cada equipo."]],
   ["1.7.1","25-oct-2026",["Escudo de cada equipo en la clasificación y botón «Clasificación» arriba en Partidos.","Al estrenar versión se bajan al momento los datos nuevos del equipo."]],
@@ -677,6 +688,7 @@ function vistaPartido(){
     <div class="bar">${S.delConfirm===S.paId?`<span class="confirm">¿Borrar el partido? <button class="btn dan sm" id="paBorrarSi">Sí, borrar</button><button class="btn sm" id="paBorrarNo">No</button></span>`:`<button class="btn dan sm" id="paBorrar">Borrar partido</button>`}</div>
   </div></details>
   ${codRival(p)?`<div class="bar" style="margin:-4px 0 12px"><button class="btn" id="paInforme">Informe del rival</button></div>`:""}
+  ${(()=>{const js=Object.entries(S.jug||{}).filter(([id,j])=>j.partido===S.paId);return js.length?`<section class="blk"><h3 class="h3">Jugadas para este partido</h3><div class="bar" style="margin-top:6px">${js.map(([id,j])=>`<button class="btn" data-jgp="${esc(id)}">▶ ${esc(j.nombre)}</button>`).join("")}</div></section>`:""})()}
   ${p.resultado?htmlResultado(p):""}
   <section class="blk"><div class="bar"><div class="grow"><h3 class="h3">Convocatoria <span class="note tot${conv.length>MAX_CONV?" over":""}">${conv.length}/${MAX_CONV}</span></h3>
     <div class="note">Toca a cada jugador para convocarlo o quitarlo.</div></div><button class="btn sm" id="convTodos">Todos</button><button class="btn sm" id="convNadie">Ninguno</button></div>
@@ -1224,6 +1236,249 @@ async function dibujar(p,tipo){
   return await new Promise(ok=>c.toBlob(ok,"image/png"));
 }
 // ==== /PARTIDOS ====
+// ---------- Jugadas animadas (1.9) ----------
+// Una jugada son fichas (nuestros, rivales, porteros) y un balón en varios pasos. Entre un paso y
+// el siguiente la app deduce el movimiento: carrera (se mueve sin balón), conducción (se mueve con
+// el balón) o pase (el balón cambia de jugador). Se guardan en este móvil (localStorage).
+const JV=["jug","jugEdit"];
+const JUG_KEY="pizarra.jugadas";
+S.jug=(()=>{try{return JSON.parse(localStorage.getItem(JUG_KEY))||{}}catch(e){return {}}})();
+function jugGuardar(){try{localStorage.setItem(JUG_KEY,JSON.stringify(S.jug));return true}catch(e){toast("No cabe en este móvil");return false}}
+const CAMPOS_JUG={completo:"Campo entero",medio:"Medio campo",area:"Área",f7:"Campo F7"};
+const FICHA_COL={A:["#fff","#0b4a20","#0b3a19"],B:["#e0322b","#fff","#fff"],PT:["#ffd84a","#0b4a20","#0b3a19"],PR:["#111","#e0322b","#fff"]};
+// Plantillas para empezar (metros: medio campo 64x50 con la portería abajo; campo entero 100x64 atacando a la derecha)
+function jugPlantillas(){
+  const A=(id,x,y,lab)=>({id,t:"A",lab}),B=(id,lab)=>({id,t:"B",lab:lab||""});
+  const P={
+  "plantilla-corner":{nombre:"Córner a favor: prolongación al segundo palo",campo:"medio",fichas:[A("s",0,0,"7"),A("a1",0,0,"5"),A("a2",0,0,"9"),A("a3",0,0,"4"),A("a4",0,0,"10"),{id:"pr",t:"PR",lab:""},B("r1"),B("r2"),B("r3"),B("r4")],
+    pasos:[{texto:"Sacamos de esquina. El 5, el 9 y el 4 esperan fuera del área pequeña; el 10 en la frontal para el rechace.",pos:{s:[63.4,49.4],a1:[38,36],a2:[32,35],a3:[27,37],a4:[32,30],pr:[32,49],r1:[36,40],r2:[31,40],r3:[27,41],r4:[40,44]},balon:{con:"s"}},
+      {texto:"Arrancan a la vez: el 5 ataca el primer palo, el 9 el punto de penalti y el 4 el segundo palo.",pos:{s:[63.4,49.4],a1:[37,46],a2:[32,40],a3:[26,45],a4:[32,32],pr:[32,49],r1:[36,44],r2:[31,42],r3:[28,44],r4:[40,45]},balon:{con:"s"}},
+      {texto:"Centro tenso al primer palo.",pos:{s:[63.4,49.4],a1:[37,46.5],a2:[32,41],a3:[25.5,45.5],a4:[32,32],pr:[32,49],r1:[36.5,45],r2:[31,42],r3:[28,44.5],r4:[40,45]},balon:{con:"a1"}},
+      {texto:"El 5 prolonga de cabeza y el 4 remata en el segundo palo.",pos:{s:[63.4,49.4],a1:[37,46.5],a2:[32,42],a3:[27,48],a4:[32,33],pr:[33,49],r1:[36.5,45],r2:[31,43],r3:[28,46],r4:[40,45]},balon:{con:"a3"}},
+      {texto:"¡Gol!",pos:{s:[63.4,49.4],a1:[37,46.5],a2:[32,42],a3:[27.5,48.5],a4:[32,33],pr:[33.5,49],r1:[36.5,45],r2:[31,43],r3:[28,46.5],r4:[40,45]},balon:{xy:[29,50.6]}}]},
+  "plantilla-salida":{nombre:"Salida de balón: el mediocentro baja entre centrales",campo:"completo",fichas:[{id:"po",t:"PT",lab:"1"},A("c1",0,0,"4"),A("c2",0,0,"5"),A("li",0,0,"3"),A("ld",0,0,"2"),A("mc",0,0,"6"),B("d1","9"),B("d2","10"),B("m1","8")],
+    pasos:[{texto:"Saca el portero. Sus dos delanteros esperan a los centrales.",pos:{po:[4,32],c1:[16,20],c2:[16,44],li:[28,8],ld:[28,56],mc:[24,32],d1:[24,24],d2:[24,40],m1:[34,32]},balon:{con:"po"}},
+      {texto:"El 6 baja entre los centrales, los centrales se abren y los laterales suben: ya son tres contra dos.",pos:{po:[4,32],c1:[13,12],c2:[13,52],li:[38,4],ld:[38,60],mc:[13,32],d1:[20,26],d2:[20,38],m1:[30,32]},balon:{con:"po"}},
+      {texto:"El portero la da al central abierto.",pos:{po:[4,32],c1:[13,12],c2:[13,52],li:[38,4],ld:[38,60],mc:[13,32],d1:[20,22],d2:[20,38],m1:[30,30]},balon:{con:"c1"}},
+      {texto:"El central conduce hacia dentro para atraer y suelta al lateral.",pos:{po:[4,32],c1:[24,14],c2:[13,52],li:[42,4],ld:[38,60],mc:[16,30],d1:[22,18],d2:[20,36],m1:[30,22]},balon:{con:"li"}},
+      {texto:"El lateral recibe de cara y conduce: hemos superado su presión.",pos:{po:[4,32],c1:[24,14],c2:[16,50],li:[56,6],ld:[44,58],mc:[24,28],d1:[24,18],d2:[22,34],m1:[38,18]},balon:{con:"li"}}]},
+  "plantilla-presion":{nombre:"Presión tras pérdida: robar en 5 segundos",campo:"completo",fichas:[A("p1",0,0,"8"),A("p2",0,0,"10"),A("p3",0,0,"6"),A("p4",0,0,"9"),B("r1","6"),B("r2","8"),B("r3","4")],
+    pasos:[{texto:"Perdemos el balón en su campo. El que la tiene está de espaldas.",pos:{p1:[62,30],p2:[66,40],p3:[54,34],p4:[72,24],r1:[64,32],r2:[70,44],r3:[78,28]},balon:{con:"r1"}},
+      {texto:"Los tres más cerca saltan a la vez: uno al poseedor y los otros cierran sus pases.",pos:{p1:[63,31.5],p2:[68,41],p3:[60,35],p4:[74,27],r1:[64,33],r2:[70,44],r3:[78,28]},balon:{con:"r1"}},
+      {texto:"Robamos.",pos:{p1:[64,32.5],p2:[68,41],p3:[61,35],p4:[74,27],r1:[64.5,34.5],r2:[70,43],r3:[77,29]},balon:{con:"p1"}},
+      {texto:"El 8 conduce y la mete al 9, que ya estaba atacando el espacio.",pos:{p1:[72,32],p2:[76,42],p3:[64,36],p4:[86,30],r1:[66,35],r2:[74,42],r3:[80,32]},balon:{con:"p4"}}]},
+  "plantilla-falta":{nombre:"Falta lateral: bloqueo y remate al primer palo",campo:"medio",fichas:[A("s",0,0,"10"),A("a1",0,0,"4"),A("a2",0,0,"5"),A("a3",0,0,"9"),{id:"pr",t:"PR",lab:""},B("r1"),B("r2"),B("r3"),B("r4")],
+    pasos:[{texto:"Falta en la banda derecha. Tres arriba, en línea, a la altura del penalti.",pos:{s:[58,36],a1:[30,36],a2:[34,36],a3:[38,36],pr:[32,49],r1:[30,39],r2:[34,39],r3:[38,39],r4:[42,40]},balon:{con:"s"}},
+      {texto:"El 4 bloquea a su marcador y el 9 sale al primer palo por detrás.",pos:{s:[58,36],a1:[33,39],a2:[30,43],a3:[38,46],pr:[32,49],r1:[31,40],r2:[33,41],r3:[37,42],r4:[42,42]},balon:{con:"s"}},
+      {texto:"Centro al primer palo y remata el 9.",pos:{s:[58,36],a1:[33,39],a2:[29,45],a3:[37,47],pr:[33,49],r1:[31,40],r2:[33,42],r3:[37,44],r4:[42,43]},balon:{con:"a3"}},
+      {texto:"¡Gol!",pos:{s:[58,36],a1:[33,39],a2:[29,45],a3:[37,47.5],pr:[34,49],r1:[31,40],r2:[33,42],r3:[37,44.5],r4:[42,43]},balon:{xy:[35,50.6]}}]}};
+  aArea(P["plantilla-corner"]);aArea(P["plantilla-falta"]);
+  return P;
+}
+// Las de balón parado se ven mejor en el área (64x30): se bajan 20 m las del medio campo
+function aArea(j){j.campo="area";for(const p of j.pasos){for(const id in p.pos)p.pos[id]=[p.pos[id][0],p.pos[id][1]-20];if(p.balon&&p.balon.xy)p.balon.xy=[p.balon.xy[0],p.balon.xy[1]-20]}return j}
+function jugDims(j){const c=CAMPOS[j.campo]||CAMPOS.completo;return [c.w,c.h]}
+function bPos(j,k){const p=j.pasos[k];if(!p||!p.balon)return null;if(p.balon.con&&p.pos[p.balon.con]){const q=p.pos[p.balon.con];return [q[0]+0.9,q[1]+0.9]}return p.balon.xy||null}
+// Movimientos entre el paso k-1 y el k
+function movimientos(j,k){
+  if(k<1)return [];const a=j.pasos[k-1],b=j.pasos[k],out=[];
+  for(const f of j.fichas){const p=a.pos[f.id],q=b.pos[f.id];if(!p||!q)continue;
+    if(Math.hypot(q[0]-p[0],q[1]-p[1])>0.8) out.push({t:(a.balon?.con===f.id&&b.balon?.con===f.id)?"conduccion":"carrera",id:f.id,p,q})}
+  const bp=bPos(j,k-1),bq=bPos(j,k);
+  if(bp&&bq&&!(a.balon?.con&&a.balon.con===b.balon?.con)&&Math.hypot(bq[0]-bp[0],bq[1]-bp[1])>0.8) out.push({t:"pase",p:bp,q:bq});
+  return out}
+function ondulada(p,q,amp){const L=Math.hypot(q[0]-p[0],q[1]-p[1]),n=Math.max(3,Math.round(L/2.2)),ux=(q[0]-p[0])/L,uy=(q[1]-p[1])/L;let d=`M${p[0]},${p[1]}`;
+  for(let i=1;i<=n;i++){const t=i/n,s=(i===n?0:(i%2?1:-1))*amp;d+=` L${p[0]+ux*L*t-uy*s},${p[1]+uy*L*t+ux*s}`}return d}
+// Dibujo: posiciones del paso k, o a mitad de camino hacia k+1 con anim (0..1)
+function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}){
+  const [w,h]=jugDims(j),pad=Math.max(2,w*.035),r=Math.max(1.3,w*.022),sw=Math.max(.12,w*.0035),fs=r*1.05;
+  const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,e=anim==null?0:ease(anim);
+  const k2=anim==null?k:Math.min(k+1,j.pasos.length-1);
+  const pos=id=>{const a=j.pasos[k].pos[id],b=j.pasos[k2].pos[id];if(!a)return b;if(!b||anim==null)return a;return [a[0]+(b[0]-a[0])*e,a[1]+(b[1]-a[1])*e]};
+  let fl="",gh="",pl="";
+  const col={carrera:"#ffd84a",conduccion:"#7fe0ff",pase:"#fff"};
+  const flecha=(m,op)=>m.t==="conduccion"?`<path d="${ondulada(m.p,m.q,r*.45)}" fill="none" stroke="${col.conduccion}" stroke-width="${sw*2.6}" marker-end="url(#${uid}conduccion)" opacity="${op}"/>`
+    :`<line x1="${m.p[0]}" y1="${m.p[1]}" x2="${m.q[0]}" y2="${m.q[1]}" stroke="${col[m.t]}" stroke-width="${sw*2.4}" ${m.t==="pase"?`stroke-dasharray="${r*.8} ${r*.55}"`:""} marker-end="url(#${uid}${m.t})" opacity="${op}"/>`;
+  if(anim==null&&ghost&&k>0) for(const m of movimientos(j,k)){fl+=flecha(m,.95);
+    if(m.id){const f=j.fichas.find(x=>x.id===m.id),[c1,c2]=FICHA_COL[f.t];gh+=`<circle cx="${m.p[0]}" cy="${m.p[1]}" r="${r}" fill="${c1}" stroke="${c2}" stroke-width="${sw*1.4}" opacity=".3"/>`}}
+  if(anim!=null) for(const m of movimientos(j,k2)) fl+=flecha(m,.35+.6*e);
+  // Rivales debajo y los nuestros encima, para que siempre se lean nuestros dorsales
+  for(const f of [...j.fichas].sort((a,b)=>("BPR".includes(b.t)?0:1)-("BPR".includes(a.t)?0:1)).reverse().sort((a,b)=>(a.t==="B"||a.t==="PR"?0:1)-(b.t==="B"||b.t==="PR"?0:1))){const q=pos(f.id);if(!q)continue;const [c1,c2,c3]=FICHA_COL[f.t];
+    pl+=`<g data-f="${f.id}"><circle cx="${q[0]}" cy="${q[1]}" r="${r}" fill="${c1}" stroke="${sel===f.id?"#ffd84a":c2}" stroke-width="${sel===f.id?sw*3.5:sw*1.6}"/>${f.lab?`<text x="${q[0]}" y="${q[1]+r*.38}" font-size="${fs*(String(f.lab).length>2?.62:1)}" fill="${c3}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif">${esc(f.lab)}</text>`:""}</g>`}
+  // Balón: en un pase viaja de un sitio a otro; si no, va con su jugador
+  let b=bPos(j,k);if(anim!=null){const b2=bPos(j,k2),a=j.pasos[k].balon,c=j.pasos[k2].balon;
+    if(a?.con&&a.con===c?.con){const q=pos(a.con);b=[q[0]+.9,q[1]+.9]} else if(b&&b2) b=[b[0]+(b2[0]-b[0])*e,b[1]+(b2[1]-b[1])*e]}
+  if(b) pl+=`<circle data-f="balon" cx="${b[0]}" cy="${b[1]}" r="${r*.5}" fill="#fff" stroke="#111" stroke-width="${sw*1.2}"/>`;
+  const marks=["pase","carrera","conduccion"].map(t=>`<marker id="${uid}${t}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${col[t]}"/></marker>`).join("");
+  let rayas="";for(let i=0;i<8;i++) rayas+=`<rect x="${i*w/8}" y="0" width="${w/16}" height="${h}" fill="#fff" fill-opacity=".045"/>`;
+  return `<svg viewBox="${-pad} ${-pad} ${w+2*pad} ${h+2*pad}" ${editable?'id="jgsvg"':""} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Jugada"><defs>${marks}</defs>
+    <rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="#1f7a3c"/>${rayas}
+    <g stroke="#fff" stroke-opacity=".75" stroke-width="${sw*1.4}" fill="none">${lineasCampo(j.campo,w,h)}</g>${fl}${gh}${pl}</svg>`}
+
+// ---------- Vistas ----------
+function vistaJugadas(){
+  const l=Object.entries(S.jug).sort((a,b)=>(b[1].actualizado||"").localeCompare(a[1].actualizado||""));
+  const P=jugPlantillas();
+  return `${tabsEj()}<div class="bar"><div class="grow note">Jugadas por pasos para enseñarlas en la charla: mueve las fichas y la app dibuja carreras, conducciones y pases.</div>
+    ${S.canWrite?`<button class="btn pri" id="jgNueva">+ Nueva jugada</button>`:""}</div>
+    ${l.length?`<div class="grid">${l.map(([id,j])=>`<button class="card" data-jg="${esc(id)}"><div class="dg">${svgJugada(j,j.pasos.length-1,{uid:"l"+id.replace(/\W/g,"")})}</div>
+      <div class="bd"><span class="tag">${j.pasos.length} pasos</span><h3>${esc(j.nombre||"Jugada")}</h3>${j.partido&&S.eq.partidos[j.partido]?`<div class="meta">Para J${esc(S.eq.partidos[j.partido].jornada)} · ${esc(S.eq.partidos[j.partido].rival)}</div>`:""}</div></button>`).join("")}</div>`
+      :`<div class="empty"><b>Todavía no hay jugadas</b>Crea una nueva o empieza desde una de estas:</div>`}
+    <h3 class="h3" style="margin-top:16px">Para empezar</h3><div class="plist" style="margin-top:8px">${Object.entries(P).map(([id,j])=>`<button class="pcard" data-jgplant="${id}"><span class="pj">▶</span><span class="pesc"></span><span class="pmid"><b>${esc(j.nombre)}</b><br><span class="note">${j.pasos.length} pasos · ${esc(CAMPOS_JUG[j.campo])}</span></span><span></span></button>`).join("")}</div>`;
+}
+function tabsEj(){return `<div class="chips" style="margin-bottom:12px"><button class="chip" id="ejModoEj" aria-pressed="${S.view==="ej"}">Ejercicios</button><button class="chip" id="ejModoJg" aria-pressed="${JV.includes(S.view)}">Jugadas</button></div>`}
+const JTOOLS=[["mover","✋ Mover"],["A",'<span class="sw" style="background:#fff"></span>Nuestro'],["PT",'<span class="sw" style="background:#ffd84a"></span>Portero'],["B",'<span class="sw" style="background:#e0322b;border-color:#fff;outline:1px solid #999"></span>Rival'],["PR",'<span class="sw" style="background:#111;border-color:#e0322b"></span>Portero rival'],["balon","● Balón"]];
+function vistaJugEdit(){
+  const j=S.jgDraft,k=S.jgPaso,n=j.pasos.length,f=j.fichas.find(x=>x.id===S.jgSel),ro=!S.canWrite||S.jgPlay;
+  const partidos=partidosOrden().filter(([id,p])=>p.rival);
+  return `<button class="back" id="jgVolver">← Jugadas</button>
+  <div class="ed">
+    <div class="board${S.jgCharla?" charla":""}" id="jgboard">
+      <div id="jgwrap">${svgJugada(j,k,{uid:"e",sel:S.jgSel,editable:true})}</div>
+      <div class="chips jgpasos"><span class="note">Pasos:</span>${j.pasos.map((p,i)=>`<button class="chip" data-jpaso="${i}" aria-pressed="${i===k}">${i+1}</button>`).join("")}${ro?"":`<button class="chip" id="jgMasPaso">+ Paso</button>`}</div>
+      <div class="jgtexto" id="jgtexto">${esc(j.pasos[k].texto||"")}</div>
+      <div class="bar" style="margin:8px 0 0;justify-content:center"><button class="btn sm" id="jgIni" aria-label="Al principio">⏮</button><button class="btn sm" id="jgAnt" aria-label="Paso anterior">◀</button>
+        <button class="btn sm pri" id="jgPlay">${S.jgPlay?"⏸ Pausa":"▶ Reproducir"}</button><button class="btn sm" id="jgSig" aria-label="Paso siguiente">▶</button>
+        <span class="note">Paso ${k+1} de ${n}</span><button class="btn sm" id="jgCharla">${S.jgCharla?"Salir":"⛶ Charla"}</button></div>
+      ${ro?"":`<div class="tools" role="toolbar" aria-label="Fichas">${JTOOLS.map(([t,l])=>`<button class="tool" data-jt="${t}" aria-pressed="${S.jgTool===t}">${l}</button>`).join("")}</div>
+      <p class="note" style="margin:6px 0 0">${{mover:"Arrastra una ficha para moverla en este paso. Toca una para cambiarle el número o quitarla. El balón se pega al jugador si lo sueltas encima.",balon:"Toca el campo o un jugador para poner el balón."}[S.jgTool]||"Toca el campo para añadir la ficha (sale en todos los pasos)."}</p>`}
+    </div>
+    <form class="form" onsubmit="return false">
+      <label>Nombre<input type="text" id="jg-nombre" value="${esc(j.nombre)}" placeholder="p. ej. Córner al primer palo" ${ro?"disabled":""}></label>
+      <div class="row"><label>Campo<select id="jg-campo" ${ro?"disabled":""}>${Object.entries(CAMPOS_JUG).map(([c,t])=>`<option value="${c}" ${j.campo===c?"selected":""}>${t}</option>`).join("")}</select></label>
+        <label>Para el partido<select id="jg-partido" ${ro?"disabled":""}><option value="">—</option>${partidos.map(([id,p])=>`<option value="${esc(id)}" ${j.partido===id?"selected":""}>J${esc(p.jornada)} · ${esc(p.rival)}</option>`).join("")}</select></label></div>
+      ${f&&!ro?`<div class="picker"><div class="row"><label>Número o nombre de la ficha<input type="text" id="jg-lab" value="${esc(f.lab||"")}" maxlength="10"></label>
+        <label>De la plantilla<select id="jg-labpl"><option value="">—</option>${Object.entries(S.eq.jugadores).sort(jugOrden).map(([id,x])=>`<option value="${esc(x.dorsal!=null?x.dorsal:nomJ(x))}">${x.dorsal!=null?esc(x.dorsal)+" · ":""}${esc(nomJ(x))}</option>`).join("")}</select></label></div>
+        <div class="bar" style="margin-top:6px"><button class="btn dan sm" id="jgQuitar">Quitar la ficha</button><button class="btn sm" id="jgDesel">Listo</button></div></div>`:""}
+      <label>Qué pasa en este paso (sale en la charla)<textarea id="jg-texto" ${ro?"disabled":""} placeholder="p. ej. El 6 fija al central y el 10 cae a banda">${esc(j.pasos[k].texto||"")}</textarea></label>
+      ${ro?"":`<div class="bar"><button class="btn pri" id="jgGuardar">Guardar jugada</button><button class="btn" id="jgVideo">Vídeo</button><button class="btn" id="jgImg">Imagen del paso</button>
+        ${n>1?`<button class="btn sm" id="jgBorrarPaso">Borrar este paso</button>`:""}
+        ${S.jgId&&S.jug[S.jgId]?(S.delConfirm==="jg"?`<span class="confirm">¿Borrar la jugada? <button class="btn dan sm" id="jgBorrarSi">Sí</button><button class="btn sm" id="jgBorrarNo">No</button></span>`:`<button class="btn dan sm" id="jgBorrar">Borrar jugada</button>`):""}</div>`}
+    </form>
+  </div>
+  ${S.img?`<div class="imgov" role="dialog" aria-label="Archivo"><div class="imgbox">${S.img.video?`<video src="${S.img.url}" controls playsinline autoplay muted loop style="width:100%;border-radius:8px"></video>`:`<img src="${S.img.url}" alt="">`}
+    <div class="bar" style="justify-content:center;margin-top:10px"><button class="btn pri" id="jgCompartir">Compartir</button><button class="btn" id="jgBajar">Descargar</button><button class="btn" id="jgCerrar">Cerrar</button></div></div></div>`:""}`;
+}
+function abrirJugada(id,plantilla){
+  const base=plantilla?structuredClone(jugPlantillas()[plantilla]):id?structuredClone(S.jug[id]):{nombre:"",campo:"medio",fichas:[],pasos:[{texto:"",pos:{},balon:null}]};
+  S.jgId=plantilla?null:id;S.jgDraft=base;S.jgPaso=0;S.jgSel=null;S.jgTool="mover";S.jgPlay=false;S.jgCharla=false;S.img=null;S.delConfirm=null;S.view="jugEdit";render();window.scrollTo(0,0)}
+function leerJg(){const j=S.jgDraft,v=id=>$("#"+id);if(!v("jg-nombre"))return;j.nombre=v("jg-nombre").value.trim();j.partido=v("jg-partido").value||null;j.pasos[S.jgPaso].texto=v("jg-texto").value.trim()}
+function redibujarJg(){const w=$("#jgwrap");if(w) w.innerHTML=svgJugada(S.jgDraft,S.jgPaso,{uid:"e",sel:S.jgSel,editable:true})}
+
+// ---------- Gestos en la pizarra de jugadas (un dedo, como la de ejercicios) ----------
+let jgDrag=null;
+function montarJug(){
+  const wrap=$("#jgwrap");if(!wrap||!S.canWrite)return;
+  const quieto=e=>{if(e.cancelable)e.preventDefault()};
+  wrap.addEventListener("touchstart",quieto,{passive:false});wrap.addEventListener("touchmove",quieto,{passive:false});
+  const pto=ev=>{const svg=$("#jgsvg"),p=svg.createSVGPoint();p.x=ev.clientX;p.y=ev.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse()),[w,h]=jugDims(S.jgDraft);
+    return [Math.min(w+1.5,Math.max(-1.5,Math.round(q.x*2)/2)),Math.min(h+1.5,Math.max(-1.5,Math.round(q.y*2)/2))]};
+  const cerca=(x,y)=>{const P=S.jgDraft.pasos[S.jgPaso],lim=Math.max(2.2,jugDims(S.jgDraft)[0]*.035);let best=null,bd=1e9;
+    const b=bPos(S.jgDraft,S.jgPaso);if(b){const d=Math.hypot(x-b[0],y-b[1]);if(d<bd&&d<=lim*.8){bd=d;best="balon"}}
+    for(const f of S.jgDraft.fichas){const q=P.pos[f.id];if(!q)continue;const d=Math.hypot(x-q[0],y-q[1]);if(d<bd&&d<=lim){bd=d;best=f.id}}return best};
+  wrap.onpointerdown=ev=>{if(S.jgPlay||!$("#jgsvg"))return;ev.preventDefault();try{wrap.setPointerCapture(ev.pointerId)}catch(e){}
+    const [x,y]=pto(ev),t=S.jgTool,j=S.jgDraft,P=j.pasos[S.jgPaso];jgDrag=null;
+    if(t==="mover"){const c=cerca(x,y);if(c){jgDrag={id:c,x0:x,y0:y,movido:false}}else{S.jgSel=null;redibujarJg()}}
+    else if(t==="balon"){const c=cerca(x,y);P.balon=c&&c!=="balon"?{con:c}:{xy:[x,y]};redibujarJg()}
+    else{const id="f"+Date.now().toString(36)+Math.random().toString(36).slice(2,4),nn=j.fichas.filter(f=>f.t===t).length+1;
+      j.fichas.push({id,t,lab:t==="A"?String(nn+1):t==="PT"?"1":""});for(const p of j.pasos) p.pos[id]=[x,y];redibujarJg()}};
+  wrap.onpointermove=ev=>{if(!jgDrag)return;ev.preventDefault();const [x,y]=pto(ev),P=S.jgDraft.pasos[S.jgPaso];
+    if(Math.hypot(x-jgDrag.x0,y-jgDrag.y0)>.6) jgDrag.movido=true;if(!jgDrag.movido)return;
+    if(jgDrag.id==="balon") P.balon={xy:[x,y]}; else P.pos[jgDrag.id]=[x,y];redibujarJg()};
+  wrap.onpointerup=ev=>{if(!jgDrag)return;const d=jgDrag;jgDrag=null;const P=S.jgDraft.pasos[S.jgPaso];
+    if(d.id==="balon"&&d.movido){const [x,y]=pto(ev);let c=null,bd=2.4;for(const f of S.jgDraft.fichas){const q=P.pos[f.id];if(!q)continue;const dd=Math.hypot(x-q[0],y-q[1]);if(dd<bd){bd=dd;c=f.id}}
+      P.balon=c?{con:c}:{xy:[x,y]}}
+    else if(!d.movido&&d.id!=="balon"){leerJg();S.jgSel=d.id;render();return}
+    redibujarJg()};
+  wrap.onpointercancel=()=>{jgDrag=null;redibujarJg()};
+}
+
+// ---------- Reproducción y vídeo ----------
+const JG_T=1300; // ms por paso
+function reproducir(){
+  const j=S.jgDraft;if(j.pasos.length<2)return toast("Añade al menos dos pasos");
+  if(S.jgPaso>=j.pasos.length-1) S.jgPaso=0;
+  S.jgPlay=true;render();let t0=null;
+  const tick=ts=>{if(!S.jgPlay)return;if(t0==null)t0=ts;const a=Math.min(1,(ts-t0)/JG_T),w=$("#jgwrap");
+    if(w) w.innerHTML=svgJugada(j,S.jgPaso,{uid:"e",anim:a});
+    if(a>=1){S.jgPaso++;const tx=$("#jgtexto");if(tx)tx.textContent=j.pasos[S.jgPaso].texto||"";t0=null;
+      if(S.jgPaso>=j.pasos.length-1){S.jgPlay=false;setTimeout(render,500);return}
+      return setTimeout(()=>requestAnimationFrame(tick),700)}
+    requestAnimationFrame(tick)};
+  setTimeout(()=>requestAnimationFrame(tick),500)}
+const svgImg=svg=>new Promise((ok,ko)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=ko;i.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)});
+async function fotograma(x,W,H,j,k,anim,texto){
+  x.fillStyle="#0b4a20";x.fillRect(0,0,W,H);
+  const im=await svgImg(svgJugada(j,k,{uid:"v",anim,ghost:anim==null}));const [w,h]=jugDims(j),ar=(w*1.07)/(h*1.07+0.001),bh=H-150,bw=Math.min(W-40,bh*ar),bh2=bw/ar;
+  x.drawImage(im,(W-bw)/2,20+(bh-bh2)/2,bw,bh2);
+  x.fillStyle="#fff";x.font='600 30px "Barlow Condensed","Arial Narrow",sans-serif';x.textAlign="center";
+  const pal=(texto||"").split(" ");let l="",ls=[];for(const p of pal){const tt=l?l+" "+p:p;if(x.measureText(tt).width>W-80){ls.push(l);l=p}else l=tt}ls.push(l);
+  ls.slice(0,3).forEach((t,i)=>x.fillText(t,W/2,H-110+i*36));
+  x.fillStyle="#f3e7a4";x.font='400 26px "Bebas Neue",Impact,sans-serif';x.textAlign="left";x.fillText((j.nombre||"JUGADA").toUpperCase(),24,H-14);
+  x.textAlign="right";x.fillText(nombreClub().toUpperCase(),W-24,H-14)}
+async function grabarVideo(){
+  const j=S.jgDraft;if(j.pasos.length<2){toast("Añade al menos dos pasos");return null}
+  if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast("Este navegador no puede grabar vídeo: usa «Imagen del paso»");return null}
+  try{await document.fonts.load('400 26px "Bebas Neue"')}catch(e){}
+  const W=1280,H=880,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d");
+  const tipo=["video/mp4;codecs=avc1","video/mp4","video/webm;codecs=vp9","video/webm"].find(t=>MediaRecorder.isTypeSupported(t))||"";
+  const st=c.captureStream(30),rec=new MediaRecorder(st,tipo?{mimeType:tipo,videoBitsPerSecond:4e6}:{}),trozos=[];
+  rec.ondataavailable=e=>{if(e.data.size)trozos.push(e.data)};const fin=new Promise(ok=>rec.onstop=ok);
+  await fotograma(x,W,H,j,0,null,j.pasos[0].texto);rec.start(200);
+  const espera=ms=>new Promise(ok=>setTimeout(ok,ms));
+  await espera(1200);
+  for(let k=0;k<j.pasos.length-1;k++){const t0=performance.now();
+    for(;;){const a=Math.min(1,(performance.now()-t0)/JG_T);await fotograma(x,W,H,j,k,a,j.pasos[k+1].texto);if(a>=1)break;await espera(30)}
+    await fotograma(x,W,H,j,k+1,null,j.pasos[k+1].texto);await espera(1300)}
+  rec.stop();await fin;const mime=(rec.mimeType||tipo||"video/webm").split(";")[0];
+  return {blob:new Blob(trozos,{type:mime}),ext:mime.includes("mp4")?"mp4":"webm"}}
+
+// ---------- Acciones ----------
+app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!t)return;
+  if(t.id==="ejModoJg"){S.ejModo="jug";S.view="jug";render();return}
+  if(t.id==="ejModoEj"){S.ejModo="ej";S.view="ej";render();return}
+  if(t.dataset.jgp){S.ejModo="jug";abrirJugada(t.dataset.jgp);return}
+  if(!JV.includes(S.view))return;
+  if(t.id==="jgNueva"){abrirJugada(null);return}
+  if(t.dataset.jg){abrirJugada(t.dataset.jg);return}
+  if(t.dataset.jgplant){abrirJugada(null,t.dataset.jgplant);toast("Plantilla abierta: cámbiala y guárdala como tuya");return}
+  if(S.view!=="jugEdit")return;
+  const j=S.jgDraft;
+  if(t.id==="jgVolver"){S.jgPlay=false;S.view="jug";S.img=null;render();return}
+  if(t.dataset.jt){leerJg();S.jgTool=t.dataset.jt;S.jgSel=null;render();return}
+  if(t.dataset.jpaso){leerJg();S.jgPaso=+t.dataset.jpaso;S.jgSel=null;render();return}
+  if(t.id==="jgMasPaso"){leerJg();const p=structuredClone(j.pasos[S.jgPaso]);p.texto="";j.pasos.splice(S.jgPaso+1,0,p);S.jgPaso++;S.jgSel=null;render();toast("Paso nuevo: arrastra las fichas a donde van");return}
+  if(t.id==="jgBorrarPaso"){j.pasos.splice(S.jgPaso,1);S.jgPaso=Math.max(0,S.jgPaso-1);render();return}
+  if(t.id==="jgIni"){S.jgPlay=false;leerJg();S.jgPaso=0;render();return}
+  if(t.id==="jgAnt"){S.jgPlay=false;leerJg();S.jgPaso=Math.max(0,S.jgPaso-1);render();return}
+  if(t.id==="jgSig"){S.jgPlay=false;leerJg();S.jgPaso=Math.min(j.pasos.length-1,S.jgPaso+1);render();return}
+  if(t.id==="jgPlay"){if(S.jgPlay){S.jgPlay=false;render()}else{leerJg();S.jgSel=null;reproducir()}return}
+  if(t.id==="jgCharla"){leerJg();S.jgCharla=!S.jgCharla;render();if(S.jgCharla)window.scrollTo(0,0);return}
+  if(t.id==="jgQuitar"){const id=S.jgSel;j.fichas=j.fichas.filter(f=>f.id!==id);for(const p of j.pasos){delete p.pos[id];if(p.balon?.con===id){const q=bPos(j,0);p.balon=null}}S.jgSel=null;render();return}
+  if(t.id==="jgDesel"){leerJg();S.jgSel=null;render();return}
+  if(t.id==="jgGuardar"){leerJg();if(!j.nombre){toast("Ponle nombre a la jugada");$("#jg-nombre")?.focus();return}
+    const id=S.jgId||("jg-"+Date.now().toString(36));S.jug[id]={...j,actualizado:ahora()};if(jugGuardar()){S.jgId=id;toast("Jugada guardada")}render();return}
+  if(t.id==="jgBorrar"){S.delConfirm="jg";render();return}
+  if(t.id==="jgBorrarNo"){S.delConfirm=null;render();return}
+  if(t.id==="jgBorrarSi"){delete S.jug[S.jgId];jugGuardar();S.delConfirm=null;S.view="jug";render();toast("Jugada borrada");return}
+  if(t.id==="jgImg"){leerJg();t.disabled=true;try{const W=1280,H=880,c=document.createElement("canvas");c.width=W;c.height=H;await document.fonts.load('400 26px "Bebas Neue"').catch(()=>{});
+      await fotograma(c.getContext("2d"),W,H,j,S.jgPaso,null,j.pasos[S.jgPaso].texto);const blob=await new Promise(ok=>c.toBlob(ok,"image/png"));
+      S.img={blob,url:URL.createObjectURL(blob),nombre:slugPA(j.nombre||"jugada")+"-paso-"+(S.jgPaso+1)+".png"};render()}catch(e){toast("No se pudo hacer la imagen");t.disabled=false}return}
+  if(t.id==="jgVideo"){leerJg();t.disabled=true;t.textContent="Grabando…";try{const v=await grabarVideo();if(v){S.img={blob:v.blob,url:URL.createObjectURL(v.blob),nombre:slugPA(j.nombre||"jugada")+"."+v.ext,video:true}}}
+    catch(e){toast("No se pudo grabar el vídeo")}render();return}
+  if(t.id==="jgCerrar"){URL.revokeObjectURL(S.img.url);S.img=null;render();return}
+  if(t.id==="jgBajar"){bajarBlob(S.img.blob,S.img.nombre);return}
+  if(t.id==="jgCompartir"){try{const f=new File([S.img.blob],S.img.nombre,{type:S.img.blob.type});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});return}}catch(e){if(e&&e.name==="AbortError")return}
+    bajarBlob(S.img.blob,S.img.nombre);toast("Descargado");return}
+});
+app.addEventListener("change",ev=>{const t=ev.target;if(S.view!=="jugEdit")return;const j=S.jgDraft;
+  if(t.id==="jg-campo"){leerJg();j.campo=t.value;const [w,h]=jugDims(j);for(const p of j.pasos){for(const id in p.pos){const q=p.pos[id];p.pos[id]=[Math.min(w,q[0]),Math.min(h,q[1])]}}render();return}
+  if(t.id==="jg-lab"){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){f.lab=t.value.trim();redibujarJg()}return}
+  if(t.id==="jg-labpl"&&t.value){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){f.lab=t.value;const i=$("#jg-lab");if(i)i.value=t.value;redibujarJg()}return}
+});
+app.addEventListener("input",ev=>{if(S.view==="jugEdit"&&ev.target.id==="jg-texto"){S.jgDraft.pasos[S.jgPaso].texto=ev.target.value;const tx=$("#jgtexto");if(tx)tx.textContent=ev.target.value}});
+
 // ---------- Arranque ----------
 (async()=>{
   aplicarClub();
