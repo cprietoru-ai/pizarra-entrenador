@@ -179,6 +179,8 @@ ul{margin:4px 0 4px 18px;padding:0}
 .jgprog i{position:absolute;left:0;top:0;bottom:0;width:var(--p);border-radius:3px;background:linear-gradient(90deg,var(--club),#2fbf63);transition:width .12s linear}
 .jgprog b{position:absolute;top:50%;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;background:var(--surface);border:2px solid var(--line)}
 .jgprog b.on{background:#2fbf63;border-color:#2fbf63}.board.charla .jgpasos{display:none}
+@media (prefers-reduced-motion:no-preference){.jgtexto.in{animation:entra .45s cubic-bezier(.2,.8,.2,1)}}
+@keyframes entra{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
 .jgtexto{min-height:2.6em;margin-top:8px;font-family:var(--label);font-weight:700;font-size:18px;line-height:1.25;text-align:center}
 .board.charla{position:fixed;inset:0;z-index:40;border-radius:0;display:flex;flex-direction:column;justify-content:center;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom));background:#0b2e17}
 .board.charla #jgwrap{max-height:72vh;display:flex;justify-content:center}.board.charla #jgwrap svg{max-height:72vh;width:auto;max-width:100%}
@@ -499,8 +501,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.11";
+const VERSION="1.12";
 const NOVEDADES=[
+  ["1.12","31-oct-2026",["Animación más dinámica: primero arrancan los desmarques y luego sale el pase; el balón vuela en los pases largos con su sombra; la cámara se acerca a la jugada; onda al recibir y «¡GOL!» al marcar."]],
   ["1.11","31-oct-2026",["«✨ Describir jugada»: escribe la jugada con frases sencillas (dorsal, acción y adónde) y la Pizarra la monta animada, con rivales que reaccionan."]],
   ["1.10","31-oct-2026",["La Pizarra pasa a ser la primera pestaña y la app abre en ella.","Jugadas «Del club»: las que prepara el club llegan solas a la Pizarra.","Un solo botón «Compartir» que manda la animación directamente.","Jugadas más rápidas y con un aspecto nuevo: césped con degradado, fichas con relieve, halo en el que lleva el balón, estela del pase y barra de progreso."]],
   ["1.9.1","31-oct-2026",["La pizarra de jugadas tiene su propia pestaña, «Pizarra».","«Animación para WhatsApp»: la jugada en GIF, que se envía y se ve bien en Android y en iPhone."]],
@@ -1311,7 +1314,9 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
   const [w,h]=jugDims(j),pad=Math.max(2,w*.035),r=Math.max(1.3,w*.022),sw=Math.max(.12,w*.0035),fs=r*1.05;
   const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,e=anim==null?0:ease(anim);
   const k2=anim==null?k:Math.min(k+1,j.pasos.length-1);
-  const pos=id=>{const a=j.pasos[k].pos[id],b=j.pasos[k2].pos[id];if(!a)return b;if(!b||anim==null)return a;return [a[0]+(b[0]-a[0])*e,a[1]+(b[1]-a[1])*e]};
+  const cl01=t=>Math.max(0,Math.min(1,t)),sale=t=>1-Math.pow(1-t,3),orden={};j.fichas.forEach((f,i)=>orden[f.id]=i);
+  const lt=id=>anim==null?0:sale(cl01((anim-Math.min(.18,(orden[id]||0)*.03))/.72));
+  const pos=id=>{const a=j.pasos[k].pos[id],b=j.pasos[k2].pos[id];if(!a)return b;if(!b||anim==null)return a;const t=lt(id);return [a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t]};
   let fl="",gh="",pl="",tr="";
   const col={carrera:"#ffd84a",conduccion:"#5fe3ff",pase:"#fff"};
   // Cada flecha con un halo suave debajo para que destaque sobre el césped
@@ -1326,17 +1331,25 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
     // estela: del punto de salida hasta donde va ahora
     if(m.id&&!esRival(m)){const q=pos(m.id);tr+=`<line x1="${m.p[0]}" y1="${m.p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${col[m.t]}" stroke-opacity=".55" stroke-width="${r*.9}" stroke-linecap="round"/>`}}
   // Rivales debajo y los nuestros encima, para que siempre se lean nuestros dorsales
-  const conB=(anim!=null&&e>.5?j.pasos[k2]:j.pasos[k]).balon?.con;
+  const conB=(anim!=null&&anim>.85?j.pasos[k2]:j.pasos[k]).balon?.con;
   for(const f of [...j.fichas].sort((a,b)=>"B PR".includes(b.t)-"B PR".includes(a.t))){const q=pos(f.id);if(!q)continue;const [c1,c2,c3]=FICHA_COL[f.t];
     if(f.id===conB) pl+=`<circle class="halo" cx="${q[0]}" cy="${q[1]}" r="${r*1.55}" fill="#ffd84a" fill-opacity=".18" stroke="#ffd84a" stroke-opacity=".8" stroke-width="${sw*1.4}"/>`;
     pl+=`<g data-f="${f.id}" filter="url(#${uid}sh)"><circle cx="${q[0]}" cy="${q[1]}" r="${r}" fill="url(#${uid}g${f.t})" stroke="${sel===f.id?"#ffd84a":c2}" stroke-width="${sel===f.id?sw*3.5:sw*1.6}"/>${f.lab?`<text x="${q[0]}" y="${q[1]+r*.38}" font-size="${fs*(String(f.lab).length>2?.62:1)}" fill="${c3}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif">${esc(f.lab)}</text>`:""}</g>`}
   // Balón: en un pase viaja de un sitio a otro; si no, va con su jugador
-  let b=bPos(j,k);if(anim!=null){const b2=bPos(j,k2),a=j.pasos[k].balon,c=j.pasos[k2].balon;
+  let b=bPos(j,k),escB=1,fx="";
+  if(anim!=null){const b2=bPos(j,k2),a=j.pasos[k].balon,c=j.pasos[k2].balon;
     if(a?.con&&a.con===c?.con){const q=pos(a.con);b=[q[0]+.9,q[1]+.9]}
-    else if(b&&b2){const b0=b;b=[b0[0]+(b2[0]-b0[0])*e,b0[1]+(b2[1]-b0[1])*e];
-      // estela del balón en el pase
-      for(let i=1;i<=4;i++){const ee=Math.max(0,e-i*.06);pl+=`<circle cx="${b0[0]+(b2[0]-b0[0])*ee}" cy="${b0[1]+(b2[1]-b0[1])*ee}" r="${r*.5*(1-i*.15)}" fill="#fff" opacity="${.35-i*.07}"/>`}}}
-  if(b) pl+=`<circle data-f="balon" cx="${b[0]}" cy="${b[1]}" r="${r*.52}" fill="url(#${uid}gbal)" stroke="#111" stroke-width="${sw*1.1}" filter="url(#${uid}sh)"/>`;
+    else if(b&&b2){const b0=b,gol=b2[0]>w||b2[1]>h||b2[0]<0||b2[1]<0,L=Math.hypot(b2[0]-b0[0],b2[1]-b0[1]),aereo=!gol&&L>16;
+      // el remate sale más tarde y más rápido; el pase, cuando ya han arrancado los desmarques
+      const tb=gol?(t=>t*t)(cl01((anim-.35)/.45)):(t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2)(cl01((anim-.22)/.7));
+      const alto=t=>(aereo?L*.16:L*.04)*Math.sin(Math.PI*t),en=t=>[b0[0]+(b2[0]-b0[0])*t,b0[1]+(b2[1]-b0[1])*t-alto(t)];
+      if(tb>0&&tb<1){const s0=[b0[0]+(b2[0]-b0[0])*tb,b0[1]+(b2[1]-b0[1])*tb];pl+=`<ellipse cx="${s0[0]}" cy="${s0[1]}" rx="${r*.55}" ry="${r*.3}" fill="#000" opacity="${.3-.15*Math.sin(Math.PI*tb)}"/>`;
+        for(let i=1;i<=5;i++){const q=en(Math.max(0,tb-i*.05));pl+=`<circle cx="${q[0]}" cy="${q[1]}" r="${r*.5*(1-i*.13)}" fill="#fff" opacity="${.4-i*.07}"/>`}}
+      b=en(tb);escB=1+(aereo?.7:.15)*Math.sin(Math.PI*tb);
+      // onda cuando llega al compañero, y «¡GOL!» cuando entra
+      if(c?.con&&tb>=1&&anim<1){const q=pos(c.con),u=cl01((anim-.9)/.1);fx+=`<circle cx="${q[0]}" cy="${q[1]}" r="${r*(1.2+u*1.8)}" fill="none" stroke="#fff" stroke-width="${sw*2}" opacity="${1-u}"/>`}
+      if(gol&&anim>=.78){const u=cl01((anim-.78)/.14);fx+=`<text x="${w/2}" y="${h/2+h*.1}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif" font-size="${h*(.18+.1*u)}" fill="#ffd84a" stroke="#0b3a19" stroke-width="${h*.012}" paint-order="stroke" opacity="${u}">¡GOL!</text>`}}}
+  if(b) pl+=`<circle data-f="balon" cx="${b[0]}" cy="${b[1]}" r="${r*.52*escB}" fill="url(#${uid}gbal)" stroke="#111" stroke-width="${sw*1.1}" filter="url(#${uid}sh)"/>`;
   const marks=["pase","carrera","conduccion"].map(t=>`<marker id="${uid}${t}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${col[t]}"/></marker>`).join("");
   let rayas="";for(let i=0;i<10;i++) rayas+=`<rect x="${i*w/10}" y="${-pad}" width="${w/20}" height="${h+2*pad}" fill="#fff" fill-opacity=".05"/>`;
   const grad=(id,a,b)=>`<radialGradient id="${uid}g${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient>`;
@@ -1344,10 +1357,13 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
     <radialGradient id="${uid}vin" cx="50%" cy="50%" r="70%"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
     <filter id="${uid}sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="${r*.22}" stdDeviation="${r*.22}" flood-color="#000" flood-opacity=".45"/></filter>
     ${grad("A","#ffffff","#dfe9e0")}${grad("PT","#ffe680","#e8b800")}${grad("B","#ff6a5e","#c11d16")}${grad("PR","#3a3a3a","#0a0a0a")}${grad("bal","#ffffff","#cfcfcf")}`;
-  return `<svg viewBox="${-pad} ${-pad} ${w+2*pad} ${h+2*pad}" ${editable?'id="jgsvg"':""} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Jugada"><defs>${defs}</defs>
+  let vb=[-pad,-pad,w+2*pad,h+2*pad];
+  if(anim!=null&&b){const s=Math.sin(Math.PI*anim),z=1+.16*s,VW=vb[2]/z,VH=vb[3]/z,fc=[w/2+(b[0]-w/2)*.7*s,h/2+(b[1]-h/2)*.7*s];
+    vb=[Math.max(-pad,Math.min(w+pad-VW,fc[0]-VW/2)),Math.max(-pad,Math.min(h+pad-VH,fc[1]-VH/2)),VW,VH]}
+  return `<svg viewBox="${vb.join(" ")}" ${editable?'id="jgsvg"':""} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Jugada"><defs>${defs}</defs>
     <rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="url(#${uid}cesped)"/>${rayas}
     <g stroke="#fff" stroke-opacity=".8" stroke-width="${sw*1.4}" fill="none">${lineasCampo(j.campo,w,h)}</g>
-    <rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="url(#${uid}vin)"/>${tr}${fl}${gh}${pl}</svg>`}
+    <rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="url(#${uid}vin)"/>${tr}${fl}${gh}${pl}${fx}</svg>`}
 
 // ---------- Describir una jugada con frases (1.11) ----------
 // Sin IA: entiende frases sencillas con dorsales, una por paso («el 3 la da al 8», «el 7 se
@@ -1527,7 +1543,7 @@ function montarJug(){
 }
 
 // ---------- Reproducción y vídeo ----------
-const JG_T=850; // ms por paso
+const JG_T=1000; // ms por paso (corren, luego sale el balón)
 function reproducir(){
   const j=S.jgDraft;if(j.pasos.length<2)return toast("Añade al menos dos pasos");
   if(S.jgPaso>=j.pasos.length-1) S.jgPaso=0;
@@ -1535,7 +1551,7 @@ function reproducir(){
   const tick=ts=>{if(!S.jgPlay)return;if(t0==null)t0=ts;const a=Math.min(1,(ts-t0)/JG_T),w=$("#jgwrap");
     if(w) w.innerHTML=svgJugada(j,S.jgPaso,{uid:"e",anim:a});
     const pr=$("#jgprog");if(pr) pr.style.setProperty("--p",((S.jgPaso+a)/(j.pasos.length-1)*100).toFixed(1)+"%");
-    if(a>=1){S.jgPaso++;const tx=$("#jgtexto");if(tx)tx.textContent=j.pasos[S.jgPaso].texto||"";t0=null;
+    if(a>=1){S.jgPaso++;const tx=$("#jgtexto");if(tx){tx.textContent=j.pasos[S.jgPaso].texto||"";tx.classList.remove("in");void tx.offsetWidth;tx.classList.add("in")}t0=null;
       if(S.jgPaso>=j.pasos.length-1){S.jgPlay=false;setTimeout(render,500);return}
       return setTimeout(()=>requestAnimationFrame(tick),420)}
     requestAnimationFrame(tick)};
@@ -1559,7 +1575,7 @@ async function grabarGif(){
   const W=720,H=496,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d",{willReadFrequently:true}),gif=GIFEncoder();
   const frame=async(k,anim,texto,delay)=>{await fotograma(x,W,H,j,k,anim,texto);const d=x.getImageData(0,0,W,H).data,pal=quantize(d,128,{format:"rgb444"});
     gif.writeFrame(applyPalette(d,pal,"rgb444"),W,H,{palette:pal,delay})};
-  const N=10;
+  const N=16;
   await frame(0,null,j.pasos[0].texto,1000);
   for(let k=0;k<j.pasos.length-1;k++){for(let i=1;i<N;i++) await frame(k,i/N,j.pasos[k+1].texto,Math.round(JG_T/N));
     await frame(k+1,null,j.pasos[k+1].texto,k===j.pasos.length-2?2200:950)}

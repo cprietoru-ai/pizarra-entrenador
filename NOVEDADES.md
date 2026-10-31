@@ -2,6 +2,9 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.12 · 31-oct-2026
+- Animación más dinámica: primero arrancan los desmarques y luego sale el pase; el balón vuela en los pases largos con su sombra; la cámara se acerca a la jugada; onda al recibir y «¡GOL!» al marcar.
+
 ## 1.11 · 31-oct-2026
 - «✨ Describir jugada»: escribe la jugada con frases sencillas (dorsal, acción y adónde) y la Pizarra la monta animada, con rivales que reaccionan.
 
