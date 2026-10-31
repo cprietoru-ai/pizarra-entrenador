@@ -2,6 +2,12 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.28 · 31-oct-2026
+- Botón «👥 Colocar» encima del campo, al lado del de campo: pone a los 11 de nuestro equipo o del rival con el sistema que elijas (4-4-2, 4-3-3, 4-2-3-1, 4-1-4-1, 3-5-2; en F7, 2-3-1, 3-2-1...).
+- Si la jugada es para un partido con el once hecho en Partidos, sale «⭐ Once de la J…» con los dorsales de verdad.
+- En medio campo y área, jugadas predefinidas: ataque 5 contra 4+1, presión tras pérdida, córner y falta lateral.
+- «💾 Guardar esta colocación» guarda cómo tienes las fichas para usarlo en otras jugadas del mismo campo.
+
 ## 1.27 · 31-oct-2026
 - Con muchos pasos, la línea de pasos se desliza y se centra en el paso en el que estás; el + y ↶ ↷ 🗑 siempre a la vista.
 - No se pueden repetir dorsales en el mismo equipo: los jugadores que ya están en el campo salen apagados, y las fichas nuevas cogen el primer número libre.
