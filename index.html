@@ -808,8 +808,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.33";
+const VERSION="1.34";
 const NOVEDADES=[
+  ["1.34","31-oct-2026",["20 ejercicios nuevos del FIFA Training Centre: sesiones de la selección sub-15 de México (posesión, salida de balón, presión tras pérdida, víspera de partido y balón parado) y de fútbol base de 12 a 15 años.","Cada uno con su dibujo, consignas, variantes y la fuente exacta. Donde la FIFA no da tiempos, se indica que son una propuesta para cadetes.","Se añaden solos a tu biblioteca, sin tocar tus ejercicios. ✨ Generar ya tiene más donde elegir."]],
   ["1.33","31-oct-2026",["Ejercicios por tipo (calentamiento, técnica, táctica…) en grupos que se abren y se cierran, cada uno con su criterio en una línea. Se recuerda cuáles dejas abiertos.","Filtro por lo que trabaja (presión, posesión, finalización…) y buscador; «Abrir todo» y «Cerrar todo».","Sesiones agrupadas por lo que trabajan, con filtros de próximas o pasadas y de carga, y buscador (también busca en sus ejercicios)."]],
   ["1.32","31-oct-2026",["En la jugada, el campo y 👥 Colocar van en las dos esquinas de arriba del campo, a la vista.","La 🗑 vuelve a estar siempre arriba (si la jugada no está guardada, la descarta).","Calendario: los días fijos son siete círculos L M X J V S D; el entreno extra se añade con «＋ Extra» en la semana que toca, eligiendo el día."]],
   ["1.31","31-oct-2026",["La pestaña Sesiones pasa a llamarse Entrenos, con 📅 Calendario y 📚 Sesiones dentro.","✨ Generar con opciones: qué trabajar (presión, posesión, salida de balón, finalización…), duración, carga y cuántos jugadores. Elige los ejercicios de tu biblioteca según eso.","También dentro de Nueva sesión: «✨ Generar», al lado de «+ Añadir ejercicio», usando la fecha y la idea que hayas puesto.","Calendario: «＋ Entreno extra» para un día suelto y ✕ para quitar solo un día (por ejemplo, un festivo). Los días fijos no cambian."]],
@@ -925,6 +926,10 @@ async function importarTexto(txt){
   try{S.db.fusionar("ejercicios",ej);S.db.fusionar("sesiones",se);toast(`Importados ${Object.keys(ej).length} ejercicios y ${Object.keys(se).length} sesiones`)}
   catch(e){toast("No cabe más en este móvil: borra algo o exporta y limpia")}
 }
+// 1.34: los ejercicios de ejemplo nuevos (campo «desde» = versión de ejemplos.json) se añaden una vez a quien ya usa la app, sin tocar lo suyo
+async function ejemplosNuevos(){const vista=+(LS.get("pizarra.ejemplosVer",1)||1);try{const r=await fetch("ejemplos.json",{cache:"no-cache"});if(!r.ok)return;const d=await r.json();
+  if(!d.version||d.version<=vista)return;const nuevos={};for(const [id,e] of Object.entries(d.ejercicios||{}))if((e.desde||1)>vista&&!S.ej[id])nuevos[id]=e;
+  if(Object.keys(nuevos).length){S.db.fusionar("ejercicios",nuevos);toast(`📚 ${Object.keys(nuevos).length} ejercicios nuevos en tu biblioteca (FIFA Training Centre)`)}LS.set("pizarra.ejemplosVer",d.version)}catch(e){}}
 async function cargarEjemplos(){try{const r=await fetch("ejemplos.json",{cache:"no-cache"});await importarTexto(await r.text())}catch(e){toast("No se pudieron cargar los ejemplos (¿sin conexión?)")}}
 app.addEventListener("change",async ev=>{
   if(ev.target.id==="importar"&&ev.target.files[0]){await importarTexto(await ev.target.files[0].text());ev.target.value="";render()}
@@ -1390,6 +1395,15 @@ function generarSesion(fecha,indic,opt={}){
   const dur=+opt.dur||0,tot=()=>elegidos.reduce((a,id)=>a+minutos(S.ej[id].tiempo),0)+10; // +10' de pausas y charla
   if(dur){let g=0;while(tot()<dur-8&&g++<4){const c=Object.entries(S.ej).filter(([id,e])=>["Táctica","Técnica","Finalización","Partido","Balón parado"].includes(e.categoria)&&!elegidos.includes(id)).sort((a,b)=>nota(b[0],b[1])-nota(a[0],a[1]))[0];if(!c)break;elegidos.splice(Math.max(1,elegidos.length-1),0,c[0])}
     g=0;while(tot()>dur+10&&elegidos.length>3&&g++<4){const quita=elegidos.slice(1,-1).sort((a,b)=>nota(a,S.ej[a])-nota(b,S.ej[b]))[0];elegidos.splice(elegidos.indexOf(quita),1)}}
+  // cada objetivo elegido, con al menos un ejercicio suyo (cambia el que menos encaja)
+  for(const k of opt.obj||[]){const o=OBJ_GEN.find(x=>x[0]===k);if(!o)continue;const encaja=e=>o[2].some(w=>norm([e.nombre,e.objetivo].join(" ")).includes(norm(w)));
+    if(elegidos.some(id=>encaja(S.ej[id])))continue;
+    const c=Object.entries(S.ej).filter(([id,e])=>!elegidos.includes(id)&&!["Calentamiento","Vuelta a la calma","Charla"].includes(e.categoria)&&encaja(e)).sort((a,b)=>nota(b[0],b[1])-nota(a[0],a[1]))[0];if(!c)continue;
+    const medio=elegidos.filter(id=>!["Calentamiento","Vuelta a la calma"].includes(S.ej[id].categoria)&&!(opt.obj||[]).some(kk=>{const oo=OBJ_GEN.find(x=>x[0]===kk);return oo&&oo[2].some(w=>norm([S.ej[id].nombre,S.ej[id].objetivo].join(" ")).includes(norm(w)))}));
+    if(medio.length)elegidos.splice(elegidos.indexOf(medio.sort((a,b)=>nota(a,S.ej[a])-nota(b,S.ej[b]))[0]),1,c[0]);else elegidos.splice(Math.max(1,elegidos.length-1),0,c[0])}
+  // orden de una sesión: calentamiento → técnica → táctica → finalización → balón parado → partido → vuelta a la calma
+  const ORD=["Calentamiento","Técnica","Táctica","Finalización","Físico","Balón parado","Partido","Vuelta a la calma","Charla"];
+  elegidos.sort((a,b)=>ORD.indexOf(S.ej[a].categoria)-ORD.indexOf(S.ej[b].categoria));
   const d=new Date(fecha+"T12:00:00"),dia=DIAS_N[d.getDay()];
   const tema=temas[0]||(alta?"Juego y presión":"Activación y finalización");
   return {fecha,nombre:dia[0].toUpperCase()+dia.slice(1)+" · "+tema,carga:opt.carga&&opt.carga!=="auto"?opt.carga:alta?"Alta":"Baja",tareas:elegidos,
@@ -2450,7 +2464,8 @@ $("#ayuda").addEventListener("input",ev=>{if(ev.target.id!=="manQ")return;S.manQ
 (async()=>{
   aplicarClub();
   const db=crearDB(); S.db=db;
-  if(!LS.get("pizarra.iniciada",false)&&!Object.keys(db.leer("ejercicios")).length){LS.set("pizarra.iniciada",true);await cargarEjemplos()}
+  if(!LS.get("pizarra.iniciada",false)&&!Object.keys(db.leer("ejercicios")).length){LS.set("pizarra.iniciada",true);await cargarEjemplos();LS.set("pizarra.ejemplosVer",2)}
+  else setTimeout(()=>{S.ej=S.ej||{};ejemplosNuevos()},1500);
   let llegados=0;const listo=()=>{if(++llegados>=2&&S.view!=="edit"&&S.view!=="sesion")render()};
   db.collection("ejercicios").onSnapshot(snap=>{S.ej={};snap.docs.forEach(d=>S.ej[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
   db.collection("sesiones").onSnapshot(snap=>{S.se={};snap.docs.forEach(d=>S.se[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});

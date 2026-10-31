@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.34 · 31-oct-2026
+- 20 ejercicios nuevos del FIFA Training Centre: sesiones de la selección sub-15 de México (posesión, salida de balón, presión tras pérdida, víspera de partido y balón parado) y de fútbol base de 12 a 15 años.
+- Cada uno con su dibujo, consignas, variantes y la fuente exacta. Donde la FIFA no da tiempos, se indica que son una propuesta para cadetes.
+- Se añaden solos a tu biblioteca, sin tocar tus ejercicios. ✨ Generar ya tiene más donde elegir, pone al menos un ejercicio de cada objetivo elegido y los ordena como una sesión.
+
 ## 1.33 · 31-oct-2026
 - Ejercicios por tipo (calentamiento, técnica, táctica…) en grupos que se abren y se cierran, cada uno con su criterio en una línea. Se recuerda cuáles dejas abiertos.
 - Filtro por lo que trabaja (presión, posesión, finalización…) y buscador; «Abrir todo» y «Cerrar todo».
