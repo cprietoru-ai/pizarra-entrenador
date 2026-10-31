@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.15 · 31-oct-2026
+- «✨ Generar este paso» en el editor: escribes qué pasa en el paso y la app coloca y mueve las fichas.
+- «Describir jugada» arreglado: cada pase, conducción, centro o remate va en su propio paso, aunque esté todo en una frase con comas.
+- Las frases funcionan en cualquier campo: entero, medio campo, área y F7.
+
 ## 1.14 · 31-oct-2026
 - Sin zoom: el campo se ve fijo y entero.
 - Balón más real: el pase sale fuerte y frena, llega al compañero justo cuando llega a su sitio, solo los pases largos y centros van por el aire, en la conducción va por delante del jugador y el remate es seco.
