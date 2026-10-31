@@ -14,17 +14,17 @@
 /* Layout: cabecera fija con pestañas; vista de lista en una columna en móvil y dos en escritorio; editor a pantalla completa. */
 :root{
   --bg:#f3f4ee; --surface:#ffffff; --ink:#15261b; --muted:#5b6e60; --line:#d6ded4;
-  --club:#0b4a20; --club-ink:#ffffff; --crema:#c79a12; --rojo:#d22f28; --pitch:#1f7a3c; --chip:#e8efe6;
+  --club:#15763a; --club-ink:#ffffff; --crema:#c79a12; --rojo:#d22f28; --pitch:#2a8f48; --chip:#e6efe4; --acc:#15763a; --acc-ink:#ffffff;
   --display:"Bebas Neue",Impact,"Arial Narrow",sans-serif;
   --body:"Barlow","Segoe UI",Roboto,Helvetica,Arial,sans-serif;
   --label:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0d1610; --surface:#152219; --ink:#e7efe6; --muted:#9db3a2; --line:#2a3b2f;
-  --club:#1b6a33; --club-ink:#ffffff; --crema:#f3e7a4; --rojo:#ff5a50; --pitch:#1d6e37; --chip:#1e3024; color-scheme:dark}}
+  --bg:#1a261e; --surface:#24342a; --ink:#f0f6ef; --muted:#b7cabb; --line:#3e5545;
+  --club:#22843f; --club-ink:#ffffff; --crema:#f3e7a4; --rojo:#ff6b61; --pitch:#2a8f48; --chip:#2e4234; --acc:#43d97a; --acc-ink:#062b12; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0d1610; --surface:#152219; --ink:#e7efe6; --muted:#9db3a2; --line:#2a3b2f;
-  --club:#1b6a33; --club-ink:#ffffff; --crema:#f3e7a4; --rojo:#ff5a50; --pitch:#1d6e37; --chip:#1e3024; color-scheme:dark}
+  --bg:#1a261e; --surface:#24342a; --ink:#f0f6ef; --muted:#b7cabb; --line:#3e5545;
+  --club:#22843f; --club-ink:#ffffff; --crema:#f3e7a4; --rojo:#ff6b61; --pitch:#2a8f48; --chip:#2e4234; --acc:#43d97a; --acc-ink:#062b12; color-scheme:dark}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;overscroll-behavior-y:contain}
 body{overscroll-behavior-y:contain}
@@ -146,6 +146,7 @@ ul{margin:4px 0 4px 18px;padding:0}
 .pj{font-family:var(--display);font-size:24px;color:var(--club)}
 .pesc{width:40px;height:40px;object-fit:contain;background:#fff;border-radius:50%;padding:3px;display:inline-block}
 .pesc.big{width:64px;height:64px;flex:0 0 auto}
+.pcard .pesc:empty{background:none;padding:0}
 .pmid{min-width:0;overflow-wrap:anywhere}
 .pres{font-family:var(--display);font-size:26px}
 .phead{display:flex;gap:12px;align-items:center;margin-bottom:10px}
@@ -235,6 +236,23 @@ ul{margin:4px 0 4px 18px;padding:0}
 .jgpop.abajo .popflecha{bottom:auto;top:-8px;transform:rotate(225deg)}
 .jgshare{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:14px}.jgshare .note{grid-column:1/-1;margin:-2px 2px 0;font-size:12.5px}
 .jgvelseg{margin:0!important}.jgvelseg button{font-size:13px!important;padding:8px 2px!important}.jgvelseg button[aria-selected="true"]{background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,.12);border-radius:10px}
+.jghead{display:flex;align-items:center;gap:8px;margin-bottom:2px}.jghead .back{margin:0}
+.jgicons{margin-left:auto;display:flex;gap:8px}
+.hic{position:relative;width:44px;height:44px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;padding:0;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.08);transition:transform .12s;text-transform:none;letter-spacing:0;flex-direction:row}
+.hic:active{transform:scale(.92)}.hic svg{width:22px;height:22px}
+.hic.on{border-color:var(--acc);color:var(--acc)}.hic.dan{color:var(--rojo)}
+.hic select{position:absolute;inset:0;opacity:0;width:100%;height:100%;font-size:16px;padding:0;border:0}
+.hbadge{position:absolute;top:2px;right:2px;font-family:var(--label);font-size:10px;line-height:1;background:var(--acc);color:var(--acc-ink);border-radius:6px;padding:2px 4px;pointer-events:none}
+.hdot{position:absolute;top:6px;right:6px;width:8px;height:8px;border-radius:50%;background:#f0a500;pointer-events:none}.hdot.ok{background:var(--acc)}
+.jgconf{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0;padding:10px 12px;border-radius:12px;border:1.5px solid var(--rojo);background:color-mix(in srgb,var(--rojo) 10%,var(--surface))}.jgconf span{flex:1 1 180px}
+.jgpartido{display:inline-block;margin:6px 0 0;padding:3px 10px;border-radius:999px;background:color-mix(in srgb,var(--acc) 16%,var(--surface));color:var(--ink);font-family:var(--label);font-weight:700;font-size:13px;letter-spacing:.3px}
+.jt[aria-pressed="true"]{background:var(--acc)!important;color:var(--acc-ink)!important}
+.seg .pill{background:var(--acc)!important}.seg button[aria-selected="true"]{color:var(--acc-ink)!important}
+.jgvelseg button[aria-selected="true"]{background:var(--acc)!important;color:var(--acc-ink)!important}
+.chip[aria-pressed="true"],.tool[aria-pressed="true"]{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}
+.jgst.on{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}.jgst.hecho{border-color:var(--acc);color:var(--acc)}
+.popj.on{background:var(--acc);border-color:var(--acc);color:var(--acc-ink)}
+.tabs button[aria-selected="true"]{border-bottom-width:4px}
 .btn.gen{background:var(--surface);color:var(--club);border:2px solid var(--club)}
 .jgtools{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding:2px}
 .jgtools::-webkit-scrollbar{display:none}
@@ -630,8 +648,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.23";
+const VERSION="1.24";
 const NOVEDADES=[
+  ["1.24","31-oct-2026",["En la jugada, arriba a la derecha: 📅 partido para el que es, 💾 guardar y 🗑 borrar, como iconos.","Colores más claros, en modo claro y en oscuro.","Lo que tienes elegido (ficha, paso, pestaña, velocidad) se marca con un verde vivo que se ve bien."]],
   ["1.23","31-oct-2026",["El nombre de la jugada es el título de arriba: tócalo y escribe.","El campo se cambia con el botón que hay encima del dibujo, arriba a la izquierda.","Al tocar una ficha sale su menú justo encima: número, jugadores de la plantilla para elegir con un toque, 🗑 para quitarla y ✓.","Velocidad de la animación: 🐢 Lenta, Normal o ⚡ Rápida, para reproducir y para compartir. Por defecto ahora va más despacio que antes."]],
   ["1.22","31-oct-2026",["Fichas en una fila de seis que se ven todas a la vez, con su color.","↶ Deshacer y ↷ Rehacer junto a la 🗑, en la línea de pasos.","🎤 En «Este paso», dictar solo guarda la explicación, sin mover nada: mueves las fichas a mano y dictas lo que pasa. «✨ Generar este paso» sigue ahí si quieres que la app las coloque.","Cambiar de pestaña ya no abre el teclado.","Entiende mucho más para colocar: «el 8 y el 7 arriba», «el 2 avanza», «el 9 en el área», «el 7 en la banda derecha», «el 10 junto al 9», «el 5 detrás del 4», «el 6 en el centro del campo», «el 3 atrás», «el 7 en el córner»."]],
   ["1.21.1","31-oct-2026",["Las versiones nuevas entran solas también al volver a la app desde segundo plano, y aunque salgan dos el mismo día."]],
@@ -1503,7 +1522,7 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false,som
   const marks=["pase","carrera","conduccion"].map(t=>`<marker id="${uid}${t}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${col[t]}"/></marker>`).join("");
   let rayas="";for(let i=0;i<10;i++) rayas+=`<rect x="${i*w/10}" y="${-pad}" width="${w/20}" height="${h+2*pad}" fill="#fff" fill-opacity="${plano?.07:.05}"/>`;
   const grad=(id,a,b)=>`<radialGradient id="${uid}g${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient>`;
-  const defs=marks+`<linearGradient id="${uid}cesped" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c9d4f"/><stop offset="1" stop-color="#17652f"/></linearGradient>
+  const defs=marks+`<linearGradient id="${uid}cesped" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#38ad5b"/><stop offset="1" stop-color="#22803f"/></linearGradient>
     <radialGradient id="${uid}vin" cx="50%" cy="50%" r="70%"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
     <filter id="${uid}sh" x="-50%" y="-50%" width="200%" height="200%"><feDropShadow dx="0" dy="${r*.22}" stdDeviation="${r*.22}" flood-color="#000" flood-opacity=".45"/></filter>
     ${grad("A","#ffffff","#dfe9e0")}${grad("PT","#ffe680","#e8b800")}${grad("B","#ff6a5e","#c11d16")}${grad("PR","#3a3a3a","#0a0a0a")}${grad("bal","#ffffff","#cfcfcf")}`;
@@ -1745,6 +1764,9 @@ function vistaJugadas(){
     ${Object.keys(S.eq.jugadasClub||{}).length?`<h3 class="h3" style="margin-top:16px">Del club</h3><div class="plist" style="margin-top:8px">${Object.entries(S.eq.jugadasClub).map(([id,j])=>`<button class="pcard" data-jgclub="${esc(id)}"><span class="pj">▶</span><span class="pesc"></span><span class="pmid"><b>${esc(j.nombre)}</b><br><span class="note">${j.pasos.length} pasos${j.nota?" · "+esc(j.nota):""}</span></span><span></span></button>`).join("")}</div>`:""}
     <h3 class="h3" style="margin-top:16px">Para empezar</h3><div class="plist" style="margin-top:8px">${Object.entries(P).map(([id,j])=>`<button class="pcard" data-jgplant="${id}"><span class="pj">▶</span><span class="pesc"></span><span class="pmid"><b>${esc(j.nombre)}</b><br><span class="note">${j.pasos.length} pasos · ${esc(CAMPOS_JUG[j.campo])}</span></span><span></span></button>`).join("")}</div>`;
 }
+const IC={guardar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M5 3h11l4 4v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a1 1 0 0 1 1-2z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/></svg>',
+  partido:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/><circle cx="12" cy="15.5" r="2.6"/></svg>',
+  borrar:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13M9 7V4h6v3"/></svg>'};
 const JT_BAR=[["mover",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg>',"Mover"],
   ["A",'<i class="ficha" style="background:#fff;border-color:#1b3b25"></i>',"Nuestro"],["PT",'<i class="ficha" style="background:#ffd84a;border-color:#1b3b25"></i>',"Portero"],
   ["B",'<i class="ficha" style="background:#e0322b;border-color:#fff"></i>',"Rival"],["PR",'<i class="ficha" style="background:#111;border-color:#e0322b"></i>',"P. rival"],
@@ -1753,7 +1775,14 @@ const JTOOLS=[["mover","✋ Mover"],["A",'<span class="sw" style="background:#ff
 function vistaJugEdit(){
   const j=S.jgDraft,k=S.jgPaso,n=j.pasos.length,f=j.fichas.find(x=>x.id===S.jgSel),ro=!S.canWrite||S.jgPlay;
   const partidos=partidosOrden().filter(([id,p])=>p.rival);
-  return `<button class="back" id="jgVolver">← Pizarra</button>
+  const guardada=!!(S.jgId&&S.jug[S.jgId]),pj=j.partido&&S.eq.partidos[j.partido];
+  return `<div class="jghead"><button class="back" id="jgVolver">← Pizarra</button>
+    ${ro?"":`<div class="jgicons">
+      <label class="hic${pj?" on":""}" title="Para el partido">${IC.partido}${pj?`<b class="hbadge">J${esc(pj.jornada)}</b>`:""}<select id="jg-partido" aria-label="Para el partido"><option value="">Sin partido</option>${partidos.map(([id,p])=>`<option value="${esc(id)}" ${j.partido===id?"selected":""}>J${esc(p.jornada)} · ${esc(p.rival)}</option>`).join("")}</select></label>
+      <button class="hic" id="jgGuardar" aria-label="Guardar jugada" title="Guardar">${IC.guardar}<i class="hdot${guardada?" ok":""}" id="jgDot"></i></button>
+      ${guardada?`<button class="hic dan" id="jgBorrar" aria-label="Borrar jugada" title="Borrar">${IC.borrar}</button>`:""}</div>`}</div>
+  ${S.delConfirm==="jg"&&guardada?`<div class="jgconf"><span>¿Borrar <b>${esc(j.nombre||"la jugada")}</b>? No se puede deshacer.</span><button class="btn dan sm" id="jgBorrarSi">Sí, borrar</button><button class="btn sm" id="jgBorrarNo">No</button></div>`:""}
+  ${pj?`<div class="jgpartido">⚽ Para la J${esc(pj.jornada)} · ${esc(pj.rival)}</div>`:""}
   <label class="jgtit"><input type="text" id="jg-nombre" value="${esc(j.nombre)}" placeholder="Ponle nombre a la jugada" ${ro?"disabled":""} enterkeyhint="done" aria-label="Nombre de la jugada">${ro?"":'<span class="lapiz" aria-hidden="true">✎</span>'}</label>
   ${S.jgAvisos&&S.jgAvisos.length?`<div class="err" style="margin-bottom:10px">No he entendido: ${S.jgAvisos.map(a=>`«${esc(a)}»`).join(", ")}. Añade esos pasos a mano o escríbelos más sencillo (dorsal + acción + adónde).</div>`:""}
   <div class="ed">
@@ -1783,12 +1812,9 @@ function vistaJugEdit(){
         :`<div class="jgtexto" id="jgtexto">${esc(j.pasos[k].texto||"")}</div>`}
     </div>
     <form class="form" onsubmit="return false">
-      <div class="row"><label>Para el partido<select id="jg-partido" ${ro?"disabled":""}><option value="">—</option>${partidos.map(([id,p])=>`<option value="${esc(id)}" ${j.partido===id?"selected":""}>J${esc(p.jornada)} · ${esc(p.rival)}</option>`).join("")}</select></label></div>
-      ${ro?"":`<div class="bar"><span class="note" id="jgEstado">${S.jgId&&S.jug[S.jgId]?"✓ Guardada automáticamente":"Se guarda sola en cuanto la cambies"}</span><button class="btn pri" id="jgGuardar">Guardar jugada</button></div>
+      ${ro?"":`<div class="bar"><span class="note" id="jgEstado">${S.jgId&&S.jug[S.jgId]?"✓ Guardada automáticamente":"Se guarda sola en cuanto la cambies"}</span></div>
         <div class="jgshare"><div class="seg jgvelseg">${Object.entries(JG_VEL).map(([v,[l]])=>`<button data-jvel="${v}" aria-selected="${LS.get("pizarra.jgVel","normal")===v}">${l}</button>`).join("")}</div>
-          <button class="btn pri" id="jgGif">📤 Compartir</button><span class="note">La velocidad vale para reproducir y para compartir.</span></div><div class="bar">
-
-        ${S.jgId&&S.jug[S.jgId]?(S.delConfirm==="jg"?`<span class="confirm">¿Borrar la jugada? <button class="btn dan sm" id="jgBorrarSi">Sí</button><button class="btn sm" id="jgBorrarNo">No</button></span>`:`<button class="btn dan sm" id="jgBorrar">Borrar jugada</button>`):""}</div>`}
+          <button class="btn pri" id="jgGif">📤 Compartir</button><span class="note">La velocidad vale para reproducir y para compartir.</span></div><div class="bar"></div>`}
     </form>
   </div>
   ${S.img?`<div class="imgov" role="dialog" aria-label="Archivo"><div class="imgbox"><img src="${S.img.url}" alt="">
@@ -1803,7 +1829,7 @@ function marcarAbierta(){try{if(S.jgEd&&S.jgId)localStorage.setItem(JG_ABIERTA,J
 function guardarJgYa(){clearTimeout(jgTimer);if(!S.jgEd||!S.jgDraft||!S.canWrite)return;
   const txt=JSON.stringify(S.jgDraft);if(txt===S.jgOrig)return marcarAbierta();
   if(!S.jgId) S.jgId="jg-"+Date.now().toString(36);
-  if(!S.jgDraft.nombre) S.jgDraft.nombre="Jugada del "+new Date().toLocaleDateString("es-ES",{day:"numeric",month:"short"});
+  $("#jgDot")?.classList.add("ok");if(!S.jgDraft.nombre) S.jgDraft.nombre="Jugada del "+new Date().toLocaleDateString("es-ES",{day:"numeric",month:"short"});
   S.jug[S.jgId]={...S.jgDraft,actualizado:ahora()};S.jgOrig=JSON.stringify(S.jgDraft);
   if(jugGuardar()){const e=$("#jgEstado");if(e)e.textContent="✓ Guardada automáticamente"}marcarAbierta()}
 function jgSnap(){S.jgHist=S.jgHist||[];S.jgHist.push(JSON.stringify({d:S.jgDraft,k:S.jgPaso}));if(S.jgHist.length>50)S.jgHist.shift();S.jgRedo=[]}
@@ -1821,7 +1847,7 @@ function abrirJugada(id,plantilla){
 (()=>{try{const a=JSON.parse(localStorage.getItem(JG_ABIERTA)||"null");if(a&&S.jug[a.id]){const j=structuredClone(S.jug[a.id]);
   S.jgId=a.id;S.jgDraft=j;S.jgOrig=JSON.stringify(j);S.jgPaso=Math.min(a.paso||0,j.pasos.length-1);S.jgSel=null;S.jgTool="mover";S.view="jugEdit";S.jgEd=true;
   setTimeout(()=>toast("He recuperado la jugada que estabas haciendo"),900)}}catch(e){}})();
-function leerJg(){const j=S.jgDraft,v=id=>$("#"+id);if(!v("jg-nombre"))return;j.nombre=v("jg-nombre").value.trim();j.partido=v("jg-partido").value||null;const tx=v("jg-texto");if(tx)j.pasos[S.jgPaso].texto=tx.value.trim()}
+function leerJg(){const j=S.jgDraft,v=id=>$("#"+id);if(!v("jg-nombre"))return;j.nombre=v("jg-nombre").value.trim();{const pp=v("jg-partido");if(pp)j.partido=pp.value||null}const tx=v("jg-texto");if(tx)j.pasos[S.jgPaso].texto=tx.value.trim()}
 function redibujarJg(){const w=$("#jgwrap");if(w) w.innerHTML=svgJugada(S.jgDraft,S.jgPaso,{uid:"e",sel:S.jgSel,editable:true});
   if(!S.jgSel) $("#jgpop")?.remove(); else colocarPop();autoGuardarJg()}
 // Menú de la ficha (1.23): sale encima de la ficha tocada, con su número y la plantilla
@@ -1987,6 +2013,7 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
     bajarBlob(S.img.blob,S.img.nombre);toast("Descargado");return}
 });
 app.addEventListener("change",ev=>{const t=ev.target;if(S.view!=="jugEdit")return;const j=S.jgDraft;
+  if(t.id==="jg-partido"){leerJg();autoGuardarJg();render();const pj=j.partido&&S.eq.partidos[j.partido];toast(pj?`Jugada para la J${pj.jornada} · ${pj.rival}`:"Sin partido");return}
   if(t.id==="jg-campo"){leerJg();jgSnap();j.campo=t.value;const [w,h]=jugDims(j);for(const p of j.pasos){for(const id in p.pos){const q=p.pos[id];p.pos[id]=[Math.min(w,q[0]),Math.min(h,q[1])]}}render();return}
   if(t.id==="jg-lab"){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){f.lab=t.value.trim();redibujarJg()}return}
   if(t.id==="jg-labpl"&&t.value){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){f.lab=t.value;const i=$("#jg-lab");if(i)i.value=t.value;redibujarJg()}return}
@@ -2005,7 +2032,7 @@ const MANUAL=[
   ["Qué versión tengo y qué hay de nuevo",`Arriba, debajo del nombre, pone <b>v1.x</b>. Toca el botón <b>?</b> de arriba a la derecha → <b>✨ Novedades</b>: ahí está lo nuevo de cada versión (sale un punto amarillo cuando hay algo sin ver). Las versiones nuevas llegan solas al abrir la app con cobertura; si no la ves, ciérrala y ábrela otra vez.`],
   ["Las pestañas",`<ul><li><b>Pizarra:</b> jugadas animadas para la charla.</li><li><b>Ejercicios:</b> tu biblioteca de ejercicios dibujados.</li><li><b>Sesiones:</b> calendario de entrenos y sesiones.</li><li><b>Partidos:</b> convocatoria, alineación, resultado, informe del rival, clasificación y estadísticas.</li><li><b>Mi club:</b> tu club, tu equipo, copias e instalar.</li><li><b>Botón ? (arriba a la derecha):</b> este manual y las novedades, desde cualquier pestaña.</li></ul>`]]},
  {ic:"🎬",t:"Pizarra: jugadas animadas",r:"Jugadas paso a paso con carreras, conducciones y pases, para enseñarlas y compartirlas.",a:[
-  ["Crear una jugada",`<b>+ Nueva jugada</b>, o abre una de <b>Para empezar</b> (córner, falta, salida de balón, presión) o <b>Del club</b> y cámbiala a tu gusto. Arriba, <b>toca el título</b> para ponerle nombre. El campo (entero, medio campo, área o F7) se cambia con el botón <b>⛶</b> que hay encima del dibujo, arriba a la izquierda. «Para el partido» está más abajo.`],
+  ["Crear una jugada",`<b>+ Nueva jugada</b>, o abre una de <b>Para empezar</b> (córner, falta, salida de balón, presión) o <b>Del club</b> y cámbiala a tu gusto. Arriba, <b>toca el título</b> para ponerle nombre. El campo (entero, medio campo, área o F7) se cambia con el botón <b>⛶</b> que hay encima del dibujo, arriba a la izquierda. Arriba a la derecha, a la altura de «← Pizarra»: <b>📅</b> para decir para qué partido es (sale «J6» en el icono), <b>💾</b> para guardar (el punto se pone verde cuando está guardada; también se guarda sola) y <b>🗑</b> para borrar la jugada (pregunta antes).`],
   ["Poner y mover fichas",`<ul><li>Elige <b>Nuestro</b>, <b>Portero</b>, <b>Rival</b>, <b>Portero rival</b> o <b>Balón</b> en la fila de encima del campo y toca el campo.</li><li>Con <b>Mover</b>, arrastra con un dedo. Si sueltas el balón encima de un jugador, se le pega.</li><li><b>Toca una ficha</b> sin arrastrarla: sale su menú justo encima, con su número, los jugadores de tu plantilla para elegir con un toque, <b>🗑</b> para quitarla y <b>✓</b> para cerrar.</li></ul>`],
   ["Los pasos",`Una jugada es una serie de pasos. Debajo del campo está el reproductor (⏮ ◀ ▶ ▶) y la <b>línea de pasos</b>: toca un número para ir a ese paso, <b>+</b> copia el paso actual (luego arrastras las fichas a donde van) y <b>🗑</b> borra el paso en el que estás. <b>⛶</b> pone el campo a pantalla completa para la charla. La app dibuja sola lo que pasa entre un paso y otro:<ul><li><b>Línea amarilla:</b> carrera sin balón.</li><li><b>Línea azul ondulada:</b> conducción (se mueve con el balón).</li><li><b>Línea blanca discontinua:</b> pase.</li></ul>En el cuadro de abajo escribes qué pasa en ese paso: sale en la charla y al compartir.`],
   ["🎤 Solo la explicación, moviendo a mano",`La forma más rápida si prefieres mover tú las fichas:<ol><li>Coloca las fichas del paso 1 arrastrándolas.</li><li>Pestaña <b>✨ Este paso</b> → <b>🎤</b> y di lo que pasa. Se guarda solo como explicación del paso: <b>no mueve nada</b>. Sale en la charla y al compartir.</li><li><b>+</b> en la línea de pasos, arrastra las fichas a donde van y vuelve a dictar.</li></ol>Si dictas otra vez, la explicación se cambia por la nueva (↶ la recupera).`],

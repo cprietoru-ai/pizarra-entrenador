@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.24 · 31-oct-2026
+- En la jugada, arriba a la derecha: 📅 partido para el que es, 💾 guardar y 🗑 borrar, como iconos.
+- Colores más claros, en modo claro y en oscuro.
+- Lo que tienes elegido (ficha, paso, pestaña, velocidad) se marca con un verde vivo que se ve bien.
+
 ## 1.23 · 31-oct-2026
 - El nombre de la jugada es el título de arriba: tócalo y escribe.
 - El campo se cambia con el botón que hay encima del dibujo, arriba a la izquierda.
