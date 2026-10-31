@@ -192,6 +192,7 @@ ul{margin:4px 0 4px 18px;padding:0}
   <nav class="wrap tabs" role="tablist">
     <button role="tab" id="tab-ej" aria-selected="true">Ejercicios</button>
     <button role="tab" id="tab-se" aria-selected="false">Sesiones</button>
+    <button role="tab" id="tab-jg" aria-selected="false">Pizarra</button>
     <button role="tab" id="tab-pa" aria-selected="false">Partidos</button>
     <button role="tab" id="tab-club" aria-selected="false">Mi club</button>
   </nav>
@@ -256,7 +257,8 @@ function svgDiagrama(dg,{editable=false,preview=null,uid="d"}={}){
 
 // ---------- Render general ----------
 function render(){
-  $("#tab-ej").setAttribute("aria-selected",S.view==="ej"||S.view==="edit"||JV.includes(S.view));
+  $("#tab-ej").setAttribute("aria-selected",S.view==="ej"||S.view==="edit");
+  $("#tab-jg").setAttribute("aria-selected",JV.includes(S.view));
   $("#tab-se").setAttribute("aria-selected",S.view==="se"||S.view==="sesion"||S.view==="vista");
   const err=S.error?`<div class="err">${esc(S.error)}</div>`:"";
   if(S.view==="ej") app.innerHTML=err+vistaEjercicios();
@@ -273,7 +275,8 @@ function render(){
   if(S.view==="edit") montarEditor();
   if(S.view==="jugEdit") montarJug();
 }
-$("#tab-ej").onclick=()=>{S.jgPlay=false;S.view=S.ejModo==="jug"?"jug":"ej";render()};
+$("#tab-ej").onclick=()=>{S.jgPlay=false;S.view="ej";render()};
+$("#tab-jg").onclick=()=>{S.jgPlay=false;S.img=null;S.view="jug";render()};
 $("#tab-se").onclick=()=>{S.view="se";render()};
 $("#tab-pa").onclick=()=>{S.view="pa";S.slot=null;S.img=null;S.delConfirm=null;render();if(typeof sincronizar==="function")sincronizar()};
 $("#tab-club").onclick=()=>{S.view="club";S.delConfirm=null;render()};
@@ -284,7 +287,7 @@ function vistaEjercicios(){
   const chips=["Todas",...CATS].map(c=>`<button class="chip" aria-pressed="${S.filtro===c}" data-f="${esc(c)}">${esc(c)}</button>`).join("");
   const cards=lista.map(([id,e])=>`<button class="card" data-open="${esc(id)}"><div class="dg">${e.diagrama?svgDiagrama(e.diagrama,{uid:"c"+id.replace(/\W/g,"")}):`<span class="nodg">${esc(e.categoria)}</span>`}</div>
     <div class="bd"><span class="tag">${esc(e.categoria)}</span><h3>${esc(e.nombre)}</h3><div class="meta"><span>${esc(e.tiempo)}</span>${e.jugadores?`<span>· ${esc(e.jugadores.split("·")[0])}</span>`:""}</div></div></button>`).join("");
-  return `${tabsEj()}<div class="bar"><input class="grow" type="search" id="q" placeholder="Buscar ejercicio u objetivo" value="${esc(S.q)}">
+  return `<div class="bar"><input class="grow" type="search" id="q" placeholder="Buscar ejercicio u objetivo" value="${esc(S.q)}">
     ${S.canWrite?`<button class="btn pri" id="nuevo">+ Nuevo ejercicio</button>`:""}</div>
     <div class="chips" style="margin-bottom:14px">${chips}</div>
     ${Object.keys(S.ej).length===0?`<div class="empty"><b>Todavía no hay ejercicios</b>Pulsa «Nuevo ejercicio» para crear el primero y dibujarlo en la pizarra.</div>`
@@ -486,8 +489,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.9";
+const VERSION="1.9.1";
 const NOVEDADES=[
+  ["1.9.1","31-oct-2026",["La pizarra de jugadas tiene su propia pestaña, «Pizarra».","«Animación para WhatsApp»: la jugada en GIF, que se envía y se ve bien en Android y en iPhone."]],
   ["1.9","31-oct-2026",["Jugadas animadas (Ejercicios → Jugadas): mueve las fichas paso a paso y la app dibuja carreras, conducciones y pases.","Reproducir la jugada, modo charla a pantalla completa, imagen de cada paso y vídeo para el grupo.","Cuatro jugadas para empezar (córner, falta lateral, salida de balón y presión tras pérdida) y jugadas asignadas a cada partido."]],
   ["1.8","25-oct-2026",["Informe del rival en cada partido, con los datos de la federación de ese día, y su imagen.","Calendario de entrenamientos en Sesiones: tus días de entreno con el partido de cada semana.","«Generar sesión»: una propuesta con tus ejercicios según el rival, los días que faltan al partido y tus indicaciones."]],
   ["1.7.2","25-oct-2026",["Las fotos de los campos salen todas del mismo tamaño en la ficha de cada equipo."]],
@@ -1319,19 +1323,18 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
 function vistaJugadas(){
   const l=Object.entries(S.jug).sort((a,b)=>(b[1].actualizado||"").localeCompare(a[1].actualizado||""));
   const P=jugPlantillas();
-  return `${tabsEj()}<div class="bar"><div class="grow note">Jugadas por pasos para enseñarlas en la charla: mueve las fichas y la app dibuja carreras, conducciones y pases.</div>
+  return `<h2 class="h2" style="margin-bottom:6px">Pizarra de jugadas</h2><div class="bar"><div class="grow note">Jugadas por pasos para enseñarlas en la charla: mueve las fichas y la app dibuja carreras, conducciones y pases.</div>
     ${S.canWrite?`<button class="btn pri" id="jgNueva">+ Nueva jugada</button>`:""}</div>
     ${l.length?`<div class="grid">${l.map(([id,j])=>`<button class="card" data-jg="${esc(id)}"><div class="dg">${svgJugada(j,j.pasos.length-1,{uid:"l"+id.replace(/\W/g,"")})}</div>
       <div class="bd"><span class="tag">${j.pasos.length} pasos</span><h3>${esc(j.nombre||"Jugada")}</h3>${j.partido&&S.eq.partidos[j.partido]?`<div class="meta">Para J${esc(S.eq.partidos[j.partido].jornada)} · ${esc(S.eq.partidos[j.partido].rival)}</div>`:""}</div></button>`).join("")}</div>`
       :`<div class="empty"><b>Todavía no hay jugadas</b>Crea una nueva o empieza desde una de estas:</div>`}
     <h3 class="h3" style="margin-top:16px">Para empezar</h3><div class="plist" style="margin-top:8px">${Object.entries(P).map(([id,j])=>`<button class="pcard" data-jgplant="${id}"><span class="pj">▶</span><span class="pesc"></span><span class="pmid"><b>${esc(j.nombre)}</b><br><span class="note">${j.pasos.length} pasos · ${esc(CAMPOS_JUG[j.campo])}</span></span><span></span></button>`).join("")}</div>`;
 }
-function tabsEj(){return `<div class="chips" style="margin-bottom:12px"><button class="chip" id="ejModoEj" aria-pressed="${S.view==="ej"}">Ejercicios</button><button class="chip" id="ejModoJg" aria-pressed="${JV.includes(S.view)}">Jugadas</button></div>`}
 const JTOOLS=[["mover","✋ Mover"],["A",'<span class="sw" style="background:#fff"></span>Nuestro'],["PT",'<span class="sw" style="background:#ffd84a"></span>Portero'],["B",'<span class="sw" style="background:#e0322b;border-color:#fff;outline:1px solid #999"></span>Rival'],["PR",'<span class="sw" style="background:#111;border-color:#e0322b"></span>Portero rival'],["balon","● Balón"]];
 function vistaJugEdit(){
   const j=S.jgDraft,k=S.jgPaso,n=j.pasos.length,f=j.fichas.find(x=>x.id===S.jgSel),ro=!S.canWrite||S.jgPlay;
   const partidos=partidosOrden().filter(([id,p])=>p.rival);
-  return `<button class="back" id="jgVolver">← Jugadas</button>
+  return `<button class="back" id="jgVolver">← Pizarra</button>
   <div class="ed">
     <div class="board${S.jgCharla?" charla":""}" id="jgboard">
       <div id="jgwrap">${svgJugada(j,k,{uid:"e",sel:S.jgSel,editable:true})}</div>
@@ -1351,7 +1354,7 @@ function vistaJugEdit(){
         <label>De la plantilla<select id="jg-labpl"><option value="">—</option>${Object.entries(S.eq.jugadores).sort(jugOrden).map(([id,x])=>`<option value="${esc(x.dorsal!=null?x.dorsal:nomJ(x))}">${x.dorsal!=null?esc(x.dorsal)+" · ":""}${esc(nomJ(x))}</option>`).join("")}</select></label></div>
         <div class="bar" style="margin-top:6px"><button class="btn dan sm" id="jgQuitar">Quitar la ficha</button><button class="btn sm" id="jgDesel">Listo</button></div></div>`:""}
       <label>Qué pasa en este paso (sale en la charla)<textarea id="jg-texto" ${ro?"disabled":""} placeholder="p. ej. El 6 fija al central y el 10 cae a banda">${esc(j.pasos[k].texto||"")}</textarea></label>
-      ${ro?"":`<div class="bar"><button class="btn pri" id="jgGuardar">Guardar jugada</button><button class="btn" id="jgVideo">Vídeo</button><button class="btn" id="jgImg">Imagen del paso</button>
+      ${ro?"":`<div class="bar"><button class="btn pri" id="jgGuardar">Guardar jugada</button><button class="btn pri" id="jgGif">Animación para WhatsApp</button><button class="btn" id="jgVideo">Vídeo</button><button class="btn" id="jgImg">Imagen del paso</button>
         ${n>1?`<button class="btn sm" id="jgBorrarPaso">Borrar este paso</button>`:""}
         ${S.jgId&&S.jug[S.jgId]?(S.delConfirm==="jg"?`<span class="confirm">¿Borrar la jugada? <button class="btn dan sm" id="jgBorrarSi">Sí</button><button class="btn sm" id="jgBorrarNo">No</button></span>`:`<button class="btn dan sm" id="jgBorrar">Borrar jugada</button>`):""}</div>`}
     </form>
@@ -1409,13 +1412,13 @@ function reproducir(){
 const svgImg=svg=>new Promise((ok,ko)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=ko;i.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg)});
 async function fotograma(x,W,H,j,k,anim,texto){
   x.fillStyle="#0b4a20";x.fillRect(0,0,W,H);
-  const im=await svgImg(svgJugada(j,k,{uid:"v",anim,ghost:anim==null}));const [w,h]=jugDims(j),ar=(w*1.07)/(h*1.07+0.001),bh=H-150,bw=Math.min(W-40,bh*ar),bh2=bw/ar;
+  const im=await svgImg(svgJugada(j,k,{uid:"v",anim,ghost:anim==null}));const [w,h]=jugDims(j),ar=(w*1.07)/(h*1.07+0.001),bh=H-150*W/1280,bw=Math.min(W-40*W/1280,bh*ar),bh2=bw/ar;
   x.drawImage(im,(W-bw)/2,20+(bh-bh2)/2,bw,bh2);
-  x.fillStyle="#fff";x.font='600 30px "Barlow Condensed","Arial Narrow",sans-serif';x.textAlign="center";
+  const k_=W/1280;x.fillStyle="#fff";x.font=`600 ${30*k_}px "Barlow Condensed","Arial Narrow",sans-serif`;x.textAlign="center";
   const pal=(texto||"").split(" ");let l="",ls=[];for(const p of pal){const tt=l?l+" "+p:p;if(x.measureText(tt).width>W-80){ls.push(l);l=p}else l=tt}ls.push(l);
-  ls.slice(0,3).forEach((t,i)=>x.fillText(t,W/2,H-110+i*36));
-  x.fillStyle="#f3e7a4";x.font='400 26px "Bebas Neue",Impact,sans-serif';x.textAlign="left";x.fillText((j.nombre||"JUGADA").toUpperCase(),24,H-14);
-  x.textAlign="right";x.fillText(nombreClub().toUpperCase(),W-24,H-14)}
+  ls.slice(0,3).forEach((t,i)=>x.fillText(t,W/2,H-110*k_+i*36*k_));
+  x.fillStyle="#f3e7a4";x.font=`400 ${26*k_}px "Bebas Neue",Impact,sans-serif`;x.textAlign="left";x.fillText((j.nombre||"JUGADA").toUpperCase(),24*k_,H-14*k_);
+  x.textAlign="right";x.fillText(nombreClub().toUpperCase(),W-24*k_,H-14*k_)}
 async function grabarVideo(){
   const j=S.jgDraft;if(j.pasos.length<2){toast("Añade al menos dos pasos");return null}
   if(!window.MediaRecorder||!HTMLCanvasElement.prototype.captureStream){toast("Este navegador no puede grabar vídeo: usa «Imagen del paso»");return null}
@@ -1433,11 +1436,24 @@ async function grabarVideo(){
   rec.stop();await fin;const mime=(rec.mimeType||tipo||"video/webm").split(";")[0];
   return {blob:new Blob(trozos,{type:mime}),ext:mime.includes("mp4")?"mp4":"webm"}}
 
+// Animación GIF: WhatsApp la acepta en Android y en iPhone y la repite sola. Se hace fotograma a
+// fotograma (no en tiempo real), así que sale igual de suave en cualquier móvil.
+async function grabarGif(){
+  const j=S.jgDraft;if(j.pasos.length<2){toast("Añade al menos dos pasos");return null}
+  const {GIFEncoder,quantize,applyPalette}=await import("./lib/gifenc.esm.js");
+  try{await document.fonts.load('400 26px "Bebas Neue"')}catch(e){}
+  const W=720,H=496,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d",{willReadFrequently:true}),gif=GIFEncoder();
+  const frame=async(k,anim,texto,delay)=>{await fotograma(x,W,H,j,k,anim,texto);const d=x.getImageData(0,0,W,H).data,pal=quantize(d,128,{format:"rgb444"});
+    gif.writeFrame(applyPalette(d,pal,"rgb444"),W,H,{palette:pal,delay})};
+  const N=12;
+  await frame(0,null,j.pasos[0].texto,1400);
+  for(let k=0;k<j.pasos.length-1;k++){for(let i=1;i<N;i++) await frame(k,i/N,j.pasos[k+1].texto,Math.round(JG_T/N));
+    await frame(k+1,null,j.pasos[k+1].texto,k===j.pasos.length-2?2600:1500)}
+  gif.finish();return new Blob([gif.bytes()],{type:"image/gif"})}
+
 // ---------- Acciones ----------
 app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!t)return;
-  if(t.id==="ejModoJg"){S.ejModo="jug";S.view="jug";render();return}
-  if(t.id==="ejModoEj"){S.ejModo="ej";S.view="ej";render();return}
-  if(t.dataset.jgp){S.ejModo="jug";abrirJugada(t.dataset.jgp);return}
+  if(t.dataset.jgp){abrirJugada(t.dataset.jgp);return}
   if(!JV.includes(S.view))return;
   if(t.id==="jgNueva"){abrirJugada(null);return}
   if(t.dataset.jg){abrirJugada(t.dataset.jg);return}
@@ -1464,6 +1480,8 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   if(t.id==="jgImg"){leerJg();t.disabled=true;try{const W=1280,H=880,c=document.createElement("canvas");c.width=W;c.height=H;await document.fonts.load('400 26px "Bebas Neue"').catch(()=>{});
       await fotograma(c.getContext("2d"),W,H,j,S.jgPaso,null,j.pasos[S.jgPaso].texto);const blob=await new Promise(ok=>c.toBlob(ok,"image/png"));
       S.img={blob,url:URL.createObjectURL(blob),nombre:slugPA(j.nombre||"jugada")+"-paso-"+(S.jgPaso+1)+".png"};render()}catch(e){toast("No se pudo hacer la imagen");t.disabled=false}return}
+  if(t.id==="jgGif"){leerJg();t.disabled=true;t.textContent="Preparando…";try{const blob=await grabarGif();if(blob)S.img={blob,url:URL.createObjectURL(blob),nombre:slugPA(j.nombre||"jugada")+".gif"}}
+    catch(e){toast("No se pudo hacer la animación")}render();return}
   if(t.id==="jgVideo"){leerJg();t.disabled=true;t.textContent="Grabando…";try{const v=await grabarVideo();if(v){S.img={blob:v.blob,url:URL.createObjectURL(v.blob),nombre:slugPA(j.nombre||"jugada")+"."+v.ext,video:true}}}
     catch(e){toast("No se pudo grabar el vídeo")}render();return}
   if(t.id==="jgCerrar"){URL.revokeObjectURL(S.img.url);S.img=null;render();return}

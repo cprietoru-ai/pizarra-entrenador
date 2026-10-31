@@ -2,6 +2,10 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.9.1 · 31-oct-2026
+- La pizarra de jugadas tiene su propia pestaña, «Pizarra».
+- «Animación para WhatsApp»: la jugada en GIF, que se envía y se ve bien en Android y en iPhone.
+
 ## 1.9 · 31-oct-2026
 - Jugadas animadas (Ejercicios → Jugadas): mueve las fichas paso a paso y la app dibuja carreras, conducciones y pases.
 - Reproducir la jugada, modo charla a pantalla completa, imagen de cada paso y vídeo para el grupo.
