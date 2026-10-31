@@ -195,6 +195,8 @@ ul{margin:4px 0 4px 18px;padding:0}
 .jgprog b.on{background:#2fbf63;border-color:#2fbf63}.board.charla .jgpasos{display:none}
 @media (prefers-reduced-motion:no-preference){.jgtexto.in{animation:entra .45s cubic-bezier(.2,.8,.2,1)}}
 @keyframes entra{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+.jgsig.este{border-style:solid;background:var(--surface)}
+.jgsig .jgedit>span{color:var(--club)}
 .jgsig{margin-top:12px;padding:10px;border-radius:12px;background:color-mix(in srgb,#2fbf63 10%,var(--surface));border:1.5px dashed #2fbf63}
 .jgsig label{display:flex;flex-direction:column;gap:4px;text-transform:none;letter-spacing:0}
 .jgsig label>span{font-family:var(--label);font-weight:700;font-size:14px;letter-spacing:.5px;text-transform:uppercase;color:var(--club)}
@@ -569,8 +571,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.20";
+const VERSION="1.20.1";
 const NOVEDADES=[
+  ["1.20.1","31-oct-2026",["«✨ Generar este paso» vuelve con su nombre y bien a la vista, en su propio cuadro encima de «¿Qué pasa después?».","🎤 Dictar también para el paso en el que estás: lo dices y se genera solo."]],
   ["1.20","31-oct-2026",["Manual y novedades salen de Mi club: ahora están en el botón ? de arriba a la derecha, en cualquier pestaña.","Se abren en una hoja que sube desde abajo, con Manual y Novedades a un toque. Se cierra con ✕, tocando fuera, arrastrando hacia abajo o con el botón atrás.","Un punto amarillo en el ? avisa cuando hay una versión nueva sin ver."]],
   ["1.19","31-oct-2026",["«¿Qué pasa después?»: escribe o dicta lo siguiente y la app crea el paso siguiente sola.","🎤 Dictar dentro de la app: hablas y al terminar se añade el paso. Entiende los números dichos («el cuatro la da al ocho»).","Manual: cómo se hace una jugada paso a paso."]],
   ["1.18","31-oct-2026",["Deshacer, rehacer y borrar paso en la Pizarra, al lado del campo.","«Generar este paso» arreglado: usa las fichas que ya tengas puestas, en el primer paso crea la posición inicial y el movimiento, y entiende los nombres de la plantilla.","Manual de uso en Mi club, por secciones que se abren y cierran, con buscador."]],
@@ -1590,15 +1593,17 @@ function ponerRivales(j,g){const nuestros=dorsalesNuestros(j);
   for(const p of j.pasos) reaccionRivales(g,p,nuestros)}
 // El paso siguiente al k, desde lo que se escribe o se dicta («¿Qué pasa después?»)
 let reco=null;
-function dictar(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){toast("Este navegador no deja dictar dentro de la app: usa el micrófono del teclado");$("#jgSig")?.focus();return}
+// modo "sig": ¿Qué pasa después? (añade paso) · "este": el paso en el que estás (lo genera)
+function dictar(modo="sig"){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition,taId=modo==="este"?"#jg-texto":"#jgSig",btId=modo==="este"?"#jgGenPaso":"#jgSigBtn";
+  if(!SR){toast("Este navegador no deja dictar dentro de la app: usa el micrófono del teclado");$(taId)?.focus();return}
   if(S.jgEscucha&&reco){reco.stop();return}
   reco=new SR();reco.lang="es-ES";reco.interimResults=true;reco.continuous=false;let final="";
-  reco.onresult=e=>{let txt="";for(const r of e.results){txt+=r[0].transcript;if(r.isFinal)final=txt}const ta=$("#jgSig");if(ta)ta.value=txt;S.jgSig=txt};
+  reco.onresult=e=>{let txt="";for(const r of e.results){txt+=r[0].transcript;if(r.isFinal)final=txt}const ta=$(taId);if(ta)ta.value=txt;if(modo==="sig")S.jgSig=txt};
   reco.onerror=e=>{S.jgEscucha=false;render();toast(e.error==="not-allowed"||e.error==="service-not-allowed"?"Da permiso al micrófono para dictar (o usa el del teclado)":"No te he oído bien: prueba otra vez")};
-  reco.onend=()=>{S.jgEscucha=false;reco=null;if(final.trim()){S.jgSig=final.trim();render();$("#jgSigBtn")?.click()}else render()};
-  try{reco.start();S.jgEscucha=true;render()}catch(e){toast("No se pudo usar el micrófono")}}
+  reco.onend=()=>{S.jgEscucha=false;reco=null;const f=final.trim();if(!f)return render();
+    if(modo==="sig"){S.jgSig=f;render();$(btId)?.click()}else{const ta=$(taId);if(ta)ta.value=f;$(btId)?.click();render()}};
+  try{reco.start();S.jgEscucha=modo;render()}catch(e){toast("No se pudo usar el micrófono")}}
 function generarSiguiente(j,k,texto){
   const g={...geoCampo(j.campo),campo:j.campo},crear=creador(j,g),t=conDorsales(texto),P=j.pasos[k];
   // si aún no hay balón, empieza con el primero que hace algo con él
@@ -1655,10 +1660,11 @@ function vistaJugEdit(){
       <div class="jgprog" id="jgprog" style="--p:${n>1?(k/(n-1)*100).toFixed(1):0}%"><i></i>${j.pasos.map((p,i)=>`<b style="left:${n>1?i/(n-1)*100:0}%" class="${i<=k?"on":""}"></b>`).join("")}</div>
       ${ro?"":`<div class="bar jgacc"><button class="btn sm" id="jgDeshacer" ${(S.jgHist||[]).length?"":"disabled"}>↶ Deshacer</button><button class="btn sm" id="jgRehacer" ${(S.jgRedo||[]).length?"":"disabled"}>↷ Rehacer</button>${n>1?`<button class="btn sm dan" id="jgBorrarPaso">🗑 Borrar paso ${k+1}</button>`:""}</div>`}
       <div class="chips jgpasos"><span class="note">Pasos:</span>${j.pasos.map((p,i)=>`<button class="chip" data-jpaso="${i}" aria-pressed="${i===k}">${i+1}</button>`).join("")}${ro?"":`<button class="chip" id="jgMasPaso">+ Paso</button>`}</div>
-      ${!ro&&!S.jgCharla?`<label class="jgedit"><span>Paso ${k+1} · qué pasa (sale en la charla y al compartir)</span><textarea id="jg-texto" rows="2" placeholder="${k===0?"p. ej. El 7 saca de córner, o: el 4 tiene el balón":"p. ej. El 8 abre a banda al 7 y el 9 ataca el primer palo"}">${esc(j.pasos[k].texto||"")}</textarea></label>
-        <div class="bar" style="margin-top:6px"><button class="btn sm" id="jgGenPaso">✨ Rehacer este paso con el texto</button></div>
+      ${!ro&&!S.jgCharla?`<div class="jgsig este"><label class="jgedit"><span>✨ Paso ${k+1} · qué pasa aquí</span><textarea id="jg-texto" rows="2" placeholder="${k===0?"p. ej. El 7 saca de córner, o: el 4 tiene el balón":"p. ej. El 8 abre a banda al 7 y el 9 ataca el primer palo"}">${esc(j.pasos[k].texto||"")}</textarea></label>
+        <div class="bar" style="margin-top:6px;margin-bottom:0"><button class="btn mic${S.jgEscucha==="este"?" on":""}" id="jgMicEste">${S.jgEscucha==="este"?"⏺ Escuchando… (toca para parar)":"🎤 Dictar"}</button><button class="btn pri" id="jgGenPaso">✨ Generar este paso</button></div>
+        <p class="note" style="margin:4px 0 0">${k===0?"Cómo empieza: «el 4 tiene el balón, el 8 y el 7 arriba», o colócalos a mano.":"Coloca y mueve las fichas de este paso según lo que escribas. El texto sale en la charla y al compartir."}</p></div>
         <div class="jgsig"><label><span>✨ ¿Qué pasa después? (paso ${k+2})</span><textarea id="jgSig" rows="2" placeholder="Escribe o dicta: «el 4 la da al 8», «el 9 se desmarca a la espalda»">${esc(S.jgSig||"")}</textarea></label>
-          <div class="bar" style="margin-top:6px"><button class="btn mic${S.jgEscucha?" on":""}" id="jgMic">${S.jgEscucha?"⏺ Escuchando… (toca para parar)":"🎤 Dictar"}</button><button class="btn pri" id="jgSigBtn">Añadir paso</button></div>
+          <div class="bar" style="margin-top:6px"><button class="btn mic${S.jgEscucha==="sig"?" on":""}" id="jgMic">${S.jgEscucha==="sig"?"⏺ Escuchando… (toca para parar)":"🎤 Dictar"}</button><button class="btn pri" id="jgSigBtn">Añadir paso</button></div>
           <p class="note" style="margin:4px 0 0">${k===0?"El paso 1 es cómo empieza (colócalos o escribe «el 7 saca de córner»). Lo que pase después va aquí: cada frase es un paso nuevo.":"Cada frase crea el paso siguiente desde este. Dorsales o nombres de tu plantilla."}</p></div>`
         :`<div class="jgtexto" id="jgtexto">${esc(j.pasos[k].texto||"")}</div>`}
       <div class="bar" style="margin:8px 0 0;justify-content:center"><button class="btn sm" id="jgIni" aria-label="Al principio">⏮</button><button class="btn sm" id="jgAnt" aria-label="Paso anterior">◀</button>
@@ -1821,7 +1827,8 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
     leerJg();jgSnap();const r=generarSiguiente(j,S.jgPaso,tx);
     if(r.error){S.jgHist.pop();toast("No lo he entendido: dorsal + acción + adónde, p. ej. «el 8 la da al 7»");return}
     S.jgSig="";S.jgPaso=r.k;S.jgSel=null;render();toast(r.n>1?`Añadidos ${r.n} pasos`:`Paso ${r.k+1} añadido`);return}
-  if(t.id==="jgMic"){dictar();return}
+  if(t.id==="jgMic"){dictar("sig");return}
+  if(t.id==="jgMicEste"){dictar("este");return}
   if(t.id==="jgGenPaso"){const tx=($("#jg-texto")?.value||"").trim();if(!tx){toast("Escribe primero qué pasa en este paso");$("#jg-texto")?.focus();return}
     leerJg();jgSnap();const r=generarPaso(j,S.jgPaso,tx);if(r.error)S.jgHist.pop();
     if(r.error){toast("No lo he entendido: escribe dorsal + acción + adónde, p. ej. «el 8 la da al 7»");return}
@@ -1873,8 +1880,8 @@ const MANUAL=[
   ["Crear una jugada",`<b>+ Nueva jugada</b>, o abre una de <b>Para empezar</b> (córner, falta, salida de balón, presión) o <b>Del club</b> y cámbiala a tu gusto. Elige el campo: entero, medio campo, área o F7.`],
   ["Poner y mover fichas",`<ul><li>Elige <b>Nuestro</b>, <b>Portero</b>, <b>Rival</b>, <b>Portero rival</b> o <b>Balón</b> y toca el campo.</li><li>Con <b>Mover</b>, arrastra con un dedo. Si sueltas el balón encima de un jugador, se le pega.</li><li>Toca una ficha para cambiarle el número, elegir un jugador de tu plantilla o quitarla.</li></ul>`],
   ["Los pasos",`Una jugada es una serie de pasos. <b>+ Paso</b> copia el paso actual: arrastra las fichas a donde van. La app dibuja sola lo que pasa entre un paso y otro:<ul><li><b>Línea amarilla:</b> carrera sin balón.</li><li><b>Línea azul ondulada:</b> conducción (se mueve con el balón).</li><li><b>Línea blanca discontinua:</b> pase.</li></ul>Debajo del campo escribes qué pasa en ese paso: sale en la charla y al compartir.`],
-  ["👉 Cómo se hace una jugada (el proceso)",`<ol><li><b>Paso 1 = cómo empieza.</b> Coloca a los jugadores a mano o escribe en el texto del paso «el 7 saca de córner» / «el 4 tiene el balón» y pulsa <b>Rehacer este paso con el texto</b>.</li><li><b>¿Qué pasa después?</b> Escribe o <b>dicta con 🎤</b> lo siguiente («el 4 la da al 8») y pulsa <b>Añadir paso</b>: crea el paso 2 moviendo las fichas. Al dictar, el paso se añade solo al terminar de hablar.</li><li>Repite para cada cosa que pase. Si una frase tiene dos acciones con balón, salen dos pasos.</li><li>Retoca arrastrando si quieres, <b>Reproducir</b> y <b>Compartir</b>.</li></ol>`],
-  ["✨ Generar este paso",`Escribe qué pasa con <b>dorsales</b> o con los <b>nombres de tu plantilla</b> y pulsa <b>Generar este paso</b>: la app coloca y mueve las fichas desde el paso anterior. No hace falta poner a nadie antes: si un dorsal no está, lo pone; si ya lo has puesto tú, usa el tuyo.<ul><li>Primer paso: «el 7 saca de córner» o «el 4 tiene el balón».</li><li>«el 4 la da al 8», «el 9 se desmarca a la espalda», «el 7 centra al primer palo y el 9 ataca el primer palo», «el 9 remata».</li><li>Si pones dos cosas con el balón (un pase y un remate), la app hace dos pasos: el balón no puede hacer dos cosas a la vez.</li><li><b>Rehacer este paso con el texto</b> vuelve a mover las fichas del paso en el que estás, desde el anterior.</li><li>Al dictar vale decir los números con palabras: «el cuatro la da al ocho».</li></ul>`],
+  ["👉 Cómo se hace una jugada (el proceso)",`<ol><li><b>Paso 1 = cómo empieza.</b> Coloca a los jugadores a mano o escribe en el texto del paso «el 7 saca de córner» / «el 4 tiene el balón» y pulsa <b>✨ Generar este paso</b> (o dale a 🎤 Dictar y dilo).</li><li><b>¿Qué pasa después?</b> Escribe o <b>dicta con 🎤</b> lo siguiente («el 4 la da al 8») y pulsa <b>Añadir paso</b>: crea el paso 2 moviendo las fichas. Al dictar, el paso se añade solo al terminar de hablar.</li><li>Repite para cada cosa que pase. Si una frase tiene dos acciones con balón, salen dos pasos.</li><li>Retoca arrastrando si quieres, <b>Reproducir</b> y <b>Compartir</b>.</li></ol>`],
+  ["✨ Generar este paso",`Escribe qué pasa con <b>dorsales</b> o con los <b>nombres de tu plantilla</b> y pulsa <b>Generar este paso</b>: la app coloca y mueve las fichas desde el paso anterior. No hace falta poner a nadie antes: si un dorsal no está, lo pone; si ya lo has puesto tú, usa el tuyo.<ul><li>Primer paso: «el 7 saca de córner» o «el 4 tiene el balón».</li><li>«el 4 la da al 8», «el 9 se desmarca a la espalda», «el 7 centra al primer palo y el 9 ataca el primer palo», «el 9 remata».</li><li>Si pones dos cosas con el balón (un pase y un remate), la app hace dos pasos: el balón no puede hacer dos cosas a la vez.</li><li>Si cambias el texto, vuelve a pulsar <b>Generar este paso</b>: rehace las fichas del paso en el que estás, desde el anterior. También puedes dictarlo con 🎤.</li><li>Al dictar vale decir los números con palabras: «el cuatro la da al ocho».</li></ul>`],
   ["✨ Describir jugada (entera)",`En la lista de jugadas, <b>Describir jugada</b>: escribe toda la jugada, una frase por paso o seguida con comas, y la app la monta entera. Con la casilla marcada pone <b>rivales que reaccionan</b> (el portero va hacia el balón y los defensas acompañan). Tiene tres ejemplos para ver cómo escribirla.`],
   ["Qué palabras entiende",`<ul><li><b>Acciones:</b> la da, pasa, abre, descarga, cambia de juego, mete, prolonga, conduce, regatea, se desmarca, ataca, baja a recibir, centra, remata, dispara, saca.</li><li><b>Sitios:</b> banda derecha/izquierda, a la espalda, hacia dentro, entre líneas, frontal, primer y segundo palo, punto de penalti, en apoyo, al espacio.</li><li>Mejor frases cortas: <b>dorsal + acción + adónde</b>. Lo que no entiende te lo dice.</li></ul>`],
   ["Deshacer, rehacer y borrar",`Encima de los pasos: <b>↶ Deshacer</b> (hasta 50 cambios: mover fichas, poner o quitar, generar, añadir o borrar pasos), <b>↷ Rehacer</b> y <b>🗑 Borrar paso</b>.`],

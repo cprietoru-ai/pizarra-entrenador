@@ -2,6 +2,10 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.20.1 · 31-oct-2026
+- «✨ Generar este paso» vuelve con su nombre y bien a la vista, en su propio cuadro encima de «¿Qué pasa después?».
+- 🎤 Dictar también para el paso en el que estás: lo dices y se genera solo.
+
 ## 1.20 · 31-oct-2026
 - Manual y novedades salen de Mi club: ahora están en el botón ? de arriba a la derecha, en cualquier pestaña.
 - Se abren en una hoja que sube desde abajo, con Manual y Novedades a un toque. Se cierra con ✕, tocando fuera, arrastrando hacia abajo o con el botón atrás.
