@@ -504,8 +504,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.15";
+const VERSION="1.16";
 const NOVEDADES=[
+  ["1.16","31-oct-2026",["Al compartir, sin las sombras de las fichas al final de cada paso: el movimiento no se corta.","Animación con más definición (960 px y el doble de colores) y un estilo plano y nítido."]],
   ["1.15","31-oct-2026",["«✨ Generar este paso» en el editor: escribes qué pasa en el paso y la app coloca y mueve las fichas.","«Describir jugada» arreglado: cada pase, conducción, centro o remate va en su propio paso, aunque esté todo en una frase con comas.","Las frases funcionan en cualquier campo: entero, medio campo, área y F7."]],
   ["1.14","31-oct-2026",["Sin zoom: el campo se ve fijo y entero.","Balón más real: el pase sale fuerte y frena, llega al compañero justo cuando llega a su sitio, solo los pases largos y centros van por el aire, en la conducción va por delante del jugador y el remate es seco."]],
   ["1.13","31-oct-2026",["Al compartir, cada paso lleva una franja con «Paso n de N» y la frase en grande.","En el editor, el texto del paso está arriba, justo debajo de los pasos."]],
@@ -1316,7 +1317,7 @@ function movimientos(j,k){
 function ondulada(p,q,amp){const L=Math.hypot(q[0]-p[0],q[1]-p[1]),n=Math.max(3,Math.round(L/2.2)),ux=(q[0]-p[0])/L,uy=(q[1]-p[1])/L;let d=`M${p[0]},${p[1]}`;
   for(let i=1;i<=n;i++){const t=i/n,s=(i===n?0:(i%2?1:-1))*amp;d+=` L${p[0]+ux*L*t-uy*s},${p[1]+uy*L*t+ux*s}`}return d}
 // Dibujo: posiciones del paso k, o a mitad de camino hacia k+1 con anim (0..1)
-function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}){
+function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false,sombras=true,plano=false}={}){
   const [w,h]=jugDims(j),pad=Math.max(2,w*.035),r=Math.max(1.3,w*.022),sw=Math.max(.12,w*.0035),fs=r*1.05;
   const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2,e=anim==null?0:ease(anim);
   const k2=anim==null?k:Math.min(k+1,j.pasos.length-1);
@@ -1332,7 +1333,7 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
     return `<path d="${d}" fill="none" stroke="${col[m.t]}" stroke-opacity=".22" stroke-width="${sw*7}" stroke-linecap="round" stroke-linejoin="round" opacity="${op}"/>
       <path class="fl fl-${m.t}" d="${d}" fill="none" stroke="${col[m.t]}" stroke-width="${sw*(m.t==="conduccion"?2.8:2.6)}" stroke-linecap="round" stroke-linejoin="round" ${dash} marker-end="url(#${uid}${m.t})" opacity="${op}"/>`};
   if(anim==null&&ghost&&k>0) for(const m of movimientos(j,k)){fl+=flecha(m,.95);
-    if(m.id){const f=j.fichas.find(x=>x.id===m.id),[c1,c2]=FICHA_COL[f.t];gh+=`<circle cx="${m.p[0]}" cy="${m.p[1]}" r="${r}" fill="${c1}" stroke="${c2}" stroke-width="${sw*1.4}" opacity=".3"/>`}}
+    if(m.id&&sombras){const f=j.fichas.find(x=>x.id===m.id),[c1,c2]=FICHA_COL[f.t];gh+=`<circle cx="${m.p[0]}" cy="${m.p[1]}" r="${r}" fill="${c1}" stroke="${c2}" stroke-width="${sw*1.4}" opacity=".3"/>`}}
   if(anim!=null) for(const m of movimientos(j,k2)){fl+=flecha(m,.3+.6*e);
     // estela: del punto de salida hasta donde va ahora
     if(m.id&&!esRival(m)){const q=pos(m.id);tr+=`<line x1="${m.p[0]}" y1="${m.p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${col[m.t]}" stroke-opacity=".55" stroke-width="${r*.9}" stroke-linecap="round"/>`}}
@@ -1340,7 +1341,9 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
   const conB=(anim!=null&&anim>.85?j.pasos[k2]:j.pasos[k]).balon?.con;
   for(const f of [...j.fichas].sort((a,b)=>"B PR".includes(b.t)-"B PR".includes(a.t))){const q=pos(f.id);if(!q)continue;const [c1,c2,c3]=FICHA_COL[f.t];
     if(f.id===conB) pl+=`<circle class="halo" cx="${q[0]}" cy="${q[1]}" r="${r*1.55}" fill="#ffd84a" fill-opacity=".18" stroke="#ffd84a" stroke-opacity=".8" stroke-width="${sw*1.4}"/>`;
-    pl+=`<g data-f="${f.id}" filter="url(#${uid}sh)"><circle cx="${q[0]}" cy="${q[1]}" r="${r}" fill="url(#${uid}g${f.t})" stroke="${sel===f.id?"#ffd84a":c2}" stroke-width="${sel===f.id?sw*3.5:sw*1.6}"/>${f.lab?`<text x="${q[0]}" y="${q[1]+r*.38}" font-size="${fs*(String(f.lab).length>2?.62:1)}" fill="${c3}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif">${esc(f.lab)}</text>`:""}</g>`}
+    // plano: color liso y una sombra nítida desplazada (en un GIF, las difuminadas se emborronan)
+    if(plano) pl+=`<circle cx="${q[0]+r*.14}" cy="${q[1]+r*.26}" r="${r}" fill="#000" opacity=".28"/>`;
+    pl+=`<g data-f="${f.id}" ${plano?"":`filter="url(#${uid}sh)"`}><circle cx="${q[0]}" cy="${q[1]}" r="${r}" fill="${plano?c1:`url(#${uid}g${f.t})`}" stroke="${sel===f.id?"#ffd84a":c2}" stroke-width="${sel===f.id?sw*3.5:sw*1.6}"/>${f.lab?`<text x="${q[0]}" y="${q[1]+r*.38}" font-size="${fs*(String(f.lab).length>2?.62:1)}" fill="${c3}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif">${esc(f.lab)}</text>`:""}</g>`}
   // Balón: en un pase viaja de un sitio a otro; si no, va con su jugador
   let b=bPos(j,k),escB=1,fx="",sombra=null;
   if(anim!=null){const b2=bPos(j,k2),a=j.pasos[k].balon,c=j.pasos[k2].balon;
@@ -1360,9 +1363,9 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
       if(c?.con&&tb>=1){const q=pos(c.con),u=cl01((anim-ini-dur)/.16);if(u<1)fx+=`<circle cx="${q[0]}" cy="${q[1]}" r="${r*(1.2+u*1.8)}" fill="none" stroke="#fff" stroke-width="${sw*2}" opacity="${1-u}"/>`}
       if(gol&&tb>=1){const u=cl01((anim-ini-dur)/.14);fx+=`<text x="${w/2}" y="${h/2+h*.1}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif" font-size="${h*(.18+.1*u)}" fill="#ffd84a" stroke="#0b3a19" stroke-width="${h*.012}" paint-order="stroke" opacity="${u}">¡GOL!</text>`}}}
   if(sombra) pl+=`<ellipse cx="${sombra[0]}" cy="${sombra[1]}" rx="${r*.5}" ry="${r*.28}" fill="#000" opacity=".35"/>`;
-  if(b) pl+=`<circle data-f="balon" cx="${b[0]}" cy="${b[1]}" r="${r*.52*escB}" fill="url(#${uid}gbal)" stroke="#111" stroke-width="${sw*1.1}" filter="url(#${uid}sh)"/>`;
+  if(b) pl+=`<circle data-f="balon" cx="${b[0]}" cy="${b[1]}" r="${r*.52*escB}" fill="${plano?"#fff":`url(#${uid}gbal)`}" stroke="#111" stroke-width="${sw*1.1}" ${plano?"":`filter="url(#${uid}sh)"`}/>`;
   const marks=["pase","carrera","conduccion"].map(t=>`<marker id="${uid}${t}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${col[t]}"/></marker>`).join("");
-  let rayas="";for(let i=0;i<10;i++) rayas+=`<rect x="${i*w/10}" y="${-pad}" width="${w/20}" height="${h+2*pad}" fill="#fff" fill-opacity=".05"/>`;
+  let rayas="";for(let i=0;i<10;i++) rayas+=`<rect x="${i*w/10}" y="${-pad}" width="${w/20}" height="${h+2*pad}" fill="#fff" fill-opacity="${plano?.07:.05}"/>`;
   const grad=(id,a,b)=>`<radialGradient id="${uid}g${id}" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></radialGradient>`;
   const defs=marks+`<linearGradient id="${uid}cesped" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c9d4f"/><stop offset="1" stop-color="#17652f"/></linearGradient>
     <radialGradient id="${uid}vin" cx="50%" cy="50%" r="70%"><stop offset=".6" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
@@ -1370,9 +1373,9 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
     ${grad("A","#ffffff","#dfe9e0")}${grad("PT","#ffe680","#e8b800")}${grad("B","#ff6a5e","#c11d16")}${grad("PR","#3a3a3a","#0a0a0a")}${grad("bal","#ffffff","#cfcfcf")}`;
   const vb=[-pad,-pad,w+2*pad,h+2*pad];
   return `<svg viewBox="${vb.join(" ")}" ${editable?'id="jgsvg"':""} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Jugada"><defs>${defs}</defs>
-    <rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="url(#${uid}cesped)"/>${rayas}
+    <rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="${plano?"#27914a":`url(#${uid}cesped)`}"/>${rayas}
     <g stroke="#fff" stroke-opacity=".8" stroke-width="${sw*1.4}" fill="none">${lineasCampo(j.campo,w,h)}</g>
-    <rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="url(#${uid}vin)"/>${tr}${fl}${gh}${pl}${fx}</svg>`}
+    ${plano?"":`<rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="url(#${uid}vin)"/>`}${tr}${fl}${gh}${pl}${fx}</svg>`}
 
 // ---------- Describir jugadas y pasos con frases (1.11, rehecho en la 1.15) ----------
 // Sin IA: frases sencillas con dorsales («el 3 la da al 8», «el 7 se desmarca a la espalda»,
@@ -1623,7 +1626,7 @@ async function fotograma(x,W,H,j,k,anim,texto,num,total,alfa=1){
   x.fillStyle="#fff";x.textAlign="right";let n=(j.nombre||"Jugada").toUpperCase(),fs=22*u;x.font=`400 ${fs}px ${BE}`;while(x.measureText(n).width>W*.6&&n.length>8){n=n.slice(0,-2);x.font=`400 ${fs}px ${BE}`}
   if(n!==(j.nombre||"Jugada").toUpperCase())n=n.trim()+"…";x.fillText(n,W-18*u,32*u);
   // Campo
-  const top=46*u,franja=170*u,im=await svgImg(svgJugada(j,k,{uid:"v",anim,ghost:anim==null}));const [w,h]=jugDims(j),ar=(w*1.07)/(h*1.07+0.001),bh=H-top-franja-8*u,bw=Math.min(W-24*u,bh*ar),bh2=bw/ar;
+  const top=46*u,franja=170*u,im=await svgImg(svgJugada(j,k,{uid:"v",anim,ghost:true,sombras:false,plano:true}));const [w,h]=jugDims(j),ar=(w*1.07)/(h*1.07+0.001),bh=H-top-franja-8*u,bw=Math.min(W-24*u,bh*ar),bh2=bw/ar;
   x.drawImage(im,(W-bw)/2,top+(bh-bh2)/2,bw,bh2);
   // Franja del paso
   const fy=H-franja+4*u,fx=14*u,fw=W-28*u,fh=franja-18*u;
@@ -1644,9 +1647,9 @@ async function grabarGif(){
   const j=S.jgDraft;if(j.pasos.length<2){toast("Añade al menos dos pasos");return null}
   const {GIFEncoder,quantize,applyPalette}=await import("./lib/gifenc.esm.js");
   try{await document.fonts.load('400 26px "Bebas Neue"')}catch(e){}
-  const W=720,H=620,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d",{willReadFrequently:true}),gif=GIFEncoder();
-  const tot=j.pasos.length,frame=async(k,anim,texto,delay,num,alfa)=>{await fotograma(x,W,H,j,k,anim,texto,num,tot,alfa);const d=x.getImageData(0,0,W,H).data,pal=quantize(d,128,{format:"rgb444"});
-    gif.writeFrame(applyPalette(d,pal,"rgb444"),W,H,{palette:pal,delay})};
+  const W=960,H=827,c=document.createElement("canvas");c.width=W;c.height=H;const x=c.getContext("2d",{willReadFrequently:true}),gif=GIFEncoder();
+  const tot=j.pasos.length,frame=async(k,anim,texto,delay,num,alfa)=>{await fotograma(x,W,H,j,k,anim,texto,num,tot,alfa);const d=x.getImageData(0,0,W,H).data,pal=quantize(d,256,{format:"rgb565"});
+    gif.writeFrame(applyPalette(d,pal,"rgb565"),W,H,{palette:pal,delay})};
   const N=16;
   await frame(0,null,j.pasos[0].texto,1300,1,1);
   // el texto del paso siguiente entra con un fundido al empezar la transición

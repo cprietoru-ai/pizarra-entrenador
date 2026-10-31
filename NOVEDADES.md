@@ -2,6 +2,10 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.16 · 31-oct-2026
+- Al compartir, sin las sombras de las fichas al final de cada paso: el movimiento no se corta.
+- Animación con más definición (960 px y el doble de colores) y un estilo plano y nítido.
+
 ## 1.15 · 31-oct-2026
 - «✨ Generar este paso» en el editor: escribes qué pasa en el paso y la app coloca y mueve las fichas.
 - «Describir jugada» arreglado: cada pase, conducción, centro o remate va en su propio paso, aunque esté todo en una frase con comas.
