@@ -2,6 +2,12 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.31 · 31-oct-2026
+- La pestaña Sesiones pasa a llamarse Entrenos, con 📅 Calendario y 📚 Sesiones dentro.
+- ✨ Generar con opciones: qué trabajar (presión, posesión, salida de balón, finalización…), duración, carga y cuántos jugadores. Elige los ejercicios de tu biblioteca según eso.
+- También dentro de Nueva sesión: «✨ Generar», al lado de «+ Añadir ejercicio», usando la fecha y la idea que hayas puesto.
+- Calendario: «＋ Entreno extra» para un día suelto y ✕ para quitar solo un día (por ejemplo, un festivo). Los días fijos no cambian.
+
 ## 1.30 · 31-oct-2026
 - Pizarra renovada: tarjetas más pequeñas, de dos en dos en el móvil, con su campo, pasos y partido.
 - Arriba, las jugadas del próximo partido; buscador y filtros (con partido, campo entero, medio campo...) cuando tienes más de tres.
