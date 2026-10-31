@@ -2,6 +2,10 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.13 · 31-oct-2026
+- Al compartir, cada paso lleva una franja con «Paso n de N» y la frase en grande.
+- En el editor, el texto del paso está arriba, justo debajo de los pasos.
+
 ## 1.12 · 31-oct-2026
 - Animación más dinámica: primero arrancan los desmarques y luego sale el pase; el balón vuela en los pases largos con su sombra; la cámara se acerca a la jugada; onda al recibir y «¡GOL!» al marcar.
 
