@@ -2,6 +2,10 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.39 · 31-oct-2026
+- 11 ejercicios más (ya son 41): el FIFA 11+ en sus tres partes (también en Físico), presión en bloque y 2 contra 1, 4 contra 4 en dos zonas, patrón de ataque con centro, córners con carreras señuelo, falta lateral con bloqueos y un 11 contra 11 de presión alta. Todos del FIFA Training Centre y de FIFA Medical, con su fuente.
+- 7 sesiones tipo listas para usar: presión tras pérdida, salir jugando, posesión y cambio de orientación, finalización, defender juntos, víspera de partido y prevención con el FIFA 11+. Salen como «Plantilla» en 📚 Sesiones; en el calendario, «Elegir» las copia al día que quieras.
+
 ## 1.38.1 · 31-oct-2026
 - Entreno extra con un solo botón, debajo de los días fijos: eliges cualquier día y entra en su semana como uno más (por ejemplo, para tener tres esa semana).
 - Iconos del logo renovados con otro nombre para que el móvil y el ordenador cojan el escudo nuevo.

@@ -1,6 +1,6 @@
 // Modo sin conexión: guarda la app y sirve primero lo guardado; si hay red,
 // se actualiza en segundo plano para la próxima vez que se abra.
-const CACHE = "pizarra-v47";
+const CACHE = "pizarra-v48";
 const BASE = ["./", "index.html", "ejemplos.json", "manifest.webmanifest", "icons/escudo-icon-192.png", "icons/escudo-icon-512.png", "icons/escudo-icon-180.png", "icons/logo.svg", "icons/escudo-256.png", "icons/maskable-192.png", "lib/gifenc.esm.js"];
 // cache: "reload" para no guardar una copia vieja de la caché del navegador
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(BASE.map(u => new Request(u, { cache: "reload" }))))); self.skipWaiting(); });

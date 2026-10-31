@@ -1,5 +1,5 @@
 {
- "version": 2,
+ "version": 3,
  "ejercicios": {
   "vuelta-calma": {
    "nombre": "Vuelta a la calma y mensaje",
@@ -3299,6 +3299,1354 @@
     ]
    },
    "desde": 2
+  },
+  "fifa11-parte1": {
+   "categoria": "Calentamiento",
+   "nombre": "FIFA 11+ parte 1: carrera con movilidad",
+   "tiempo": "8'",
+   "series": "6 ejercicios, 2 series cada uno",
+   "espacio": "Dos filas de 6 conos, a unos 5-6 m entre conos y 30 m de largo",
+   "jugadores": "Todo el grupo, por parejas",
+   "objetivo": "Activar con carrera suave y movilidad de cadera, y aprender a caer y a cambiar de dirección bien.",
+   "descripcion": "Ida corriendo y vuelta suave. 1) Carrera recta. 2) Cadera hacia fuera (en cada cono, rodilla arriba y abrir). 3) Cadera hacia dentro. 4) Rodear al compañero. 5) Salto con choque de hombros. 6) Sprint corto hacia delante y hacia atrás.",
+   "consignas": [
+    "Rodilla alineada con el pie al caer (que no se vaya hacia dentro)",
+    "Tronco recto",
+    "Calidad antes que velocidad"
+   ],
+   "variantes": "Se hace siempre igual: lo que cambia de nivel es la parte 2.",
+   "fuente": "FIFA 11+ (FIFA Medical), programa oficial de calentamiento para jugadores de 14 años o más. Revisiones: entre un 30 y un 50 % menos de lesiones si se hace al menos 2 veces por semana. Parte 1.",
+   "diagrama": {
+    "w": 40,
+    "h": 30,
+    "tipo": "rect",
+    "el": [
+     [
+      "cono",
+      6,
+      8
+     ],
+     [
+      "cono",
+      12,
+      8
+     ],
+     [
+      "cono",
+      18,
+      8
+     ],
+     [
+      "cono",
+      24,
+      8
+     ],
+     [
+      "cono",
+      30,
+      8
+     ],
+     [
+      "cono",
+      36,
+      8
+     ],
+     [
+      "cono",
+      6,
+      22
+     ],
+     [
+      "cono",
+      12,
+      22
+     ],
+     [
+      "cono",
+      18,
+      22
+     ],
+     [
+      "cono",
+      24,
+      22
+     ],
+     [
+      "cono",
+      30,
+      22
+     ],
+     [
+      "cono",
+      36,
+      22
+     ],
+     [
+      "A",
+      3,
+      8
+     ],
+     [
+      "A",
+      3,
+      22
+     ],
+     [
+      "carrera",
+      4,
+      8,
+      34,
+      8
+     ],
+     [
+      "carrera",
+      4,
+      22,
+      34,
+      22
+     ],
+     [
+      "texto",
+      20,
+      15,
+      "Ida con el ejercicio · vuelta suave"
+     ]
+    ]
+   },
+   "desde": 3
+  },
+  "fifa11-parte2": {
+   "categoria": "Físico",
+   "nombre": "FIFA 11+ parte 2: fuerza, pliometría y equilibrio",
+   "tiempo": "10'",
+   "series": "6 ejercicios; nivel 1, 2 o 3 según el grupo",
+   "espacio": "Una zona de hierba al lado del campo",
+   "jugadores": "Todo el grupo, por parejas",
+   "objetivo": "Prevenir lesiones con fuerza de tronco y piernas, saltos y equilibrio.",
+   "descripcion": "Seis ejercicios con tres niveles: 1) Plancha. 2) Plancha lateral. 3) Isquios (nórdico, con el compañero sujetando los tobillos). 4) Equilibrio a una pierna. 5) Sentadillas. 6) Saltos. Se sube de nivel cuando el grupo hace el anterior bien.",
+   "consignas": [
+    "Cuerpo en línea en las planchas",
+    "Nórdico: bajar despacio, que lo sujete bien el compañero",
+    "Al caer de un salto, rodillas alineadas y caída suave"
+   ],
+   "variantes": "Nivel 1 (principiante) → 2 → 3, ejercicio a ejercicio.",
+   "fuente": "FIFA 11+ (FIFA Medical), programa oficial de calentamiento para jugadores de 14 años o más. Revisiones: entre un 30 y un 50 % menos de lesiones si se hace al menos 2 veces por semana. Parte 2.",
+   "diagrama": {
+    "w": 40,
+    "h": 30,
+    "tipo": "rect",
+    "el": [
+     [
+      "A",
+      8,
+      8
+     ],
+     [
+      "A",
+      20,
+      8
+     ],
+     [
+      "A",
+      32,
+      8
+     ],
+     [
+      "A",
+      8,
+      22
+     ],
+     [
+      "A",
+      20,
+      22
+     ],
+     [
+      "A",
+      32,
+      22
+     ],
+     [
+      "texto",
+      8,
+      4,
+      "Plancha"
+     ],
+     [
+      "texto",
+      20,
+      4,
+      "Lateral"
+     ],
+     [
+      "texto",
+      32,
+      4,
+      "Nórdico"
+     ],
+     [
+      "texto",
+      8,
+      28,
+      "1 pierna"
+     ],
+     [
+      "texto",
+      20,
+      28,
+      "Sentadilla"
+     ],
+     [
+      "texto",
+      32,
+      28,
+      "Saltos"
+     ]
+    ]
+   },
+   "desde": 3
+  },
+  "fifa11-parte3": {
+   "categoria": "Físico",
+   "nombre": "FIFA 11+ parte 3: carrera rápida y cambios de dirección",
+   "tiempo": "3'",
+   "series": "3 ejercicios, 2 series",
+   "espacio": "Lo largo del campo y la misma calle de conos",
+   "jugadores": "Todo el grupo",
+   "objetivo": "Acabar el calentamiento a ritmo de partido, cuidando los apoyos.",
+   "descripcion": "1) Carrera a lo largo del campo, de menos a más. 2) Carrera con zancadas largas (saltando hacia delante). 3) Apoyo y cambio de dirección: correr, frenar sobre una pierna y salir al otro lado.",
+   "consignas": [
+    "En el cambio de dirección, rodilla sobre el pie",
+    "Pasos cortos para frenar"
+   ],
+   "variantes": "Se puede hacer con balón al final para enlazar con el primer ejercicio.",
+   "fuente": "FIFA 11+ (FIFA Medical), programa oficial de calentamiento para jugadores de 14 años o más. Revisiones: entre un 30 y un 50 % menos de lesiones si se hace al menos 2 veces por semana. Parte 3.",
+   "diagrama": {
+    "w": 40,
+    "h": 30,
+    "tipo": "rect",
+    "el": [
+     [
+      "A",
+      4,
+      8
+     ],
+     [
+      "A",
+      4,
+      22
+     ],
+     [
+      "carrera",
+      5,
+      8,
+      34,
+      8
+     ],
+     [
+      "carrera",
+      5,
+      22,
+      22,
+      22
+     ],
+     [
+      "carrera",
+      22,
+      22,
+      30,
+      15
+     ],
+     [
+      "cono",
+      22,
+      22
+     ],
+     [
+      "texto",
+      20,
+      28,
+      "Frenar y cambiar de dirección"
+     ]
+    ]
+   },
+   "desde": 3
+  },
+  "fifa-tres-en-raya": {
+   "categoria": "Calentamiento",
+   "nombre": "Tres en raya a la carrera",
+   "tiempo": "8'",
+   "series": "Partidas de 1'",
+   "espacio": "9 aros (o conos) en 3 filas de 3, a 15 m de la salida",
+   "jugadores": "Equipos de 4 o 5; dos equipos a la vez, con 3 petos cada uno",
+   "objetivo": "Activar con velocidad y decisión en un juego competitivo.",
+   "descripcion": "Sale uno de cada equipo, esprinta y deja su peto en un aro; vuelve y sale el siguiente. Gana el primero que hace tres en raya. Si ya están los 6 petos puestos, el siguiente mueve uno de los suyos para intentar la raya.",
+   "consignas": [
+    "Ambiente alegre y competitivo",
+    "Subir la intensidad poco a poco"
+   ],
+   "variantes": "Antes: juego de reacción con un peto encima de un poste entre dos jugadores (izquierda, derecha, gira… y al decir el color, a por el peto).",
+   "fuente": "FIFA Training Centre · torneo sub-15 masculino: México, «Matchday 1: preparing to play Spain in a 4-4-2 diamond», parte 1 (calentamiento). Tiempos: propuesta para cadetes (la fuente no los da), con series cortas y descanso de verdad (Castillo et al. 2019).",
+   "diagrama": {
+    "w": 40,
+    "h": 30,
+    "tipo": "rect",
+    "el": [
+     [
+      "cono",
+      17,
+      6
+     ],
+     [
+      "cono",
+      20,
+      6
+     ],
+     [
+      "cono",
+      23,
+      6
+     ],
+     [
+      "cono",
+      17,
+      9
+     ],
+     [
+      "cono",
+      20,
+      9
+     ],
+     [
+      "cono",
+      23,
+      9
+     ],
+     [
+      "cono",
+      17,
+      12
+     ],
+     [
+      "cono",
+      20,
+      12
+     ],
+     [
+      "cono",
+      23,
+      12
+     ],
+     [
+      "A",
+      15,
+      27
+     ],
+     [
+      "A",
+      17,
+      27
+     ],
+     [
+      "B",
+      23,
+      27
+     ],
+     [
+      "B",
+      25,
+      27
+     ],
+     [
+      "carrera",
+      16,
+      26,
+      19,
+      13
+     ],
+     [
+      "carrera",
+      24,
+      26,
+      22,
+      13
+     ],
+     [
+      "texto",
+      20,
+      18,
+      "15 m"
+     ]
+    ]
+   },
+   "desde": 3
+  },
+  "fifa-circuito-hexagono": {
+   "categoria": "Técnica",
+   "nombre": "Circuito de pases en hexágono (con maniquí)",
+   "tiempo": "10'",
+   "series": "Rotando sitios; cambio de lado a mitad",
+   "espacio": "Dos hexágonos con un maniquí en el centro, de medio campo a 5 m de la banda",
+   "jugadores": "Grupos de 6, un balón por grupo, sin oposición",
+   "objetivo": "Pase diagonal, control orientado, pared y desmarques para recibir.",
+   "descripcion": "En cada hexágono, pases en diagonal, desmarques en horizontal para recibir, control orientado y paredes; luego se vuelve a empezar. Se rota de sitio todo el rato. Antes, activación sin balón: trote hasta 4 picas en el suelo, pasos laterales entre ellas y vuelta.",
+   "consignas": [
+    "Pases firmes",
+    "Perfil para controlar y jugar hacia delante",
+    "Pase al espacio con la fuerza justa"
+   ],
+   "variantes": "El grupo de la izquierda del hexágono se cambia con el de la derecha.",
+   "fuente": "FIFA Training Centre · selección sub-15 femenina de México (Karla Maya): «Defensive phase and pressing», parte 1. Tiempos: propuesta para cadetes (la fuente no los da), con series cortas y descanso de verdad (Castillo et al. 2019).",
+   "diagrama": {
+    "w": 40,
+    "h": 30,
+    "tipo": "rect",
+    "el": [
+     [
+      "B",
+      20,
+      15
+     ],
+     [
+      "A",
+      12,
+      8
+     ],
+     [
+      "A",
+      28,
+      8
+     ],
+     [
+      "A",
+      34,
+      15
+     ],
+     [
+      "A",
+      28,
+      22
+     ],
+     [
+      "A",
+      12,
+      22
+     ],
+     [
+      "A",
+      6,
+      15
+     ],
+     [
+      "balon",
+      12.8,
+      8.8
+     ],
+     [
+      "pase",
+      12,
+      8,
+      28,
+      22
+     ],
+     [
+      "carrera",
+      34,
+      15,
+      30,
+      10
+     ],
+     [
+      "pase",
+      28,
+      22,
+      34,
+      15
+     ]
+    ]
+   },
+   "desde": 3
+  },
+  "fifa-4v4-dos-zonas": {
+   "categoria": "Táctica",
+   "nombre": "4 contra 4 en dos zonas: salir de la presión y presionar",
+   "tiempo": "15'",
+   "series": "4 x 3'",
+   "espacio": "40 x 40 m con portería en cada fondo, partido en dos zonas; dos conos amarillos a 4 m de la línea central como referencia de la línea defensiva",
+   "jugadores": "En cada zona, portero, 4 atacantes y 4 defensores",
+   "objetivo": "Presionar fuerte al que recibe de espaldas y salir jugando de la zona propia.",
+   "descripcion": "El portero empieza (balón alto del entrenador) y busca a un compañero en su zona. Los defensas de la zona 1 progresan pasando y combinando con los atacantes de la zona 2, que intentan acabar rápido. Cada uno se queda en su zona. El que no tiene el balón presiona a tope para robar y acabar.",
+   "consignas": [
+    "Presionar fuerte cuando el rival recibe de espaldas",
+    "Hablar para que la línea defensiva esté junta",
+    "Elegir cuándo presionar y cuándo cubrir"
+   ],
+   "variantes": "El portero puede jugar directo a la zona 2; o los de la zona 1 pueden tirar desde su zona.",
+   "fuente": "FIFA Training Centre · selección sub-15 femenina de México (Karla Maya): «Defensive phase and pressing», parte 2. Tiempos: propuesta para cadetes (la fuente no los da), con series cortas y descanso de verdad (Castillo et al. 2019).",
+   "diagrama": {
+    "w": 60,
+    "h": 40,
+    "tipo": "f7",
+    "el": [
+     [
+      "zona",
+      10,
+      0,
+      20,
+      40,
+      "Zona 1"
+     ],
+     [
+      "zona",
+      30,
+      0,
+      20,
+      40,
+      "Zona 2"
+     ],
+     [
+      "PT",
+      8,
+      20
+     ],
+     [
+      "PT",
+      52,
+      20
+     ],
+     [
+      "A",
+      15,
+      8
+     ],
+     [
+      "A",
+      15,
+      32
+     ],
+     [
+      "A",
+      24,
+      14
+     ],
+     [
+      "A",
+      24,
+      26
+     ],
+     [
+      "B",
+      18,
+      12
+     ],
+     [
+      "B",
+      18,
+      28
+     ],
+     [
+      "B",
+      27,
+      20
+     ],
+     [
+      "B",
+      13,
+      20
+     ],
+     [
+      "A",
+      36,
+      10
+     ],
+     [
+      "A",
+      36,
+      30
+     ],
+     [
+      "A",
+      44,
+      16
+     ],
+     [
+      "A",
+      44,
+      24
+     ],
+     [
+      "B",
+      40,
+      8
+     ],
+     [
+      "B",
+      40,
+      32
+     ],
+     [
+      "B",
+      46,
+      20
+     ],
+     [
+      "B",
+      34,
+      20
+     ],
+     [
+      "cono",
+      26,
+      4
+     ],
+     [
+      "cono",
+      34,
+      4
+     ],
+     [
+      "balon",
+      15.8,
+      8.8
+     ],
+     [
+      "pase",
+      15,
+      8,
+      24,
+      14
+     ],
+     [
+      "pase",
+      24,
+      14,
+      36,
+      10
+     ]
+    ]
+   },
+   "desde": 3
+  },
+  "fifa-presion-2v1-zonas": {
+   "categoria": "Táctica",
+   "nombre": "Presión para hacer 2 contra 1, en tres zonas",
+   "tiempo": "15'",
+   "series": "3 x 4'",
+   "espacio": "55 x 45 m en tres zonas: la central de 15 m y las de los fondos de 20 m",
+   "jugadores": "Los dos equipos en 4-3-3 con portero (en los fondos, 4 defensas + portero contra 3 delanteros; en el centro, 3 contra 3)",
+   "objetivo": "Presionar todos juntos para hacer superioridad al lado del balón.",
+   "descripcion": "Cada uno en la zona de su puesto. El que presiona busca hacer un 2 contra 1 sobre el que tiene el balón. Solo los defensas pueden bajar una zona a ayudar; los demás se quedan en la suya. El objetivo es quitar espacio y robar rápido.",
+   "consignas": [
+    "Volver rápido al perder el balón",
+    "Con el balón, pasar rápido a la siguiente zona",
+    "Ayudar cuando el balón te supera",
+    "Presión por la espalda: el delantero baja y presiona al medio por donde no le ve"
+   ],
+   "variantes": "11 contra 11 sin zonas.",
+   "fuente": "FIFA Training Centre · selección sub-15 femenina de México (Karla Maya): «Defensive phase and pressing», parte 3. Tiempos: propuesta para cadetes (la fuente no los da), con series cortas y descanso de verdad (Castillo et al. 2019).",
+   "diagrama": {
+    "w": 100,
+    "h": 64,
+    "tipo": "completo",
+    "el": [
+     [
+      "zona",
+      8,
+      4,
+      37,
+      56,
+      "20 m"
+     ],
+     [
+      "zona",
+      45,
+      4,
+      10,
+      56,
+      "15 m"
+     ],
+     [
+      "zona",
+      55,
+      4,
+      37,
+      56,
+      "20 m"
+     ],
+     [
+      "PT",
+      9,
+      32
+     ],
+     [
+      "PT",
+      91,
+      32
+     ],
+     [
+      "A",
+      20,
+      12
+     ],
+     [
+      "A",
+      18,
+      26
+     ],
+     [
+      "A",
+      18,
+      38
+     ],
+     [
+      "A",
+      20,
+      52
+     ],
+     [
+      "A",
+      50,
+      20
+     ],
+     [
+      "A",
+      50,
+      32
+     ],
+     [
+      "A",
+      50,
+      44
+     ],
+     [
+      "B",
+      30,
+      16
+     ],
+     [
+      "B",
+      32,
+      32
+     ],
+     [
+      "B",
+      30,
+      48
+     ],
+     [
+      "B",
+      48,
+      26
+     ],
+     [
+      "B",
+      52,
+      38
+     ],
+     [
+      "B",
+      48,
+      14
+     ],
+     [
+      "carrera",
+      30,
+      16,
+      22,
+      14
+     ],
+     [
+      "carrera",
+      32,
+      32,
+      22,
+      15
+     ],
+     [
+      "balon",
+      20.8,
+      12.8
+     ]
+    ]
+   },
+   "desde": 3
+  },
+  "fifa-patron-ataque-centro": {
+   "categoria": "Finalización",
+   "nombre": "Patrón de ataque con centro y defender el centro",
+   "tiempo": "15'",
+   "series": "3 variantes, 4-5 repeticiones por lado",
+   "espacio": "Campo entero con porterías y porteros; maniquíes en 4-1-4-1 como rivales",
+   "jugadores": "Un once en 4-4-2 (dos medios más atrás) y los que sobran esperando junto a los maniquíes de su puesto",
+   "objetivo": "Ataque combinativo que acaba en centro y llegada de cuatro al área; y defenderlo.",
+   "descripcion": "Fase 1: el portero da a un defensa, que cambia de lado; el lateral contrario sube y un medio baja a su sitio. El medio de banda progresa hacia el 9, que la deja de cara al medio que llega; este abre al lateral, que centra para cuatro que llegan al área. Fase 2: los defensas defienden ese centro mientras dos medios atacan el área y otro centra. Fase 3: tras el despeje, el medio que no ha jugado pasa al entrenador y tira.",
+   "consignas": [
+    "Pases precisos y secos",
+    "Movimientos sincronizados",
+    "Los medios miran todo el rato para encontrar el pase adelante",
+    "El 9 baja a combinar",
+    "Defensas: perfil para ver balón y rival"
+   ],
+   "variantes": "Hacerlo por el otro lado; pase al hueco al extremo contrario; o atraer al lateral rival para que el 9 ataque su espalda.",
+   "fuente": "FIFA Training Centre · torneo sub-15 masculino: México, «Matchday 1: preparing to play Spain in a 4-4-2 diamond», parte 2. Tiempos: propuesta para cadetes (la fuente no los da), con series cortas y descanso de verdad (Castillo et al. 2019).",
+   "diagrama": {
+    "w": 100,
+    "h": 64,
+    "tipo": "completo",
+    "el": [
+     [
+      "PT",
+      1.5,
+      32
+     ],
+     [
+      "PT",
+      98.5,
+      32
+     ],
+     [
+      "A",
+      14,
+      16
+     ],
+     [
+      "A",
+      14,
+      48
+     ],
+     [
+      "A",
+      28,
+      32
+     ],
+     [
+      "A",
+      40,
+      58
+     ],
+     [
+      "A",
+      46,
+      26
+     ],
+     [
+      "A",
+      62,
+      40
+     ],
+     [
+      "A",
+      76,
+      32
+     ],
+     [
+      "A",
+      86,
+      26
+     ],
+     [
+      "A",
+      86,
+      36
+     ],
+     [
+      "A",
+      80,
+      46
+     ],
+     [
+      "B",
+      70,
+      24
+     ],
+     [
+      "B",
+      70,
+      40
+     ],
+     [
+      "B",
+      84,
+      32
+     ],
+     [
+      "balon",
+      15,
+      17
+     ],
+     [
+      "pase",
+      14,
+      16,
+      14,
+      48
+     ],
+     [
+      "pase",
+      14,
+      48,
+      40,
+      58
+     ],
+     [
+      "pase",
+      40,
+      58,
+      76,
+      32
+     ],
+     [
+      "pase",
+      76,
+      32,
+      62,
+      40
+     ],
+     [
+      "pase",
+      62,
+      40,
+      80,
+      58
+     ],
+     [
+      "carrera",
+      80,
+      46,
+      80,
+      58
+     ],
+     [
+      "pase",
+      80,
+      58,
+      88,
+      31
+     ]
+    ]
+   },
+   "desde": 3
+  },
+  "fifa-corner-senuelos": {
+   "categoria": "Balón parado",
+   "nombre": "Córners ensayados: carreras señuelo y primer-segundo palo",
+   "tiempo": "15'",
+   "series": "5 de cada jugada",
+   "espacio": "Medio campo con portería y portero",
+   "jugadores": "Un equipo ataca y otro defiende (5 al hombre, 2 en zona en la frontal, 2 en zona en el primer palo)",
+   "objetivo": "Dos jugadas de córner para crear espacio en el segundo palo.",
+   "descripcion": "Jugada 1 (señuelos): 5 atacantes entre el penalti y la frontal corren al primer palo para arrastrar a los defensas; 2 esperan a los lados de la media luna y uno esprinta al hueco del segundo palo. Jugada 2: 4 en la frontal y 1 en la media luna; los 4 se cruzan y atacan primer y segundo palo; uno junto al portero se va hacia el penalti al sacar.",
+   "consignas": [
+    "Cada uno sabe su papel y lo adapta a cómo defienden",
+    "Agresivos al atacar el balón y en las carreras señuelo"
+   ],
+   "variantes": "Defensa: 5 al hombre, 2 en zona en la frontal para el rechace y 2 en zona en el primer palo.",
+   "fuente": "FIFA Training Centre · torneo sub-15 masculino: México, «Matchday 1: preparing to play Spain in a 4-4-2 diamond», parte 4. Tiempos: propuesta para cadetes (la fuente no los da), con series cortas y descanso de verdad (Castillo et al. 2019).",
+   "diagrama": {
+    "w": 64,
+    "h": 30,
+    "tipo": "area",
+    "el": [
+     [
+      "A",
+      63.4,
+      29.4
+     ],
+     [
+      "A",
+      30,
+      12
+     ],
+     [
+      "A",
+      34,
+      13
+     ],
+     [
+      "A",
+      26,
+      13
+     ],
+     [
+      "A",
+      38,
+      12
+     ],
+     [
+      "A",
+      32,
+      10
+     ],
+     [
+      "A",
+      22,
+      8
+     ],
+     [
+      "A",
+      42,
+      8
+     ],
+     [
+      "PT",
+      32,
+      29
+     ],
+     [
+      "B",
+      28,
+      24
+     ],
+     [
+      "B",
+      36,
+      24
+     ],
+     [
+      "B",
+      31,
+      20
+     ],
+     [
+      "B",
+      24,
+      18
+     ],
+     [
+      "B",
+      40,
+      18
+     ],
+     [
+      "carrera",
+      30,
+      12,
+      38,
+      24
+     ],
+     [
+      "carrera",
+      34,
+      13,
+      40,
+      23
+     ],
+     [
+      "carrera",
+      42,
+      8,
+      24,
+      24
+     ],
+     [
+      "pase",
+      63.4,
+      29.4,
+      24,
+      25
+     ],
+     [
+      "texto",
+      24,
+      27,
+      "hueco"
+     ]
+    ]
+   },
+   "desde": 3
+  },
+  "fifa-falta-lateral-bloqueos": {
+   "categoria": "Balón parado",
+   "nombre": "Falta lateral: bloqueos para el segundo palo",
+   "tiempo": "12'",
+   "series": "5-6 repeticiones",
+   "espacio": "Medio campo con portería y portero",
+   "jugadores": "Ataque: 5 en el área y 2 en la frontal. Defensa: 7 en línea en zona, barrera de 2 y 1 en la media luna",
+   "objetivo": "Atacar el segundo palo con bloqueos; y defender la falta en zona.",
+   "descripcion": "Ataque: 5 en el área (3 en la línea del primer palo y 2 más cerca del segundo) y 2 en la frontal. Los que salen del segundo palo van hacia el primero para tapar a los defensas y dejar libre el hueco del segundo palo a sus compañeros. Defensa: 7 en línea en zona en el borde del área, barrera de 2 delante del balón y 1 en la media luna para el rechace.",
+   "consignas": [
+    "Saber si marcas al hombre o en zona y actuar según eso",
+    "Agresividad al atacar el balón"
+   ],
+   "variantes": "Cambiar el lado de la falta o que el que saca elija primer o segundo palo.",
+   "fuente": "FIFA Training Centre · torneo sub-15 masculino: México, «Matchday 1: preparing to play Spain in a 4-4-2 diamond», parte 4. Tiempos: propuesta para cadetes (la fuente no los da), con series cortas y descanso de verdad (Castillo et al. 2019).",
+   "diagrama": {
+    "w": 64,
+    "h": 50,
+    "tipo": "medio",
+    "el": [
+     [
+      "PT",
+      32,
+      48.5
+     ],
+     [
+      "A",
+      4,
+      30
+     ],
+     [
+      "A",
+      22,
+      38
+     ],
+     [
+      "A",
+      26,
+      38
+     ],
+     [
+      "A",
+      30,
+      38
+     ],
+     [
+      "A",
+      40,
+      40
+     ],
+     [
+      "A",
+      44,
+      40
+     ],
+     [
+      "A",
+      28,
+      28
+     ],
+     [
+      "A",
+      38,
+      28
+     ],
+     [
+      "B",
+      20,
+      36
+     ],
+     [
+      "B",
+      25,
+      36
+     ],
+     [
+      "B",
+      30,
+      36
+     ],
+     [
+      "B",
+      35,
+      36
+     ],
+     [
+      "B",
+      40,
+      36
+     ],
+     [
+      "B",
+      45,
+      36
+     ],
+     [
+      "B",
+      50,
+      36
+     ],
+     [
+      "B",
+      9,
+      32
+     ],
+     [
+      "B",
+      11,
+      33
+     ],
+     [
+      "B",
+      32,
+      30
+     ],
+     [
+      "balon",
+      3.4,
+      30
+     ],
+     [
+      "carrera",
+      44,
+      40,
+      36,
+      41
+     ],
+     [
+      "pase",
+      4,
+      30,
+      44,
+      42
+     ]
+    ]
+   },
+   "desde": 3
+  },
+  "fifa-11v11-presion-rombo": {
+   "categoria": "Partido",
+   "nombre": "11 contra 11: salir contra presión alta y presionar en rombo",
+   "tiempo": "20'",
+   "series": "2 x 8'",
+   "espacio": "Campo entero con porterías y porteros",
+   "jugadores": "11 contra 11 (un equipo en 4-4-2 con rombo y otro en 4-3-3); con menos, 8 contra 8",
+   "objetivo": "Ensayar el partido: presión alta coordinada y salir de ella.",
+   "descripcion": "Se empieza siempre con saque de puerta. Un equipo sale jugando y el otro presiona alto y coordinado, con el rombo en el centro. Después se cambian los papeles: el del rombo sale jugando y busca la banda cuando los laterales rivales salen a presionar.",
+   "consignas": [
+    "Presionando: tapar el pase entre central y lateral y forzar el error o el pelotazo",
+    "Si va a la banda, el medio de ese lado salta rápido",
+    "Ganar el primer y el segundo balón tras un balón largo",
+    "Estar entre dos rivales hace dudar al que lleva el balón"
+   ],
+   "variantes": "Si los laterales rivales se meten por dentro, jugar largo a los dos puntas.",
+   "fuente": "FIFA Training Centre · torneo sub-15 masculino: México, «Matchday 1: preparing to play Spain in a 4-4-2 diamond», parte 3. Tiempos: propuesta para cadetes (la fuente no los da), con series cortas y descanso de verdad (Castillo et al. 2019).",
+   "diagrama": {
+    "w": 100,
+    "h": 64,
+    "tipo": "completo",
+    "el": [
+     [
+      "PT",
+      1.5,
+      32
+     ],
+     [
+      "PT",
+      98.5,
+      32
+     ],
+     [
+      "A",
+      14,
+      14
+     ],
+     [
+      "A",
+      12,
+      28
+     ],
+     [
+      "A",
+      12,
+      36
+     ],
+     [
+      "A",
+      14,
+      50
+     ],
+     [
+      "A",
+      28,
+      32
+     ],
+     [
+      "A",
+      36,
+      22
+     ],
+     [
+      "A",
+      36,
+      42
+     ],
+     [
+      "A",
+      46,
+      32
+     ],
+     [
+      "A",
+      58,
+      26
+     ],
+     [
+      "A",
+      58,
+      38
+     ],
+     [
+      "B",
+      70,
+      18
+     ],
+     [
+      "B",
+      72,
+      32
+     ],
+     [
+      "B",
+      70,
+      46
+     ],
+     [
+      "B",
+      84,
+      12
+     ],
+     [
+      "B",
+      86,
+      26
+     ],
+     [
+      "B",
+      86,
+      38
+     ],
+     [
+      "B",
+      84,
+      52
+     ],
+     [
+      "B",
+      56,
+      14
+     ],
+     [
+      "B",
+      56,
+      50
+     ],
+     [
+      "B",
+      62,
+      32
+     ],
+     [
+      "carrera",
+      58,
+      26,
+      74,
+      26
+     ],
+     [
+      "carrera",
+      46,
+      32,
+      64,
+      32
+     ],
+     [
+      "balon",
+      28.8,
+      32.8
+     ]
+    ]
+   },
+   "desde": 3
   }
  },
  "sesiones": {
@@ -3330,6 +4678,113 @@
     "charla-previa"
    ],
    "notas": "Sesión de ejemplo a 3 días del partido: poca carga y sin series largas."
+  },
+  "plantilla-presion-tras-perdida": {
+   "nombre": "Presión tras pérdida",
+   "idea": "Al perder, el más cercano presiona y los demás cierran.",
+   "carga": "Alta",
+   "tareas": [
+    "fifa11-parte1",
+    "fifa11-parte2",
+    "fifa-rondo-5v2-triangulo",
+    "fifa-presion-tras-perdida-3-equipos",
+    "presion-tras-perdida-8v8",
+    "vuelta-calma"
+   ],
+   "notas": "Sesión de carga, la más lejos del partido. Basada en la sesión de presión tras pérdida de la sub-15 de México (FIFA Training Centre). Unos 85'.",
+   "fecha": "",
+   "desde": 3
+  },
+  "plantilla-salida-de-balon": {
+   "nombre": "Salir jugando desde el portero",
+   "idea": "El portero da la superioridad: salimos jugando.",
+   "carga": "Media-alta",
+   "tareas": [
+    "fifa-activacion-4x3",
+    "fifa-circuito-433",
+    "fifa-salida-5-mas-portero",
+    "fifa-11v11-zonas",
+    "vuelta-calma"
+   ],
+   "notas": "Basada en «Possession and building from the back» de la sub-15 de México (FIFA Training Centre). Unos 70'.",
+   "fecha": "",
+   "desde": 3
+  },
+  "plantilla-posesion-cambio": {
+   "nombre": "Posesión y cambio de orientación",
+   "idea": "Tener el balón con paciencia y cambiar de lado.",
+   "carga": "Media",
+   "tareas": [
+    "fifa11-plus",
+    "fifa-rondo-3-zonas",
+    "fifa-5v5-2-comodines",
+    "fifa-11v11-tres-zonas-centrales",
+    "vuelta-calma"
+   ],
+   "notas": "Basada en «Possession moments and switch of play» de la sub-15 de México (FIFA Training Centre). Unos 80'.",
+   "fecha": "",
+   "desde": 3
+  },
+  "plantilla-finalizacion": {
+   "nombre": "Llegar al área y finalizar",
+   "idea": "Llegamos cuatro al área y acabamos.",
+   "carga": "Media",
+   "tareas": [
+    "fifa-circuito-tiro-parejas",
+    "fifa-patron-ataque-centro",
+    "fifa-5v5-4v1-mitades",
+    "finalizacion-oleadas-3v2",
+    "vuelta-calma"
+   ],
+   "notas": "Patrón de ataque de la sub-15 de México y juegos de finalización de fútbol base (FIFA Training Centre). Unos 70'.",
+   "fecha": "",
+   "desde": 3
+  },
+  "plantilla-defender-juntos": {
+   "nombre": "Defender juntos y presionar en bloque",
+   "idea": "Juntos, cerca y a por el 2 contra 1.",
+   "carga": "Media-alta",
+   "tareas": [
+    "fifa-tres-en-raya",
+    "fifa-circuito-hexagono",
+    "fifa-4v4-dos-zonas",
+    "fifa-presion-2v1-zonas",
+    "vuelta-calma"
+   ],
+   "notas": "Basada en «Defensive phase and pressing» de la sub-15 femenina de México (FIFA Training Centre). Unos 70'.",
+   "fecha": "",
+   "desde": 3
+  },
+  "plantilla-vispera": {
+   "nombre": "Víspera de partido: activación y balón parado",
+   "idea": "Frescos, rápidos y cada uno en su sitio en el balón parado.",
+   "carga": "Baja",
+   "tareas": [
+    "fifa-circuito-orientacion",
+    "fifa-8v4-comodin",
+    "fifa-corner-oposicion",
+    "fifa-faltas-oposicion",
+    "charla-previa"
+   ],
+   "notas": "Basada en «The day before the game» de la sub-15 femenina de México (FIFA Training Centre). Poco volumen y nada de juegos intensos largos (Castillo 2019). Unos 55'.",
+   "fecha": "",
+   "desde": 3
+  },
+  "plantilla-prevencion": {
+   "nombre": "Prevención y juego: FIFA 11+ completo",
+   "idea": "Cuidarnos para llegar todos al partido.",
+   "carga": "Media",
+   "tareas": [
+    "fifa11-parte1",
+    "fifa11-parte2",
+    "fifa11-parte3",
+    "fifa-superioridad-se-iguala",
+    "fifa-6v6-porterias-espalda",
+    "vuelta-calma"
+   ],
+   "notas": "El FIFA 11+ completo (unos 20') al menos 2 veces por semana baja entre un 30 y un 50 % las lesiones. Después, juego. Unos 65'.",
+   "fecha": "",
+   "desde": 3
   }
  }
 }
