@@ -207,7 +207,13 @@ ul{margin:4px 0 4px 18px;padding:0}
 .jgedit textarea{min-height:0;font-family:var(--label);font-weight:700;font-size:18px;line-height:1.25;border:2px solid #2fbf63;border-radius:10px;padding:8px 10px}
 .jgtexto{min-height:2.6em;margin-top:8px;font-family:var(--label);font-weight:700;font-size:18px;line-height:1.25;text-align:center}
 /* editor de jugadas 1.21: fichas arriba, reproductor pegado al campo, un solo cuadro para la IA */
-.jgtop{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.jgtools{display:grid!important;grid-template-columns:repeat(6,1fr);gap:4px;margin-bottom:6px;padding:4px;border-radius:14px;background:var(--chip);overflow:visible!important}
+.jt{display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;border-radius:10px;padding:6px 0 5px;font-family:var(--label);font-weight:700;font-size:12.5px;letter-spacing:.2px;color:var(--muted);min-width:0;transition:background .15s,color .15s}
+.jt[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.jtic{height:22px;display:flex;align-items:center}.jtic svg{width:22px;height:22px}
+.ficha{display:block;width:18px;height:18px;border-radius:50%;border:2.5px solid}.ficha.bal{width:14px;height:14px;background:radial-gradient(circle at 35% 30%,#fff 0 30%,#222 32% 100%);border:1.5px solid #fff;box-shadow:0 0 0 1px #222}
+.jgacts{display:flex;gap:4px;flex:0 0 auto}
+.btn.gen{background:var(--surface);color:var(--club);border:2px solid var(--club)}
 .jgtools{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding:2px}
 .jgtools::-webkit-scrollbar{display:none}
 .jgtools .tool{flex:0 0 auto;border-radius:999px;padding:6px 11px;white-space:nowrap}
@@ -602,8 +608,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.21.1";
+const VERSION="1.22";
 const NOVEDADES=[
+  ["1.22","31-oct-2026",["Fichas en una fila de seis que se ven todas a la vez, con su color.","↶ Deshacer y ↷ Rehacer junto a la 🗑, en la línea de pasos.","🎤 En «Este paso», dictar solo guarda la explicación, sin mover nada: mueves las fichas a mano y dictas lo que pasa. «✨ Generar este paso» sigue ahí si quieres que la app las coloque.","Cambiar de pestaña ya no abre el teclado.","Entiende mucho más para colocar: «el 8 y el 7 arriba», «el 2 avanza», «el 9 en el área», «el 7 en la banda derecha», «el 10 junto al 9», «el 5 detrás del 4», «el 6 en el centro del campo», «el 3 atrás», «el 7 en el córner»."]],
   ["1.21.1","31-oct-2026",["Las versiones nuevas entran solas también al volver a la app desde segundo plano, y aunque salgan dos el mismo día."]],
   ["1.21","31-oct-2026",["Editor de jugadas reordenado: las fichas y deshacer/rehacer, encima del campo; el reproductor, pegado debajo.","Los pasos son una línea de tiempo: toca un número para ir a ese paso, + para copiarlo y 🗑 para borrarlo.","Un solo cuadro para escribir o dictar, con dos pestañas: ✨ Este paso (lo genera) y ➕ Lo siguiente (añade el paso que viene). Cambia solo a «Lo siguiente» cuando generas un paso."]],
   ["1.20.1","31-oct-2026",["«✨ Generar este paso» vuelve con su nombre y bien a la vista, en su propio cuadro encima de «¿Qué pasa después?».","🎤 Dictar también para el paso en el que estás: lo dices y se genera solo."]],
@@ -1519,21 +1526,51 @@ function zonaDe(g,t,q,bal,porDefecto){
   if(/a recibir|apoyo|ofrece|baja|viene/.test(t)) return [q[0]+(bal[0]-q[0])*.45,q[1]+(bal[1]-q[1])*.45];
   if(/adelante|arriba|hacia delante|al espacio|profundidad/.test(t)) return mas(q,f,14*sc);
   return porDefecto?porDefecto(q):null}
-const VERBOS={remate:/remat|dispar|chut|tira a puerta|\bgol\b|\bmarca\b/,centro:/centr/,
+// Colocar (1.22): una zona del campo, no un movimiento desde donde está. «el 8 arriba», «el 7 en la banda derecha»
+const ZONA_ABS=/\b(arriba|adelante|delante|en ataque|en punta|de punta|ultimo tercio|atras|abajo|en defensa|en nuestro campo|en su campo|medio ?campo|centro del campo|en el medio|en medio|banda|derech|izquierd|lateral|carril|frontal|area|penalti|corner|palo|junto al?|al lado del?|cerca del?|pegado al?|a la altura del?|detras del?|delante del?|centrad|por dentro|en el centro)/;
+function zonaAbs(g,t,q,p,crear){
+  const {W,H,abajo,G,f,l,mas,sc,conLat,medioAncho}=g;
+  const ref=t.match(/\b(?:junto al?|al lado del?|cerca del?|pegado al?|a la altura del?|detras del?|delante del?)\s+(\d{1,2})\b/);
+  if(ref){const rid=crear(p,ref[1]),r=p.pos[rid];
+    if(/detras/.test(t))return mas(r,f,-6*sc);if(/delante/.test(t))return mas(r,f,6*sc);
+    if(/altura/.test(t))return abajo?[q[0],r[1]]:[r[0],q[1]];
+    const lado=Math.sign(g.lat(q)-g.lat(r))||1;return mas(r,l,lado*4*sc)}
+  if(/corner|esquina/.test(t)){const izq=/izquierd/.test(t);return abajo?[izq?W-.6:.6,H-.6]:[W-.6,izq?.6:H-.6]}
+  if(/primer palo|segundo palo|penalti|area pequena|frontal/.test(t))return zonaDe(g,t,q,G,null);
+  let fr=null;const largo=abajo?H:W,fw=x=>abajo?x[1]/H:x[0]/W;
+  if(/\barea\b/.test(t))fr=(largo-11*sc)/largo;
+  else if(/arriba|adelante|delante|en ataque|punta|ultimo tercio/.test(t))fr=abajo?.72:.78;
+  else if(/medio ?campo|centro del campo|en el medio|en medio/.test(t))fr=abajo?.3:.5;
+  else if(/atras|abajo|en defensa|en nuestro campo/.test(t))fr=abajo?.12:.22;
+  else if(/en su campo/.test(t))fr=abajo?.5:.65;
+  let lat=null;const m=medioAncho-4;
+  if(/derech/.test(t))lat=/carril|por dentro|interior/.test(t)?m*.5:m;
+  else if(/izquierd/.test(t))lat=/carril|por dentro|interior/.test(t)?-m*.5:-m;
+  else if(/centrad|por dentro|en el centro|centro del campo|en el medio|en medio/.test(t))lat=g.lat(q)*.25;
+  else if(/\bbanda\b|lateral/.test(t))lat=(Math.sign(g.lat(q))||1)*m;
+  if(fr==null&&lat==null)return null;
+  const base=fr==null?q:(abajo?[q[0],fr*H]:[fr*W,q[1]]);
+  return lat==null?base:conLat(base,lat)}
+const VERBOS={remate:/remat|dispar|chut|tira a puerta|\bgol\b|\bmarca\b/,centro:/\bcentr(?:a|ar|ando|aria)\b|\b(?:un|el|pone|mete|saca|hace) centro\b(?! del campo)/,
   conduce:/condu|avanza con|regate|sale con el balon|progresa|encara/,
   pase:/la da|se la da|le da|da al|pasa|toca|descarg|cambia de juego|abre|filtra|mete|habilita|juega con|devuelve|asiste|prolong|peina/,
-  carrera:/desmarc|corre|ataca|se va|sube|baja|viene|ofrece|apoy|arrastr|se abre|cierra|se mueve|se coloca|rompe|cae |se incorpora|dobla|entra|recibe|aparece/,
+  carrera:/desmarc|corre|ataca|se va|sube|baja|viene|ofrece|apoy|arrastr|se abre|cierra|se mueve|rompe|cae |se incorpora|dobla|entra|recibe|aparece|avanz|adelant|progres|se mete|empuja|presion|retroced|recul|repliega|se junta|se acerca|se aleja|se desplaza|va hacia|va a |se va|salta|acompana|persigue|vuelve/,
+  coloca:/\b(?:esta|estan|se coloca|se colocan|se pone|se ponen|colocad|situad|empieza en|empiezan en|parte de|se queda|se quedan|en posicion)\b/,
   saque:/sac|saque|tiene el balon|tiene la pelota|lleva el balon|empieza con|con el balon/};
-const verboDe=t=>{for(const v of ["remate","centro","conduce","pase","carrera","saque"]) if(VERBOS[v].test(t)) return v;return null};
+const verboDe=t=>{for(const v of ["remate","centro","conduce","pase","carrera","saque","coloca"]) if(VERBOS[v].test(t)) return v;return null};
 // Trocea una frase en acciones: [{s: dorsal o null, t: texto, v: verbo}]
 function acciones(frase){
-  const out=[];let ultimo=null,sujeto=null;
+  const out=[];let ultimo=null,sujeto=null,pend=[];
   // también empieza acción nueva cada «el N» que no vaya detrás de «con el», «para el»...
   for(const parte of nrm(frase).split(/\s*(?:,|;|\by\b|\btambien\b|\bluego\b|\bdespues\b|\by entonces\b)\s*|(?<!\b(?:con|para|hacia|a|de|del|que))\s+(?=el\s+\d{1,2}\b)/)){
     const t=parte.trim();if(!t)continue;
     let s=(t.match(/^(?:el|la)?\s*(\d{1,2})\b/)||[])[1]||null,v=verboDe(t);
-    if(!v&&s&&ultimo) v=ultimo;                 // «..., el 9 el punto de penalti»: mismo verbo que el anterior
+    if(!v&&s&&ZONA_ABS.test(t)) v="coloca";    // «el 8 arriba», «el 7 en la banda derecha»
+    if(!v&&s&&ultimo&&ultimo!=="saque") v=ultimo; // «..., el 9 el punto de penalti»: mismo verbo que el anterior
+    if(!v&&s&&/^(?:el|la)?\s*\d{1,2}$/.test(t)){pend.push(s);continue} // «el 8 y el 7 arriba»: el 8 espera al verbo
     if(!v) continue;
+    if(pend.length&&(v==="coloca"||v==="carrera")) for(const ps of pend) out.push({s:ps,t:t.replace(/^(?:el|la)?\s*\d{1,2}\b/,"el "+ps),v});
+    pend=[];
     if(!s) s=v==="carrera"?sujeto:null;         // «el 8 conduce y abre a banda»: el balón dirá quién
     ultimo=v;if(s)sujeto=s;out.push({s,t,v})}
   return out}
@@ -1543,7 +1580,7 @@ function aplicarFrase(g,base,frase,crear){
   const bpos=q=>{const b=q.balon;if(!b)return g.G;if(b.con&&q.pos[b.con])return q.pos[b.con];return b.xy||g.G};
   const cerrar=()=>{res.push(p);p=structuredClone(p);p.texto="";conBalon=false};
   for(const a of acciones(frase)){
-    const esBalon=a.v!=="carrera";
+    const esBalon=a.v!=="carrera"&&a.v!=="coloca";
     if(esBalon&&conBalon) cerrar();              // el balón no puede hacer dos cosas a la vez
     let id=a.s?crear(p,a.s):(esBalon&&p.balon?.con?p.balon.con:null);
     if(!id) continue;const q=p.pos[id],bal=bpos(p);
@@ -1552,9 +1589,12 @@ function aplicarFrase(g,base,frase,crear){
     if(esBalon&&a.v!=="saque"&&p.balon?.con!==id) p.balon={con:id};  // si lo hace alguien sin balón, se lo damos
     if(a.v==="saque"){const izq=/izquierd/.test(a.t);
       if(/corner|esquina/.test(a.t)) p.pos[id]=g.abajo?[izq?.6:g.W-.6,g.H-.6]:[g.W-.6,izq?.6:g.H-.6];
-      else if(/banda/.test(a.t)) p.pos[id]=g.abajo?[izq?g.W-.6:.6,q[1]]:[q[0],izq?.6:g.H-.6];
+      else if(/banda/.test(a.t)&&/\bsac|saque/.test(a.t)) p.pos[id]=g.abajo?[izq?g.W-.6:.6,q[1]]:[q[0],izq?.6:g.H-.6];
+      else{const z=zonaAbs(g,a.t.replace(/con (?:el )?balon|con la pelota/,""),q,p,crear);if(z)p.pos[id]=g.cl(z)}
       const rr=[...a.t.matchAll(/\bal\s+(\d{1,2})\b/g)].pop()?.[1];if(rr){p.balon={con:crear(p,rr)}}else{p.balon={con:id};conBalon=false}continue}
-    if(a.v==="carrera"){p.pos[id]=g.cl(zonaDe(g,a.t,q,bal,x=>g.mas(x,g.f,10*g.sc)));continue}
+    if(a.v==="coloca"){const z=zonaAbs(g,a.t,q,p,crear)||zonaDe(g,a.t,q,bal,null);if(z)p.pos[id]=g.cl(z);continue}
+    if(a.v==="carrera"){const z=/\b(?:junto|al lado|cerca|pegado|a la altura|detras|delante)\b|\ben (?:la|el)\b|corner/.test(a.t)?zonaAbs(g,a.t,q,p,crear):null;
+      p.pos[id]=g.cl(z||zonaDe(g,a.t,q,bal,x=>g.mas(x,g.f,10*g.sc)));continue}
     if(a.v==="conduce"){p.pos[id]=g.cl(zonaDe(g,a.t,q,bal,x=>g.mas(x,g.f,14*g.sc)));p.balon={con:id};continue}
     if(a.v==="pase"||(a.v==="centro"&&r)){
       if(r){const rid=crear(p,r),z=zonaDe(g,a.t.split(/\b(?:al|a)\s+\d/)[1]||"",p.pos[rid],bal,null);if(z)p.pos[rid]=g.cl(z);p.balon={con:rid}}
@@ -1612,7 +1652,7 @@ function describirJugada(texto,{rivales=true}={}){
       else if(/puerta/.test(n)){p0.pos[id]=[4,32];p0.texto="Saque de puerta."}
       p0.balon={con:id}}}
   for(const m of todo.matchAll(/\b(\d{1,2})\b/g)) if(+m[1]>0) crear(j.pasos[0],m[1]);
-  if(!j.pasos[0].balon){const a=frases.flatMap(acciones).find(x=>x.s&&x.v!=="carrera");if(a)j.pasos[0].balon={con:crear(j.pasos[0],a.s)}}
+  if(!j.pasos[0].balon){const a=frases.flatMap(acciones).find(x=>x.s&&x.v!=="carrera"&&x.v!=="coloca");if(a)j.pasos[0].balon={con:crear(j.pasos[0],a.s)}}
   for(const frase of frases){const {pasos,entendida}=aplicarFrase(g,j.pasos[j.pasos.length-1],frase,crear);
     if(!entendida){avisos.push(frase);continue}
     const txt=frase.charAt(0).toUpperCase()+frase.slice(1)+(/[.!?]$/.test(frase)?"":".");pasos.forEach((x,i)=>x.texto=pasos.length>1?`${txt} (${i+1}/${pasos.length})`:txt);
@@ -1635,12 +1675,13 @@ function dictar(modo="sig"){
   reco.onresult=e=>{let txt="";for(const r of e.results){txt+=r[0].transcript;if(r.isFinal)final=txt}const ta=$(taId);if(ta)ta.value=txt;if(modo==="sig")S.jgSig=txt};
   reco.onerror=e=>{S.jgEscucha=false;render();toast(e.error==="not-allowed"||e.error==="service-not-allowed"?"Da permiso al micrófono para dictar (o usa el del teclado)":"No te he oído bien: prueba otra vez")};
   reco.onend=()=>{S.jgEscucha=false;reco=null;const f=final.trim();if(!f)return render();
-    if(modo==="sig"){S.jgSig=f;render();$(btId)?.click()}else{const ta=$(taId);if(ta)ta.value=f;$(btId)?.click();render()}};
+    if(modo==="sig"){S.jgSig=f;render();$(btId)?.click()}
+    else{const j=S.jgDraft,P=j.pasos[S.jgPaso];jgSnap();P.texto=f;autoGuardarJg();render();toast("Explicación guardada en el paso "+(S.jgPaso+1))}};
   try{reco.start();S.jgEscucha=modo;render()}catch(e){toast("No se pudo usar el micrófono")}}
 function generarSiguiente(j,k,texto){
   const g={...geoCampo(j.campo),campo:j.campo},crear=creador(j,g),t=conDorsales(texto),P=j.pasos[k];
   // si aún no hay balón, empieza con el primero que hace algo con él
-  if(!P.balon){const a=acciones(t).find(x=>x.s&&x.v!=="carrera");if(a)P.balon={con:crear(P,a.s)}}
+  if(!P.balon){const a=acciones(t).find(x=>x.s&&x.v!=="carrera"&&x.v!=="coloca");if(a)P.balon={con:crear(P,a.s)}}
   j.pasos.splice(k+1,0,structuredClone(P));const r=generarPaso(j,k+1,texto);
   if(r.error){j.pasos.splice(k+1,1);return r}
   if(!P.texto) P.texto=k===0?"Posición inicial.":"";
@@ -1651,9 +1692,9 @@ function generarPaso(j,k,texto){
   const g={...geoCampo(j.campo),campo:j.campo},base=structuredClone(j.pasos[Math.max(0,k-1)]),crear=creador(j,g);
   for(const m of nrm(texto).matchAll(/\b(\d{1,2})\b/g)) if(+m[1]>0) crear(k===0?j.pasos[0]:base,m[1]);
   if(k===0){
-    const ini=j.pasos[0],acc=acciones(texto),mov=acc.some(a=>a.v!=="saque");
+    const ini=j.pasos[0],acc=acciones(texto),mov=acc.some(a=>a.v!=="saque"&&a.v!=="coloca");
     // quién empieza con el balón: el primero que hace algo con él
-    const a1=acc.find(a=>a.s&&a.v!=="carrera");if(!ini.balon&&a1) ini.balon={con:crear(ini,a1.s)};
+    const a1=acc.find(a=>a.s&&a.v!=="carrera"&&a.v!=="coloca");if(!ini.balon&&a1) ini.balon={con:crear(ini,a1.s)};
     if(!mov){const r=aplicarFrase(g,ini,texto,crear);if(!r.entendida)return {error:true};const p=r.pasos[r.pasos.length-1];p.texto=orig;j.pasos[0]=p;reaccionRivales(g,p,dorsalesNuestros(j));return {n:1,k:0}}
     // hay movimiento: el paso 1 se queda como posición inicial y el movimiento va en los pasos siguientes
     const r=aplicarFrase(g,ini,texto,crear);if(!r.entendida)return {error:true};
@@ -1681,6 +1722,10 @@ function vistaJugadas(){
     ${Object.keys(S.eq.jugadasClub||{}).length?`<h3 class="h3" style="margin-top:16px">Del club</h3><div class="plist" style="margin-top:8px">${Object.entries(S.eq.jugadasClub).map(([id,j])=>`<button class="pcard" data-jgclub="${esc(id)}"><span class="pj">▶</span><span class="pesc"></span><span class="pmid"><b>${esc(j.nombre)}</b><br><span class="note">${j.pasos.length} pasos${j.nota?" · "+esc(j.nota):""}</span></span><span></span></button>`).join("")}</div>`:""}
     <h3 class="h3" style="margin-top:16px">Para empezar</h3><div class="plist" style="margin-top:8px">${Object.entries(P).map(([id,j])=>`<button class="pcard" data-jgplant="${id}"><span class="pj">▶</span><span class="pesc"></span><span class="pmid"><b>${esc(j.nombre)}</b><br><span class="note">${j.pasos.length} pasos · ${esc(CAMPOS_JUG[j.campo])}</span></span><span></span></button>`).join("")}</div>`;
 }
+const JT_BAR=[["mover",'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 12h18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3M3 12l3-3M3 12l3 3M21 12l-3-3M21 12l-3 3"/></svg>',"Mover"],
+  ["A",'<i class="ficha" style="background:#fff;border-color:#1b3b25"></i>',"Nuestro"],["PT",'<i class="ficha" style="background:#ffd84a;border-color:#1b3b25"></i>',"Portero"],
+  ["B",'<i class="ficha" style="background:#e0322b;border-color:#fff"></i>',"Rival"],["PR",'<i class="ficha" style="background:#111;border-color:#e0322b"></i>',"P. rival"],
+  ["balon",'<i class="ficha bal"></i>',"Balón"]];
 const JTOOLS=[["mover","✋ Mover"],["A",'<span class="sw" style="background:#fff"></span>Nuestro'],["PT",'<span class="sw" style="background:#ffd84a"></span>Portero'],["B",'<span class="sw" style="background:#e0322b;border-color:#fff;outline:1px solid #999"></span>Rival'],["PR",'<span class="sw" style="background:#111;border-color:#e0322b"></span>Portero rival'],["balon","● Balón"]];
 function vistaJugEdit(){
   const j=S.jgDraft,k=S.jgPaso,n=j.pasos.length,f=j.fichas.find(x=>x.id===S.jgSel),ro=!S.canWrite||S.jgPlay;
@@ -1689,8 +1734,7 @@ function vistaJugEdit(){
   ${S.jgAvisos&&S.jgAvisos.length?`<div class="err" style="margin-bottom:10px">No he entendido: ${S.jgAvisos.map(a=>`«${esc(a)}»`).join(", ")}. Añade esos pasos a mano o escríbelos más sencillo (dorsal + acción + adónde).</div>`:""}
   <div class="ed">
     <div class="board${S.jgCharla?" charla":""}" id="jgboard">
-      ${ro||S.jgCharla?"":`<div class="jgtop"><div class="jgtools" role="toolbar" aria-label="Fichas">${JTOOLS.map(([t,l])=>`<button class="tool" data-jt="${t}" aria-pressed="${S.jgTool===t}">${l}</button>`).join("")}</div>
-        <div class="jgur"><button class="ib" id="jgDeshacer" aria-label="Deshacer" ${(S.jgHist||[]).length?"":"disabled"}>↶</button><button class="ib" id="jgRehacer" aria-label="Rehacer" ${(S.jgRedo||[]).length?"":"disabled"}>↷</button></div></div>
+      ${ro||S.jgCharla?"":`<div class="jgtools" role="toolbar" aria-label="Fichas">${JT_BAR.map(([t,ic,l])=>`<button class="jt" data-jt="${t}" aria-pressed="${S.jgTool===t}"><span class="jtic">${ic}</span><span>${l}</span></button>`).join("")}</div>
         <p class="jghint">${{mover:"Arrastra una ficha para moverla · tócala para cambiarle el número o quitarla",balon:"Toca el campo o un jugador para poner el balón"}[S.jgTool]||"Toca el campo para poner la ficha (sale en todos los pasos)"}</p>`}
       <div id="jgwrap">${svgJugada(j,k,{uid:"e",sel:S.jgSel,editable:true})}</div>
       ${S.jgCharla?"":`<div class="jgprog" id="jgprog" style="--p:${n>1?(k/(n-1)*100).toFixed(1):0}%"><i></i></div>`}
@@ -1701,15 +1745,15 @@ function vistaJugEdit(){
         <span class="jgcont"><b>${k+1}</b>/${n}</span>
         <button class="ib" id="jgCharla" aria-label="${S.jgCharla?"Salir de la charla":"Pantalla completa para la charla"}">${S.jgCharla?"✕":"⛶"}</button></div>
       ${S.jgCharla?"":`<div class="jgsteps"><div class="jgline">${j.pasos.map((p,i)=>`<button class="jgst${i===k?" on":""}${i<k?" hecho":""}" data-jpaso="${i}" aria-pressed="${i===k}" title="${esc(p.texto||"")}">${i+1}</button>`).join("")}${ro?"":`<button class="jgst mas" id="jgMasPaso" aria-label="Paso nuevo copiando este">+</button>`}</div>
-        ${ro||n<2?"":`<button class="ib dan" id="jgBorrarPaso" aria-label="Borrar el paso ${k+1}">🗑</button>`}</div>`}
-      ${!ro&&!S.jgCharla?(()=>{const m=S.jgIA&&S.jgIAk===k?S.jgIA:(j.pasos[k].texto?"sig":"este"),este=m==="este",esc_=S.jgEscucha===m;
+        ${ro?"":`<div class="jgacts"><button class="ib" id="jgDeshacer" aria-label="Deshacer" ${(S.jgHist||[]).length?"":"disabled"}>↶</button><button class="ib" id="jgRehacer" aria-label="Rehacer" ${(S.jgRedo||[]).length?"":"disabled"}>↷</button>${n<2?"":`<button class="ib dan" id="jgBorrarPaso" aria-label="Borrar el paso ${k+1}">🗑</button>`}</div>`}</div>`}
+      ${!ro&&!S.jgCharla?(()=>{const m=S.jgIA&&S.jgIAk===k?S.jgIA:"este",este=m==="este",esc_=S.jgEscucha===m;
         return `<div class="jgia" data-m="${m}">
         <div class="seg jgseg" data-t="${este?"man":"nov"}"><span class="pill"></span><button data-jia="este" aria-selected="${este}">✨ Este paso · ${k+1}</button><button data-jia="sig" aria-selected="${!este}">➕ Lo siguiente · ${k+2}</button></div>
-        ${este?`<textarea id="jg-texto" rows="2" placeholder="${k===0?"Cómo empieza: «el 4 tiene el balón, el 8 y el 7 arriba»":"Qué pasa aquí: «el 8 abre a banda al 7»"}">${esc(j.pasos[k].texto||"")}</textarea>`
+        ${este?`<textarea id="jg-texto" rows="2" placeholder="${k===0?"Explicación, o cómo empieza: «el 4 tiene el balón, el 8 y el 7 arriba»":"Explicación de este paso: «el 8 abre a banda al 7»"}">${esc(j.pasos[k].texto||"")}</textarea>`
           :`<textarea id="jgSig" rows="2" placeholder="Qué pasa después: «el 4 la da al 8», «el 9 se desmarca»">${esc(S.jgSig||"")}</textarea>`}
         <div class="jgiabar"><button class="btn mic${esc_?" on":""}" id="${este?"jgMicEste":"jgMic"}" aria-label="Dictar">${esc_?"⏺ Escuchando…":"🎤"}</button>
-          <button class="btn pri grow" id="${este?"jgGenPaso":"jgSigBtn"}">${este?"✨ Generar este paso":"➕ Añadir paso "+(k+2)}</button></div>
-        <p class="note">${este?(k===0?"El paso 1 es cómo empieza. También puedes colocarlos a mano con las fichas de arriba.":"Rehace las fichas de este paso desde el anterior. El texto sale en la charla y al compartir."):(j.pasos[k].texto?`Paso ${k+1}: «${esc(j.pasos[k].texto)}». `:"")+"Cada frase crea un paso nuevo desde este."}</p></div>`})()
+          <button class="btn ${este?"gen":"pri"} grow" id="${este?"jgGenPaso":"jgSigBtn"}">${este?"✨ Generar este paso":"➕ Añadir paso "+(k+2)}</button></div>
+        <p class="note">${este?"🎤 Dicta o escribe la explicación: se guarda sola y sale en la charla y al compartir, sin mover nada. Si quieres que la app coloque o mueva las fichas según el texto, pulsa ✨ Generar este paso.":(j.pasos[k].texto?`Paso ${k+1}: «${esc(j.pasos[k].texto)}». `:"")+"Cada frase crea un paso nuevo desde este."}</p></div>`})()
         :`<div class="jgtexto" id="jgtexto">${esc(j.pasos[k].texto||"")}</div>`}
     </div>
     <form class="form" onsubmit="return false">
@@ -1867,7 +1911,7 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
     if(r.error){S.jgHist.pop();toast("No lo he entendido: dorsal + acción + adónde, p. ej. «el 8 la da al 7»");return}
     S.jgSig="";S.jgPaso=r.k;S.jgSel=null;S.jgIA="sig";S.jgIAk=r.k;render();toast(r.n>1?`Añadidos ${r.n} pasos`:`Paso ${r.k+1} añadido`);return}
   if(t.id==="jgMic"){dictar("sig");return}
-  if(t.dataset.jia){leerJg();S.jgIA=t.dataset.jia;S.jgIAk=S.jgPaso;render();$(S.jgIA==="este"?"#jg-texto":"#jgSig")?.focus();return}
+  if(t.dataset.jia){leerJg();S.jgIA=t.dataset.jia;S.jgIAk=S.jgPaso;render();return}
   if(t.id==="jgMicEste"){dictar("este");return}
   if(t.id==="jgGenPaso"){const tx=($("#jg-texto")?.value||"").trim();if(!tx){toast("Escribe primero qué pasa en este paso");$("#jg-texto")?.focus();return}
     leerJg();jgSnap();const r=generarPaso(j,S.jgPaso,tx);if(r.error)S.jgHist.pop();
@@ -1920,11 +1964,13 @@ const MANUAL=[
   ["Crear una jugada",`<b>+ Nueva jugada</b>, o abre una de <b>Para empezar</b> (córner, falta, salida de balón, presión) o <b>Del club</b> y cámbiala a tu gusto. Elige el campo: entero, medio campo, área o F7.`],
   ["Poner y mover fichas",`<ul><li>Elige <b>Nuestro</b>, <b>Portero</b>, <b>Rival</b>, <b>Portero rival</b> o <b>Balón</b> y toca el campo.</li><li>Con <b>Mover</b>, arrastra con un dedo. Si sueltas el balón encima de un jugador, se le pega.</li><li>Toca una ficha para cambiarle el número, elegir un jugador de tu plantilla o quitarla.</li></ul>`],
   ["Los pasos",`Una jugada es una serie de pasos. Debajo del campo está el reproductor (⏮ ◀ ▶ ▶) y la <b>línea de pasos</b>: toca un número para ir a ese paso, <b>+</b> copia el paso actual (luego arrastras las fichas a donde van) y <b>🗑</b> borra el paso en el que estás. <b>⛶</b> pone el campo a pantalla completa para la charla. La app dibuja sola lo que pasa entre un paso y otro:<ul><li><b>Línea amarilla:</b> carrera sin balón.</li><li><b>Línea azul ondulada:</b> conducción (se mueve con el balón).</li><li><b>Línea blanca discontinua:</b> pase.</li></ul>En el cuadro de abajo escribes qué pasa en ese paso: sale en la charla y al compartir.`],
+  ["🎤 Solo la explicación, moviendo a mano",`La forma más rápida si prefieres mover tú las fichas:<ol><li>Coloca las fichas del paso 1 arrastrándolas.</li><li>Pestaña <b>✨ Este paso</b> → <b>🎤</b> y di lo que pasa. Se guarda solo como explicación del paso: <b>no mueve nada</b>. Sale en la charla y al compartir.</li><li><b>+</b> en la línea de pasos, arrastra las fichas a donde van y vuelve a dictar.</li></ol>Si dictas otra vez, la explicación se cambia por la nueva (↶ la recupera).`],
+  ["🗣️ Palabras para colocar las fichas",`Sirven en <b>✨ Este paso</b> con <b>Generar este paso</b>, sobre todo en el paso 1. Dorsal + dónde, separados por comas o «y»:<ul><li><b>Hacia delante o atrás:</b> arriba, en punta, en ataque · en el medio, centro del campo · atrás, en defensa (arriba = cerca de la portería rival).</li><li><b>De lado:</b> banda derecha, banda izquierda, por dentro, en el centro, carril derecho.</li><li><b>Sitios:</b> en el área, en la frontal, en el punto de penalti, primer palo, segundo palo, en el córner.</li><li><b>Junto a otro:</b> junto al 9, al lado del 4, detrás del 4, delante del 6, a la altura del 8.</li><li><b>Varios a la vez:</b> «el 8 y el 7 arriba», «el 8 y el 10 se ponen en la frontal».</li><li><b>Con balón:</b> «el 4 tiene el balón», «el 4 en el centro del campo con el balón».</li><li><b>Movimientos</b> (van al paso siguiente): avanza, sube, baja, retrocede, se desmarca, ataca el espacio, se mete, presiona.</li></ul>`],
   ["👉 Cómo se hace una jugada (el proceso)",`<ol><li><b>Paso 1 = cómo empieza.</b> En el cuadro de abajo, pestaña <b>✨ Este paso</b>, escribe o dicta con 🎤 «el 4 tiene el balón, el 8 y el 7 arriba» y pulsa <b>Generar este paso</b>. O colócalos a mano con las fichas de encima del campo.</li><li><b>Lo siguiente.</b> El cuadro cambia solo a <b>➕ Lo siguiente</b>: escribe o dicta lo que pasa después («el 4 la da al 8») y pulsa <b>Añadir paso</b>. Al dictar, el paso se añade solo al terminar de hablar.</li><li>Para cambiar un paso ya hecho, tócalo en la línea de pasos, pestaña <b>✨ Este paso</b>, cambia el texto y <b>Generar este paso</b>.</li><li>Repite para cada cosa que pase. Si una frase tiene dos acciones con balón, salen dos pasos.</li><li>Retoca arrastrando si quieres, <b>Reproducir</b> y <b>Compartir</b>.</li></ol>`],
   ["✨ Generar este paso",`Escribe qué pasa con <b>dorsales</b> o con los <b>nombres de tu plantilla</b> y pulsa <b>Generar este paso</b>: la app coloca y mueve las fichas desde el paso anterior. No hace falta poner a nadie antes: si un dorsal no está, lo pone; si ya lo has puesto tú, usa el tuyo.<ul><li>Primer paso: «el 7 saca de córner» o «el 4 tiene el balón».</li><li>«el 4 la da al 8», «el 9 se desmarca a la espalda», «el 7 centra al primer palo y el 9 ataca el primer palo», «el 9 remata».</li><li>Si pones dos cosas con el balón (un pase y un remate), la app hace dos pasos: el balón no puede hacer dos cosas a la vez.</li><li>Si cambias el texto, vuelve a pulsar <b>Generar este paso</b>: rehace las fichas del paso en el que estás, desde el anterior. También puedes dictarlo con 🎤.</li><li>Al dictar vale decir los números con palabras: «el cuatro la da al ocho».</li></ul>`],
   ["✨ Describir jugada (entera)",`En la lista de jugadas, <b>Describir jugada</b>: escribe toda la jugada, una frase por paso o seguida con comas, y la app la monta entera. Con la casilla marcada pone <b>rivales que reaccionan</b> (el portero va hacia el balón y los defensas acompañan). Tiene tres ejemplos para ver cómo escribirla.`],
   ["Qué palabras entiende",`<ul><li><b>Acciones:</b> la da, pasa, abre, descarga, cambia de juego, mete, prolonga, conduce, regatea, se desmarca, ataca, baja a recibir, centra, remata, dispara, saca.</li><li><b>Sitios:</b> banda derecha/izquierda, a la espalda, hacia dentro, entre líneas, frontal, primer y segundo palo, punto de penalti, en apoyo, al espacio.</li><li>Mejor frases cortas: <b>dorsal + acción + adónde</b>. Lo que no entiende te lo dice.</li></ul>`],
-  ["Deshacer, rehacer y borrar",`Encima del campo, a la derecha de las fichas: <b>↶ Deshacer</b> (hasta 50 cambios: mover fichas, poner o quitar, generar, añadir o borrar pasos), y <b>↷ Rehacer</b>. El <b>🗑</b> de la línea de pasos borra el paso en el que estás.`],
+  ["Deshacer, rehacer y borrar",`En la línea de pasos, junto a la 🗑: <b>↶ Deshacer</b> (hasta 50 cambios: mover fichas, poner o quitar, generar, añadir o borrar pasos), y <b>↷ Rehacer</b>. La <b>🗑</b> borra el paso en el que estás.`],
   ["Reproducir y modo charla",`<b>▶ Reproducir</b> la anima entera: primero corren y luego sale el balón; los pases largos van por el aire. <b>◀ ▶</b> avanzan paso a paso mientras lo explicas. <b>Charla</b> la pone a pantalla completa con el texto en grande.`],
   ["Compartir",`<b>Compartir</b> hace la animación (un GIF que WhatsApp acepta en Android y iPhone) y abre el menú del móvil para mandarla al grupo. Cada paso lleva su texto en grande.`],
   ["Se guarda sola",`Cada cambio se guarda solo en medio segundo (pone «✓ Guardada automáticamente»). Si la app se cierra o se recarga, vuelve a la jugada y al paso donde estabas. Las plantillas que solo abres para mirar no se guardan hasta que cambias algo.`],

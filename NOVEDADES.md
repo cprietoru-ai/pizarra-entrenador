@@ -2,6 +2,13 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.22 · 31-oct-2026
+- Fichas en una fila de seis que se ven todas a la vez, con su color.
+- ↶ Deshacer y ↷ Rehacer junto a la 🗑, en la línea de pasos.
+- 🎤 En «Este paso», dictar solo guarda la explicación, sin mover nada: mueves las fichas a mano y dictas lo que pasa. «✨ Generar este paso» sigue ahí si quieres que la app las coloque.
+- Cambiar de pestaña ya no abre el teclado.
+- Entiende mucho más para colocar: «el 8 y el 7 arriba», «el 2 avanza», «el 9 en el área», «el 7 en la banda derecha», «el 10 junto al 9», «el 5 detrás del 4», «el 6 en el centro del campo», «el 3 atrás», «el 7 en el córner».
+
 ## 1.21.1 · 31-oct-2026
 - Las versiones nuevas entran solas también al volver a la app desde segundo plano, y aunque salgan dos el mismo día.
 
