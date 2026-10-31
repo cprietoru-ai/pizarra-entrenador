@@ -169,6 +169,7 @@ ul{margin:4px 0 4px 18px;padding:0}
 #jgwrap{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 #jgwrap svg{width:100%;height:auto;display:block;border-radius:8px}
 .jgpasos{margin-top:8px;align-items:center}
+.picker.desc{border-color:#2fbf63;box-shadow:0 0 0 3px color-mix(in srgb,#2fbf63 18%,transparent)}.picker.desc textarea{font-size:16px;min-height:130px}
 #jgwrap svg,.card .dg svg{border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25)}
 @media (prefers-reduced-motion:no-preference){#jgwrap .halo{animation:halo 1.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
   #jgwrap .fl-pase{animation:corre 1s linear infinite}}
@@ -498,8 +499,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.10";
+const VERSION="1.11";
 const NOVEDADES=[
+  ["1.11","31-oct-2026",["«✨ Describir jugada»: escribe la jugada con frases sencillas (dorsal, acción y adónde) y la Pizarra la monta animada, con rivales que reaccionan."]],
   ["1.10","31-oct-2026",["La Pizarra pasa a ser la primera pestaña y la app abre en ella.","Jugadas «Del club»: las que prepara el club llegan solas a la Pizarra.","Un solo botón «Compartir» que manda la animación directamente.","Jugadas más rápidas y con un aspecto nuevo: césped con degradado, fichas con relieve, halo en el que lleva el balón, estela del pase y barra de progreso."]],
   ["1.9.1","31-oct-2026",["La pizarra de jugadas tiene su propia pestaña, «Pizarra».","«Animación para WhatsApp»: la jugada en GIF, que se envía y se ve bien en Android y en iPhone."]],
   ["1.9","31-oct-2026",["Jugadas animadas (Ejercicios → Jugadas): mueve las fichas paso a paso y la app dibuja carreras, conducciones y pases.","Reproducir la jugada, modo charla a pantalla completa, imagen de cada paso y vídeo para el grupo.","Cuatro jugadas para empezar (córner, falta lateral, salida de balón y presión tras pérdida) y jugadas asignadas a cada partido."]],
@@ -1313,14 +1315,16 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
   let fl="",gh="",pl="",tr="";
   const col={carrera:"#ffd84a",conduccion:"#5fe3ff",pase:"#fff"};
   // Cada flecha con un halo suave debajo para que destaque sobre el césped
-  const flecha=(m,op)=>{const d=m.t==="conduccion"?ondulada(m.p,m.q,r*.45):`M${m.p[0]},${m.p[1]} L${m.q[0]},${m.q[1]}`,dash=m.t==="pase"?`stroke-dasharray="${r*.8} ${r*.55}"`:"";
+  const esRival=m=>{const f=m.id&&j.fichas.find(x=>x.id===m.id);return !!f&&(f.t==="B"||f.t==="PR")};
+  const flecha=(m,op)=>{if(esRival(m)) return `<line x1="${m.p[0]}" y1="${m.p[1]}" x2="${m.q[0]}" y2="${m.q[1]}" stroke="#ffb3ad" stroke-width="${sw*1.2}" stroke-linecap="round" stroke-dasharray="${sw*2} ${sw*2}" opacity="${op*.45}"/>`;
+    const d=m.t==="conduccion"?ondulada(m.p,m.q,r*.45):`M${m.p[0]},${m.p[1]} L${m.q[0]},${m.q[1]}`,dash=m.t==="pase"?`stroke-dasharray="${r*.8} ${r*.55}"`:"";
     return `<path d="${d}" fill="none" stroke="${col[m.t]}" stroke-opacity=".22" stroke-width="${sw*7}" stroke-linecap="round" stroke-linejoin="round" opacity="${op}"/>
       <path class="fl fl-${m.t}" d="${d}" fill="none" stroke="${col[m.t]}" stroke-width="${sw*(m.t==="conduccion"?2.8:2.6)}" stroke-linecap="round" stroke-linejoin="round" ${dash} marker-end="url(#${uid}${m.t})" opacity="${op}"/>`};
   if(anim==null&&ghost&&k>0) for(const m of movimientos(j,k)){fl+=flecha(m,.95);
     if(m.id){const f=j.fichas.find(x=>x.id===m.id),[c1,c2]=FICHA_COL[f.t];gh+=`<circle cx="${m.p[0]}" cy="${m.p[1]}" r="${r}" fill="${c1}" stroke="${c2}" stroke-width="${sw*1.4}" opacity=".3"/>`}}
   if(anim!=null) for(const m of movimientos(j,k2)){fl+=flecha(m,.3+.6*e);
     // estela: del punto de salida hasta donde va ahora
-    if(m.id){const q=pos(m.id);tr+=`<line x1="${m.p[0]}" y1="${m.p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${col[m.t]}" stroke-opacity=".55" stroke-width="${r*.9}" stroke-linecap="round"/>`}}
+    if(m.id&&!esRival(m)){const q=pos(m.id);tr+=`<line x1="${m.p[0]}" y1="${m.p[1]}" x2="${q[0]}" y2="${q[1]}" stroke="${col[m.t]}" stroke-opacity=".55" stroke-width="${r*.9}" stroke-linecap="round"/>`}}
   // Rivales debajo y los nuestros encima, para que siempre se lean nuestros dorsales
   const conB=(anim!=null&&e>.5?j.pasos[k2]:j.pasos[k]).balon?.con;
   for(const f of [...j.fichas].sort((a,b)=>"B PR".includes(b.t)-"B PR".includes(a.t))){const q=pos(f.id);if(!q)continue;const [c1,c2,c3]=FICHA_COL[f.t];
@@ -1345,12 +1349,109 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
     <g stroke="#fff" stroke-opacity=".8" stroke-width="${sw*1.4}" fill="none">${lineasCampo(j.campo,w,h)}</g>
     <rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="url(#${uid}vin)"/>${tr}${fl}${gh}${pl}</svg>`}
 
+// ---------- Describir una jugada con frases (1.11) ----------
+// Sin IA: entiende frases sencillas con dorsales, una por paso («el 3 la da al 8», «el 7 se
+// desmarca a la espalda», «el 9 remata al primer palo»). Reconoce quién (el dorsal), qué hace
+// (pasar, conducir, desmarcarse, centrar, rematar) y adónde (banda, espalda, primer palo...).
+// Campo entero: atacamos hacia la derecha. Córner y falta: vista de área, portería abajo.
+const nrm=t=>(t||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const DESC_EJEMPLOS=[
+  ["Ataque por banda","El 4 la da al 8.\nEl 8 conduce hacia dentro.\nEl 8 abre a banda derecha al 7.\nEl 7 centra al primer palo y el 9 ataca el primer palo.\nEl 9 remata."],
+  ["Córner","El 7 saca de córner.\nEl 5 ataca el primer palo, el 9 el punto de penalti y el 4 el segundo palo.\nEl 7 centra al 5.\nEl 5 la prolonga al 4.\nEl 4 remata."],
+  ["Salida de balón","El 1 saca de puerta y la da al 4.\nEl 6 baja a recibir.\nEl 4 la da al 6.\nEl 6 cambia de juego al 3 y el 11 se desmarca a la espalda.\nEl 3 la da al 11.\nEl 11 conduce hacia dentro."]];
+// Posición de salida de cada dorsal en campo entero (4-3-3, atacando a la derecha)
+const POS_DORSAL={1:[4,32],2:[30,58],3:[30,6],4:[22,24],5:[22,40],6:[40,32],8:[52,22],10:[62,38],7:[70,56],11:[70,8],9:[78,32]};
+function describirJugada(texto,{rivales=true}={}){
+  const frases=texto.split(/\n|\.(?=\s|$)|;/).map(x=>x.trim()).filter(x=>/\d/.test(x)),todo=nrm(texto),avisos=[];
+  if(!frases.length) return {error:"Escribe al menos una frase con un dorsal, por ejemplo: «El 4 la da al 8»."};
+  const area=/corner|esquina|falta/.test(todo);  // la vista de área, solo para el balón parado
+  const campo=area?"area":"completo",[W,H]=CAMPOS[campo]?[CAMPOS[campo].w,CAMPOS[campo].h]:[100,64];
+  const cl=q=>[Math.max(.5,Math.min(W-.5,q[0])),Math.max(.5,Math.min(H-.5,q[1]))];
+  // Fichas: cada dorsal que aparezca
+  const dors=[];for(const m of todo.matchAll(/\b(\d{1,2})\b/g)) if(!dors.includes(m[1])&&+m[1]>0&&+m[1]<100) dors.push(m[1]);
+  const fichas=dors.map(d=>({id:"d"+d,t:d==="1"?"PT":"A",lab:d})),pos0={};
+  // Balón parado: quién saca y desde dónde
+  const fSaque=frases.find(f=>/sac|saque/.test(nrm(f))),sujeto=f=>{const m=nrm(f).match(/^\s*(?:y\s+)?(?:el|la)?\s*(\d{1,2})\b/);return m?m[1]:null};
+  const izq=fSaque&&/izquierd/.test(nrm(fSaque));
+  let saca=fSaque?(sujeto(fSaque)||(nrm(fSaque).match(/\b(?:del|el)\s+(\d{1,2})\b/)||[])[1]||null):null,ini=null,texto0="Posición inicial.";
+  if(area){const libres=[[28,15],[34,13.5],[40,16],[24,17],[32,9],[44,12],[20,12]];let i=0;
+    for(const d of dors){if(d===saca) continue; pos0["d"+d]=d==="1"?[32,1.5]:libres[i++%libres.length]}
+    if(saca){const corner=/corner|esquina/.test(todo);pos0["d"+saca]=corner?(izq?[0.6,29.4]:[63.4,29.4]):(izq?[6,6]:[58,6]);texto0=corner?"Saque de esquina.":"Falta lateral."}}
+  else{let extra=0;for(const d of dors) pos0["d"+d]=POS_DORSAL[d]?[...POS_DORSAL[d]]:[50+(extra%3)*8,20+(extra++%3)*12];
+    if(saca&&fSaque&&/banda/.test(nrm(fSaque))){pos0["d"+saca]=[pos0["d"+saca][0],izq?0.6:63.4];texto0="Saque de banda."}
+    if(saca&&fSaque&&/puerta/.test(nrm(fSaque))){pos0["d"+saca]=[4,32];texto0="Saque de puerta."}}
+  ini=saca||(()=>{for(const f of frases){const s=sujeto(f),n=nrm(f);if(s&&/da |pasa|toca|descarg|condu|centr|abre|cambia|filtra|mete/.test(n))return s}return dors[0]})();
+  const pasos=[{texto:texto0,pos:pos0,balon:ini?{con:"d"+ini}:null}];
+  const meta=area?[32,30]:[W,32];
+  const bpos=p=>{const b=p.balon;if(!b)return meta;if(b.con&&p.pos[b.con])return p.pos[b.con];return b.xy||meta};
+  // Adónde: la zona que nombra la frase, según dónde está el jugador y el balón
+  const zona=(t,q,bal,porDefecto)=>{
+    const lado=area?(bal[0]>32?1:-1):(bal[1]>32?1:-1);
+    if(/primer palo/.test(t)) return area?[32+lado*4.5,27]:[95,32+lado*4.5];
+    if(/segundo palo/.test(t)) return area?[32-lado*6,27]:[94,32-lado*6];
+    if(/penalti/.test(t)) return area?[32,19]:[89,32];
+    if(/area pequena/.test(t)) return area?[32,26.5]:[96,32];
+    if(/frontal/.test(t)) return area?[32,11]:[80,32];
+    if(/entre lineas/.test(t)) return area?[q[0],13]:[Math.min(70,q[0]+10),32+(q[1]-32)*.6];
+    if(/espalda/.test(t)) return area?[q[0],Math.min(28,q[1]+10)]:[Math.min(96,q[0]+20),q[1]];
+    if(/banda derecha/.test(t)) return area?[4,q[1]+3]:[q[0]+6,60];
+    if(/banda izquierda/.test(t)) return area?[60,q[1]+3]:[q[0]+6,4];
+    if(/\bbanda\b/.test(t)) return area?[q[0]<32?4:60,q[1]+3]:[q[0]+6,q[1]<32?4:60];
+    if(/dentro|al centro|al medio|interior/.test(t)) return area?[32+(q[0]-32)*.35,q[1]+3]:[q[0]+6,32+(q[1]-32)*.35];
+    if(/atras|retroce/.test(t)) return area?[q[0],q[1]-6]:[q[0]-10,q[1]];
+    if(/a recibir|apoyo|ofrece|baja|viene/.test(t)) return [q[0]+(bal[0]-q[0])*.45,q[1]+(bal[1]-q[1])*.45];
+    if(/adelante|arriba|hacia delante|al espacio|profundidad/.test(t)) return area?[q[0],q[1]+7]:[q[0]+14,q[1]];
+    return porDefecto?porDefecto(q):null};
+  const avanza=(q,d)=>area?[q[0],q[1]+d*.6]:[q[0]+d,q[1]];
+  for(const frase of frases){
+    const p=structuredClone(pasos[pasos.length-1]);p.texto=frase.charAt(0).toUpperCase()+frase.slice(1)+(/[.!?]$/.test(frase)?"":".");
+    // Acciones a la vez: «el 9 ataca el primer palo y el 4 el segundo palo»
+    const partes=nrm(frase).split(/\s*(?:,|\by\b|\btambien\b)\s*(?=(?:el|la)?\s*\d{1,2}\b)/);
+    let verbo=null,entendida=false;
+    for(const parte of partes){
+      const t=parte.trim();let s=(t.match(/^(?:y\s+)?(?:el|la)?\s*(\d{1,2})\b/)||[])[1];
+      const r=(t.replace(/^(?:y\s+)?(?:el|la)?\s*\d{1,2}\b/,"").match(/\b(?:al|a|para el|con el|hacia el|del)\s+(\d{1,2})\b/)||[])[1];
+      const v=/remat|dispar|chut|tira a puerta|\bgol\b|\bmarca\b/.test(t)?"remate":/centr/.test(t)?"centro":/condu|avanza con|regate|sale con el balon|progresa|encara/.test(t)?"conduce"
+        :/la da|le da|da al|pasa|toca|descarg|cambia de juego|abre|filtra|mete|habilita|juega con|devuelve|asiste|prolong|peina/.test(t)?"pase"
+        :/desmarc|corre|ataca|se va|sube|baja|viene|ofrece|apoy|arrastr|se abre|cierra|se mueve|se coloca|rompe|cae |se incorpora|dobla|entra|recibe|aparece/.test(t)?"carrera"
+        :/sac|saque/.test(t)?"saque":(s&&verbo)?verbo:null;
+      if(!v){continue}
+      verbo=v;const con=p.balon?.con;if(!s) s=con?con.slice(1):null;if(!s)continue;
+      const id="d"+s,q=p.pos[id];if(!q)continue;const bal=bpos(p);entendida=true;
+      if(v==="saque"){const rr=[...t.matchAll(/\bal\s+(\d{1,2})\b/g)].pop()?.[1];if(rr&&p.pos["d"+rr]) p.balon={con:"d"+rr};continue}
+      if(v==="carrera"){p.pos[id]=cl(zona(t,q,bal,x=>avanza(x,10)));continue}
+      if(v==="conduce"){p.pos[id]=cl(zona(t,q,bal,x=>avanza(x,14)));p.balon={con:id};continue}
+      if(v==="pase"||(v==="centro"&&r)){
+        if(r&&p.pos["d"+r]){const z=zona(t.split(/\b(?:al|a)\s+\d/)[1]||"",p.pos["d"+r],bal,null);if(z)p.pos["d"+r]=cl(z);p.balon={con:"d"+r}}
+        else{const z=zona(t,q,bal,null);if(z)p.balon={xy:cl(z)};else{entendida=false;avisos.push(frase)}}continue}
+      if(v==="centro"){const z=zona(t,q,bal,()=>area?[32,22]:[90,32]),cerca=Object.entries(p.pos).filter(([k])=>k!==id&&k.startsWith("d")).sort((a,b)=>Math.hypot(a[1][0]-z[0],a[1][1]-z[1])-Math.hypot(b[1][0]-z[0],b[1][1]-z[1]))[0];
+        p.balon=cerca&&Math.hypot(cerca[1][0]-z[0],cerca[1][1]-z[1])<4?{con:cerca[0]}:{xy:cl(z)};continue}
+      if(v==="remate"){const z=zona(t,q,bal,null);if(z&&p.balon?.con!==id)p.pos[id]=cl(z);
+        const sh=p.pos[id];p.balon={xy:area?[32+(sh[0]-32)*.12,30.7]:[W+.7,32+(sh[1]-32)*.1]};continue}}
+    // Si el balón acaba donde ha llegado uno de los nuestros, es suyo (centro al primer palo + el 9 ataca el primer palo)
+    if(p.balon?.xy){const z=p.balon.xy,c=Object.entries(p.pos).filter(([k])=>k.startsWith("d")).sort((a,b)=>Math.hypot(a[1][0]-z[0],a[1][1]-z[1])-Math.hypot(b[1][0]-z[0],b[1][1]-z[1]))[0];
+      if(c&&Math.hypot(c[1][0]-z[0],c[1][1]-z[1])<3.5&&!(area?z[1]>30.5:z[0]>W)) p.balon={con:c[0]}}  // si no es ya gol
+    if(!entendida) avisos.push(frase); else pasos.push(p)}
+  // Rivales que reaccionan: portero hacia el balón y defensas que acompañan a nuestros jugadores
+  if(rivales){const nuestros=dors.filter(d=>d!=="1"&&d!==saca).map(d=>"d"+d);
+    if(area){fichas.push({id:"rpr",t:"PR",lab:""});nuestros.slice(0,4).forEach((d,i)=>fichas.push({id:"rm"+i,t:"B",lab:""}));
+      for(const p of pasos){const b=bpos(p);p.pos.rpr=[32+(b[0]-32)*.12,29.2];nuestros.slice(0,4).forEach((d,i)=>{const q=p.pos[d];const dx=32-q[0],dy=30-q[1],L=Math.hypot(dx,dy)||1;p.pos["rm"+i]=cl([q[0]+dx/L*1.8,q[1]+dy/L*1.8])})}}
+    else{fichas.push({id:"rpr",t:"PR",lab:""});for(let i=0;i<4;i++)fichas.push({id:"rd"+i,t:"B",lab:""});for(let i=0;i<2;i++)fichas.push({id:"rmc"+i,t:"B",lab:""});
+      for(const p of pasos){const b=bpos(p),lx=Math.max(58,Math.min(84,b[0]+8)),sy=(b[1]-32)*.25;
+        p.pos.rpr=[97,32+(b[1]-32)*.25];[14,26,38,50].forEach((y,i)=>p.pos["rd"+i]=cl([lx,y+sy]));[24,40].forEach((y,i)=>p.pos["rmc"+i]=cl([lx-12,y+sy*1.4]))}}}
+  return {jugada:{nombre:"Jugada: "+(frases[0].length>42?frases[0].slice(0,40)+"…":frases[0]),campo,fichas,pasos},avisos}}
+
 // ---------- Vistas ----------
 function vistaJugadas(){
   const l=Object.entries(S.jug).sort((a,b)=>(b[1].actualizado||"").localeCompare(a[1].actualizado||""));
   const P=jugPlantillas();
   return `<h2 class="h2" style="margin-bottom:6px">Pizarra de jugadas</h2><div class="bar"><div class="grow note">Jugadas por pasos para enseñarlas en la charla: mueve las fichas y la app dibuja carreras, conducciones y pases.</div>
-    ${S.canWrite?`<button class="btn pri" id="jgNueva">+ Nueva jugada</button>`:""}</div>
+    ${S.canWrite?`<button class="btn pri" id="jgDescribir">✨ Describir jugada</button><button class="btn" id="jgNueva">+ Nueva jugada</button>`:""}</div>
+    ${S.jgDesc?`<div class="picker desc"><b>Describe la jugada</b><div class="note" style="margin:4px 0 8px">Una frase por paso, con dorsales: <i>«el 4 la da al 8»</i>, <i>«el 7 se desmarca a la espalda»</i>, <i>«el 9 remata al primer palo»</i>. Entiende pasar, conducir, desmarcarse, centrar y rematar; y banda, espalda, dentro, frontal, primer y segundo palo, punto de penalti. Córner, falta, saque de banda y de puerta. Cuantos más dorsales y menos adornos, mejor la entiende.</div>
+      <div class="chips" style="margin-bottom:8px">${DESC_EJEMPLOS.map(([n],i)=>`<button class="chip" data-jgdej="${i}">Ejemplo: ${esc(n)}</button>`).join("")}</div>
+      <textarea id="jgdTexto" rows="6" placeholder="El 4 la da al 8.&#10;El 8 conduce hacia dentro.&#10;El 8 abre a banda derecha al 7...">${esc(S.jgdTexto||"")}</textarea>
+      <div class="bar" style="margin-top:8px"><label class="chk"><input type="checkbox" id="jgdRiv" ${S.jgdRiv===false?"":"checked"}> Poner rivales que reaccionan</label></div>
+      <div class="bar" style="margin-top:6px"><button class="btn pri" id="jgdGenerar">Generar jugada</button><button class="btn sm" id="jgdCerrar">Cancelar</button></div></div>`:""}
     ${l.length?`<div class="grid">${l.map(([id,j])=>`<button class="card" data-jg="${esc(id)}"><div class="dg">${svgJugada(j,j.pasos.length-1,{uid:"l"+id.replace(/\W/g,"")})}</div>
       <div class="bd"><span class="tag">${j.pasos.length} pasos</span><h3>${esc(j.nombre||"Jugada")}</h3>${j.partido&&S.eq.partidos[j.partido]?`<div class="meta">Para J${esc(S.eq.partidos[j.partido].jornada)} · ${esc(S.eq.partidos[j.partido].rival)}</div>`:""}</div></button>`).join("")}</div>`
       :`<div class="empty"><b>Todavía no hay jugadas</b>Crea una nueva o empieza desde una de estas:</div>`}
@@ -1362,6 +1463,7 @@ function vistaJugEdit(){
   const j=S.jgDraft,k=S.jgPaso,n=j.pasos.length,f=j.fichas.find(x=>x.id===S.jgSel),ro=!S.canWrite||S.jgPlay;
   const partidos=partidosOrden().filter(([id,p])=>p.rival);
   return `<button class="back" id="jgVolver">← Pizarra</button>
+  ${S.jgAvisos&&S.jgAvisos.length?`<div class="err" style="margin-bottom:10px">No he entendido: ${S.jgAvisos.map(a=>`«${esc(a)}»`).join(", ")}. Añade esos pasos a mano o escríbelos más sencillo (dorsal + acción + adónde).</div>`:""}
   <div class="ed">
     <div class="board${S.jgCharla?" charla":""}" id="jgboard">
       <div id="jgwrap">${svgJugada(j,k,{uid:"e",sel:S.jgSel,editable:true})}</div>
@@ -1468,12 +1570,20 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   if(t.dataset.jgp){abrirJugada(t.dataset.jgp);return}
   if(!JV.includes(S.view))return;
   if(t.id==="jgNueva"){abrirJugada(null);return}
+  if(t.id==="jgDescribir"){S.jgDesc=!S.jgDesc;render();if(S.jgDesc)$("#jgdTexto")?.focus();return}
+  if(t.id==="jgdCerrar"){S.jgDesc=false;render();return}
+  if(t.dataset.jgdej){S.jgdTexto=DESC_EJEMPLOS[+t.dataset.jgdej][1];render();return}
+  if(t.id==="jgdGenerar"){S.jgdTexto=$("#jgdTexto").value;S.jgdRiv=$("#jgdRiv").checked;const r=describirJugada(S.jgdTexto,{rivales:S.jgdRiv});
+    if(r.error){toast(r.error);return}
+    if(r.jugada.pasos.length<2){toast("No he entendido ninguna frase: mira los ejemplos");return}
+    S.jgDesc=false;abrirJugada(null,r.jugada);S.jgAvisos=r.avisos;render();
+    toast(r.avisos.length?`Jugada lista. ${r.avisos.length===1?"Una frase":r.avisos.length+" frases"} sin entender: míralo arriba`:"Jugada lista: dale a Reproducir");return}
   if(t.dataset.jg){abrirJugada(t.dataset.jg);return}
   if(t.dataset.jgclub){const o=S.eq.jugadasClub[t.dataset.jgclub];if(o){abrirJugada(null,o);toast("Jugada del club: puedes cambiarla y guardarla como tuya")}return}
   if(t.dataset.jgplant){abrirJugada(null,t.dataset.jgplant);toast("Plantilla abierta: cámbiala y guárdala como tuya");return}
   if(S.view!=="jugEdit")return;
   const j=S.jgDraft;
-  if(t.id==="jgVolver"){S.jgPlay=false;S.view="jug";S.img=null;render();return}
+  if(t.id==="jgVolver"){S.jgPlay=false;S.jgAvisos=null;S.view="jug";S.img=null;render();return}
   if(t.dataset.jt){leerJg();S.jgTool=t.dataset.jt;S.jgSel=null;render();return}
   if(t.dataset.jpaso){leerJg();S.jgPaso=+t.dataset.jpaso;S.jgSel=null;render();return}
   if(t.id==="jgMasPaso"){leerJg();const p=structuredClone(j.pasos[S.jgPaso]);p.texto="";j.pasos.splice(S.jgPaso+1,0,p);S.jgPaso++;S.jgSel=null;render();toast("Paso nuevo: arrastra las fichas a donde van");return}
@@ -1507,6 +1617,7 @@ app.addEventListener("change",ev=>{const t=ev.target;if(S.view!=="jugEdit")retur
   if(t.id==="jg-lab"){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){f.lab=t.value.trim();redibujarJg()}return}
   if(t.id==="jg-labpl"&&t.value){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){f.lab=t.value;const i=$("#jg-lab");if(i)i.value=t.value;redibujarJg()}return}
 });
+app.addEventListener("input",ev=>{if(ev.target.id==="jgdTexto")S.jgdTexto=ev.target.value});
 app.addEventListener("input",ev=>{if(S.view==="jugEdit"&&ev.target.id==="jg-texto"){S.jgDraft.pasos[S.jgPaso].texto=ev.target.value;const tx=$("#jgtexto");if(tx)tx.textContent=ev.target.value}});
 
 // ---------- Arranque ----------

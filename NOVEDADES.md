@@ -2,6 +2,9 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.11 · 31-oct-2026
+- «✨ Describir jugada»: escribe la jugada con frases sencillas (dorsal, acción y adónde) y la Pizarra la monta animada, con rivales que reaccionan.
+
 ## 1.10 · 31-oct-2026
 - La Pizarra pasa a ser la primera pestaña y la app abre en ella.
 - Jugadas «Del club»: las que prepara el club llegan solas a la Pizarra.
