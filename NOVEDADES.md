@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.27 · 31-oct-2026
+- Con muchos pasos, la línea de pasos se desliza y se centra en el paso en el que estás; el + y ↶ ↷ 🗑 siempre a la vista.
+- No se pueden repetir dorsales en el mismo equipo: los jugadores que ya están en el campo salen apagados, y las fichas nuevas cogen el primer número libre.
+- En el ordenador: el campo cabe entero en la pantalla y el cuadro de texto va a la derecha; la rueda del ratón mueve los pasos y los jugadores. En el móvil no cambia nada.
+
 ## 1.26 · 31-oct-2026
 - Puedes subir y bajar la pantalla deslizando el dedo sobre el campo, si empiezas en el césped con «Mover». Si empiezas encima de una ficha o del balón, se arrastra la ficha como siempre.
 - Al escribir, la cabecera de arriba ya no se queda fija y deja sitio al teclado; y sin el marco raro alrededor del cuadro de texto.

@@ -71,6 +71,22 @@ textarea{min-height:76px;resize:vertical}
 .err{background:color-mix(in srgb,var(--rojo) 12%,var(--surface));border:1.5px solid var(--rojo);border-radius:8px;padding:8px 12px;margin-bottom:12px}
 /* Editor */
 .ed{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:18px;align-items:start}
+/* 1.27: en pantallas grandes, la jugada en dos columnas (campo | texto) y el campo cabe entero sin bajar. El móvil no cambia. */
+@media (min-width:1000px){
+  .ed:has(#jgboard){grid-template-columns:minmax(0,1fr)}
+  #jgboard:not(.charla){display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,380px);grid-template-rows:auto auto auto 1fr auto auto;column-gap:22px;align-items:start;position:static;padding:14px}
+  #jgboard:not(.charla)>*{grid-column:1}
+  #jgboard:not(.charla)>.jgfield{grid-row:1/span 4}
+  #jgboard:not(.charla)>.jgprog{grid-row:5}#jgboard:not(.charla)>.jgplayer{grid-row:6}
+  #jgboard:not(.charla)>.jgtools{grid-column:2;grid-row:1;max-width:none;margin:0 0 4px}
+  #jgboard:not(.charla)>.jghint{grid-column:2;grid-row:2;margin-bottom:6px}
+  #jgboard:not(.charla)>.jgsteps{grid-column:2;grid-row:3;margin:0 0 10px}
+  #jgboard:not(.charla)>.jgia{grid-column:2;grid-row:4/span 3;margin-top:0;align-self:start}
+  main:has(#jgboard){max-width:1400px}
+  #jgboard:not(.charla) .jgfield{width:fit-content;max-width:100%;margin:0 auto}
+  #jgboard:not(.charla) #jgwrap svg{height:max(320px,calc(100vh - 385px));width:auto;max-width:100%}
+  .jgia textarea{min-height:110px}
+}
 @media (max-width:860px){.ed{grid-template-columns:minmax(0,1fr)}}
 .board{background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:10px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 100px)}
 @media (max-width:860px){.board{position:static}}
@@ -235,6 +251,8 @@ ul{margin:4px 0 4px 18px;padding:0}
 .popj{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:56px;border:1.5px solid var(--line);background:var(--bg);border-radius:12px;padding:5px 8px;font-size:12px;color:var(--ink)}
 .popj b{font-family:var(--label);font-size:18px;line-height:1}.popj span{max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .popj.on{background:var(--club);border-color:var(--club);color:#fff}
+.popj.usada{opacity:.4;cursor:not-allowed}.popj small{font-size:9.5px;color:var(--muted)}
+@media (hover:hover) and (pointer:fine){.poplist{flex-wrap:wrap;max-height:180px;overflow-y:auto}.jgpop{width:min(360px,calc(100% - 8px))}}
 .popflecha{position:absolute;left:var(--fx,50%);bottom:-8px;width:14px;height:14px;margin-left:-7px;background:var(--surface);border-right:1.5px solid color-mix(in srgb,#2fbf63 50%,var(--line));border-bottom:1.5px solid color-mix(in srgb,#2fbf63 50%,var(--line));transform:rotate(45deg)}
 .jgpop.abajo .popflecha{bottom:auto;top:-8px;transform:rotate(225deg)}
 .jgshare{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-bottom:14px}.jgshare .note{grid-column:1/-1;margin:-2px 2px 0;font-size:12.5px}
@@ -282,7 +300,11 @@ ul{margin:4px 0 4px 18px;padding:0}
 .jgplay:active{transform:scale(.92)}.jgplay.on{background:radial-gradient(circle at 30% 25%,#ffd84a,#e0a400 70%);color:#3a2c00}
 .jgcont{font-family:var(--label);font-size:15px;color:var(--muted);min-width:34px;text-align:center}.jgcont b{font-size:20px;color:var(--ink)}
 .jgsteps{display:flex;align-items:center;gap:8px;margin-top:10px}
-.jgline{flex:1;min-width:0;display:flex;align-items:center;gap:14px;overflow-x:auto;scrollbar-width:none;padding:4px 2px;position:relative}
+.jgline{flex:1;min-width:0;display:flex;align-items:center;gap:14px;overflow-x:auto;scrollbar-width:none;padding:4px 6px;position:relative;scroll-behavior:smooth;-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%);mask-image:linear-gradient(90deg,transparent 0,#000 14px,#000 calc(100% - 14px),transparent 100%)}
+.jgline.ini{-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 14px),transparent 100%);mask-image:linear-gradient(90deg,#000 calc(100% - 14px),transparent 100%)}
+.jgline.fin{-webkit-mask-image:linear-gradient(90deg,transparent 0,#000 14px);mask-image:linear-gradient(90deg,transparent 0,#000 14px)}
+.jgline.ini.fin{-webkit-mask-image:none;mask-image:none}
+.jgsteps>.jgst.mas{flex:0 0 auto}
 .jgline::-webkit-scrollbar{display:none}
 .jgst{position:relative;flex:0 0 auto;width:34px;height:34px;border-radius:50%;border:2px solid var(--line);background:var(--surface);font-family:var(--label);font-weight:700;font-size:16px;padding:0;color:var(--muted)}
 .jgst:not(:first-child)::before{content:"";position:absolute;right:100%;top:50%;width:16px;height:2px;background:var(--line);margin-right:0}
@@ -669,8 +691,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.26";
+const VERSION="1.27";
 const NOVEDADES=[
+  ["1.27","31-oct-2026",["Con muchos pasos, la línea de pasos se desliza y se centra en el paso en el que estás; el + y ↶ ↷ 🗑 siempre a la vista.","No se pueden repetir dorsales en el mismo equipo: los jugadores que ya están en el campo salen apagados, y las fichas nuevas cogen el primer número libre.","En el ordenador: el campo cabe entero en la pantalla y el cuadro de texto va a la derecha; la rueda del ratón mueve los pasos y los jugadores. En el móvil no cambia nada."]],
   ["1.26","31-oct-2026",["Puedes subir y bajar la pantalla deslizando el dedo sobre el campo, si empiezas en el césped con «Mover». Si empiezas encima de una ficha o del balón, se arrastra la ficha como siempre.","Al escribir, la cabecera de arriba ya no se queda fija y deja sitio al teclado; y sin el marco raro alrededor del cuadro de texto.","El botón de compartir, con el mismo estilo que los de al lado."]],
   ["1.25","31-oct-2026",["Botón ☀️/🌙 arriba, al lado de la ayuda, para cambiar entre modo claro y oscuro. Se queda guardado.","Reproductor a la izquierda y, a la derecha, velocidad (menú 🐢 · 1× · ⚡), pantalla completa y compartir, todo junto.","El aviso de Mover cabe entero."]],
   ["1.24","31-oct-2026",["En la jugada, arriba a la derecha: 📅 partido para el que es, 💾 guardar y 🗑 borrar, como iconos.","Colores más claros, en modo claro y en oscuro.","Lo que tienes elegido (ficha, paso, pestaña, velocidad) se marca con un verde vivo que se ve bien."]],
@@ -1812,7 +1835,7 @@ function vistaJugEdit(){
     <div class="board${S.jgCharla?" charla":""}" id="jgboard">
       ${ro||S.jgCharla?"":`<div class="jgtools" role="toolbar" aria-label="Fichas">${JT_BAR.map(([t,ic,l])=>`<button class="jt" data-jt="${t}" aria-pressed="${S.jgTool===t}"><span class="jtic">${ic}</span><span>${l}</span></button>`).join("")}</div>
         <p class="jghint">${{mover:"Arrastra para mover · toca una ficha para su menú",balon:"Toca el campo o un jugador para poner el balón"}[S.jgTool]||"Toca el campo para poner la ficha (sale en todos los pasos)"}</p>`}
-      <div class="jgfield"><div id="jgwrap" class="${S.jgTool!=="mover"&&!S.jgPlay?"fijo":""}">${svgJugada(j,k,{uid:"e",sel:S.jgSel,editable:true})}</div>
+      <div class="jgfield" style="--ar:${(jugDims(j)[0]/jugDims(j)[1]).toFixed(3)}"><div id="jgwrap" class="${S.jgTool!=="mover"&&!S.jgPlay?"fijo":""}">${svgJugada(j,k,{uid:"e",sel:S.jgSel,editable:true})}</div>
         ${S.jgCharla?"":`<label class="jgcampo" title="Cambiar el campo"><span>⛶ ${esc(CAMPOS_JUG[j.campo]||"Campo")} ▾</span><select id="jg-campo" ${ro?"disabled":""} aria-label="Campo">${Object.entries(CAMPOS_JUG).map(([c,t])=>`<option value="${c}" ${j.campo===c?"selected":""}>${t}</option>`).join("")}</select></label>`}
         ${f&&!ro&&!S.jgCharla?htmlPopFicha(f):""}</div>
       ${S.jgCharla?"":`<div class="jgprog" id="jgprog" style="--p:${n>1?(k/(n-1)*100).toFixed(1):0}%"><i></i></div>`}
@@ -1826,7 +1849,7 @@ function vistaJugEdit(){
             ${S.jgVelMenu?`<span class="velmenu" role="menu"><b>Velocidad</b>${Object.entries(JG_VEL).map(([v,[l]])=>`<button role="menuitemradio" data-jvel="${v}" aria-checked="${LS.get("pizarra.jgVel","normal")===v}">${l}${LS.get("pizarra.jgVel","normal")===v?" ✓":""}</button>`).join("")}<small>Al reproducir y al compartir</small></span>`:""}</span>
           <button class="ib" id="jgCharla" aria-label="${S.jgCharla?"Salir de la charla":"Pantalla completa para la charla"}">${S.jgCharla?"✕":"⛶"}</button>
           ${ro?"":`<button class="ib share" id="jgGif" aria-label="Compartir la animación"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></button>`}</span></div>
-      ${S.jgCharla?"":`<div class="jgsteps"><div class="jgline">${j.pasos.map((p,i)=>`<button class="jgst${i===k?" on":""}${i<k?" hecho":""}" data-jpaso="${i}" aria-pressed="${i===k}" title="${esc(p.texto||"")}">${i+1}</button>`).join("")}${ro?"":`<button class="jgst mas" id="jgMasPaso" aria-label="Paso nuevo copiando este">+</button>`}</div>
+      ${S.jgCharla?"":`<div class="jgsteps"><div class="jgline" id="jgline">${j.pasos.map((p,i)=>`<button class="jgst${i===k?" on":""}${i<k?" hecho":""}" data-jpaso="${i}" aria-pressed="${i===k}" title="${esc(p.texto||"")}">${i+1}</button>`).join("")}</div>${ro?"":`<button class="jgst mas" id="jgMasPaso" aria-label="Paso nuevo copiando este">+</button>`}
         ${ro?"":`<div class="jgacts"><button class="ib" id="jgDeshacer" aria-label="Deshacer" ${(S.jgHist||[]).length?"":"disabled"}>↶</button><button class="ib" id="jgRehacer" aria-label="Rehacer" ${(S.jgRedo||[]).length?"":"disabled"}>↷</button>${n<2?"":`<button class="ib dan" id="jgBorrarPaso" aria-label="Borrar el paso ${k+1}">🗑</button>`}</div>`}</div>`}
       ${!ro&&!S.jgCharla?(()=>{const m=S.jgIA&&S.jgIAk===k?S.jgIA:"este",este=m==="este",esc_=S.jgEscucha===m;
         return `<div class="jgia" data-m="${m}">
@@ -1876,13 +1899,19 @@ function leerJg(){const j=S.jgDraft,v=id=>$("#"+id);if(!v("jg-nombre"))return;j.
 function redibujarJg(){const w=$("#jgwrap");if(w) w.innerHTML=svgJugada(S.jgDraft,S.jgPaso,{uid:"e",sel:S.jgSel,editable:true});
   if(!S.jgSel) $("#jgpop")?.remove(); else colocarPop();autoGuardarJg()}
 // Menú de la ficha (1.23): sale encima de la ficha tocada, con su número y la plantilla
+// Mismo equipo = mismos dorsales prohibidos: los nuestros (A, PT) por un lado y los rivales (B, PR) por otro
+const ladoF=t=>t==="A"||t==="PT"?"n":"r";
+function labUsado(j,f,lab){lab=String(lab).trim();return !!lab&&j.fichas.some(x=>x.id!==f.id&&ladoF(x.t)===ladoF(f.t)&&String(x.lab).trim()===lab)}
+function labLibre(j,t){const usados=new Set(j.fichas.filter(x=>ladoF(x.t)===ladoF(t)).map(x=>String(x.lab)));if(t==="PT"&&!usados.has("1"))return "1";if(t==="PR")return "";
+  for(let n=t==="A"?2:1;n<100;n++)if(!usados.has(String(n)))return String(n);return ""}
 function htmlPopFicha(f){const nuestra=f.t==="A"||f.t==="PT",J=nuestra?Object.entries(S.eq.jugadores||{}).sort(jugOrden).map(([,x])=>x):[];
   const tipo={A:"Nuestro",PT:"Portero",B:"Rival",PR:"Portero rival"}[f.t]||"Ficha";
   return `<div class="jgpop" id="jgpop" role="dialog" aria-label="Ficha"><div class="pophd"><span class="popt">${tipo}</span>
     <input type="text" id="jg-lab" value="${esc(f.lab||"")}" maxlength="10" inputmode="numeric" aria-label="Número o nombre" placeholder="Nº">
     <button class="ib dan" id="jgQuitar" aria-label="Quitar la ficha">🗑</button><button class="ib ok" id="jgDesel" aria-label="Listo">✓</button></div>
     ${J.length?`<div class="poplist">${J.map(x=>{const v=x.dorsal!=null?String(x.dorsal):nomJ(x),on=String(f.lab)===v;
-      return `<button class="popj${on?" on":""}" data-jglab="${esc(v)}">${x.dorsal!=null?`<b>${esc(x.dorsal)}</b>`:""}<span>${esc(nomJ(x))}</span></button>`}).join("")}</div>`:""}
+      const us=!on&&labUsado(S.jgDraft,f,v);
+      return `<button class="popj${on?" on":""}${us?" usada":""}" data-jglab="${esc(v)}" ${us?'disabled title="Ya está en el campo"':""}>${x.dorsal!=null?`<b>${esc(x.dorsal)}</b>`:""}<span>${esc(nomJ(x))}</span>${us?"<small>en el campo</small>":""}</button>`}).join("")}</div>`:""}
     <i class="popflecha"></i></div>`}
 function colocarPop(){const pop=$("#jgpop"),svg=$("#jgsvg"),cont=$(".jgfield");if(!pop||!svg||!cont)return;
   const q=S.jgDraft.pasos[S.jgPaso].pos[S.jgSel];if(!q){pop.remove();return}
@@ -1893,8 +1922,13 @@ function colocarPop(){const pop=$("#jgpop"),svg=$("#jgsvg"),cont=$(".jgfield");i
 
 // ---------- Gestos en la pizarra de jugadas (un dedo, como la de ejercicios) ----------
 let jgDrag=null;
+function lineaPasos(){const l=$("#jgline");if(!l)return;const on=l.querySelector(".jgst.on");
+  if(on){l.style.scrollBehavior="auto";l.scrollLeft=on.offsetLeft-l.clientWidth/2+on.offsetWidth/2;l.style.scrollBehavior=""}
+  const marcar=()=>{l.classList.toggle("ini",l.scrollLeft<=2);l.classList.toggle("fin",l.scrollLeft+l.clientWidth>=l.scrollWidth-2)};marcar();l.onscroll=marcar}
+// en el ordenador, la rueda del ratón mueve en horizontal las filas que se deslizan
+document.addEventListener("wheel",e=>{const l=e.target.closest?.(".jgline,.poplist");if(!l||Math.abs(e.deltaY)<Math.abs(e.deltaX))return;if(l.scrollWidth<=l.clientWidth)return;l.scrollLeft+=e.deltaY;e.preventDefault()},{passive:false});
 function montarJug(){
-  const wrap=$("#jgwrap");if(!wrap||!S.canWrite)return;colocarPop();
+  lineaPasos();const wrap=$("#jgwrap");if(!wrap||!S.canWrite)return;colocarPop();
   const pto=ev=>{const svg=$("#jgsvg"),p=svg.createSVGPoint();p.x=ev.clientX;p.y=ev.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse()),[w,h]=jugDims(S.jgDraft);
     return [Math.min(w+1.5,Math.max(-1.5,Math.round(q.x*2)/2)),Math.min(h+1.5,Math.max(-1.5,Math.round(q.y*2)/2))]};
   const cerca=(x,y)=>{const P=S.jgDraft.pasos[S.jgPaso],lim=Math.max(2.2,jugDims(S.jgDraft)[0]*.035);let best=null,bd=1e9;
@@ -1911,8 +1945,8 @@ function montarJug(){
     const [x,y]=pto(ev),t=S.jgTool,j=S.jgDraft,P=j.pasos[S.jgPaso];jgDrag=null;
     if(t==="mover"){const c=cerca(x,y);if(c){jgDrag={id:c,x0:x,y0:y,movido:false}}else{S.jgSel=null;redibujarJg()}}
     else if(t==="balon"){jgSnap();const c=cerca(x,y);P.balon=c&&c!=="balon"?{con:c}:{xy:[x,y]};redibujarJg()}
-    else{jgSnap();const id="f"+Date.now().toString(36)+Math.random().toString(36).slice(2,4),nn=j.fichas.filter(f=>f.t===t).length+1;
-      j.fichas.push({id,t,lab:t==="A"?String(nn+1):t==="PT"?"1":""});for(const p of j.pasos) p.pos[id]=[x,y];redibujarJg()}};
+    else{jgSnap();const id="f"+Date.now().toString(36)+Math.random().toString(36).slice(2,4),lab=labLibre(j,t);
+      j.fichas.push({id,t,lab});for(const p of j.pasos) p.pos[id]=[x,y];redibujarJg()}};
   wrap.onpointermove=ev=>{if(!jgDrag)return;ev.preventDefault();const [x,y]=pto(ev),P=S.jgDraft.pasos[S.jgPaso];
     if(!jgDrag.movido&&Math.hypot(x-jgDrag.x0,y-jgDrag.y0)>.6){jgSnap();jgDrag.movido=true}if(!jgDrag.movido)return;
     if(jgDrag.id==="balon") P.balon={xy:[x,y]}; else P.pos[jgDrag.id]=[x,y];redibujarJg()};
@@ -2023,7 +2057,7 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   if(t.id==="jgCharla"){leerJg();S.jgCharla=!S.jgCharla;render();if(S.jgCharla)window.scrollTo(0,0);return}
   if(t.id==="jgQuitar"){jgSnap();const id=S.jgSel;j.fichas=j.fichas.filter(f=>f.id!==id);for(const p of j.pasos){delete p.pos[id];if(p.balon?.con===id){const q=bPos(j,0);p.balon=null}}S.jgSel=null;render();return}
   if(t.id==="jgDesel"){leerJg();S.jgSel=null;render();return}
-  if(t.dataset.jglab!=null){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){jgSnap();f.lab=t.dataset.jglab;S.jgSel=null;render()}return}
+  if(t.dataset.jglab!=null){const f=j.fichas.find(x=>x.id===S.jgSel);if(f&&labUsado(j,f,t.dataset.jglab)){toast(`El ${t.dataset.jglab} ya está en el campo`);return}if(f){jgSnap();f.lab=t.dataset.jglab;S.jgSel=null;render()}return}
   if(t.id==="jgVelBtn"){leerJg();S.jgVelMenu=!S.jgVelMenu;render();return}
   if(t.dataset.jvel){LS.set("pizarra.jgVel",t.dataset.jvel);S.jgVelMenu=false;render();toast("Velocidad: "+JG_VEL[t.dataset.jvel][0].replace(/^\S+ /,"").toLowerCase()+" (al reproducir y al compartir)");return}
   if(t.id==="jgGuardar"){leerJg();if(!j.nombre){toast("Ponle nombre a la jugada");$("#jg-nombre")?.focus();return}
@@ -2046,7 +2080,8 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 app.addEventListener("change",ev=>{const t=ev.target;if(S.view!=="jugEdit")return;const j=S.jgDraft;
   if(t.id==="jg-partido"){leerJg();autoGuardarJg();render();const pj=j.partido&&S.eq.partidos[j.partido];toast(pj?`Jugada para la J${pj.jornada} · ${pj.rival}`:"Sin partido");return}
   if(t.id==="jg-campo"){leerJg();jgSnap();j.campo=t.value;const [w,h]=jugDims(j);for(const p of j.pasos){for(const id in p.pos){const q=p.pos[id];p.pos[id]=[Math.min(w,q[0]),Math.min(h,q[1])]}}render();return}
-  if(t.id==="jg-lab"){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){f.lab=t.value.trim();redibujarJg()}return}
+  if(t.id==="jg-lab"){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){const v=t.value.trim();
+    if(labUsado(j,f,v)){toast(`El ${v} ya está en el campo: elige otro`);t.value=f.lab||"";return}jgSnap();f.lab=v;redibujarJg()}return}
   if(t.id==="jg-labpl"&&t.value){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){f.lab=t.value;const i=$("#jg-lab");if(i)i.value=t.value;redibujarJg()}return}
 });
 app.addEventListener("input",ev=>{if(ev.target.id==="jgdTexto")S.jgdTexto=ev.target.value;if(ev.target.id==="jgSig")S.jgSig=ev.target.value;
@@ -2061,12 +2096,13 @@ const MANUAL=[
   ["Instalarla en el móvil",`<ul><li><b>Android (Chrome):</b> menú ⋮ → «Instalar aplicación».</li><li><b>iPhone:</b> ábrela en <b>Safari</b> (no en Brave ni dentro de WhatsApp) → botón Compartir (cuadrado con flecha) → «Añadir a pantalla de inicio».</li><li>Queda un icono como cualquier app y funciona sin cobertura en el campo.</li></ul>`],
   ["Conectar tu equipo",`En <b>Mi club → Mi equipo</b> pon el <b>código del equipo</b> y la <b>contraseña</b> que te ha dado el club. Una sola vez: desde entonces te llegan solos la plantilla con fotos, el calendario, los resultados, los goleadores y la clasificación.`],
   ["Qué versión tengo y qué hay de nuevo",`Arriba, debajo del nombre, pone <b>v1.x</b>. Toca el botón <b>?</b> de arriba a la derecha → <b>✨ Novedades</b>: ahí está lo nuevo de cada versión (sale un punto amarillo cuando hay algo sin ver). Las versiones nuevas llegan solas al abrir la app con cobertura; si no la ves, ciérrala y ábrela otra vez.`],
+  ["En el ordenador",`En una pantalla grande la jugada se ve en dos columnas: el campo a la izquierda, entero sin bajar, y a la derecha las fichas, los pasos y el cuadro de texto. La rueda del ratón mueve la línea de pasos y la lista de jugadores.`],
   ["Modo claro y oscuro",`Toca el <b>☀️/🌙</b> de arriba, al lado del <b>?</b>, para cambiar entre claro y oscuro. Se queda guardado en el móvil.`],
   ["Las pestañas",`<ul><li><b>Pizarra:</b> jugadas animadas para la charla.</li><li><b>Ejercicios:</b> tu biblioteca de ejercicios dibujados.</li><li><b>Sesiones:</b> calendario de entrenos y sesiones.</li><li><b>Partidos:</b> convocatoria, alineación, resultado, informe del rival, clasificación y estadísticas.</li><li><b>Mi club:</b> tu club, tu equipo, copias e instalar.</li><li><b>Botón ? (arriba a la derecha):</b> este manual y las novedades, desde cualquier pestaña.</li></ul>`]]},
  {ic:"🎬",t:"Pizarra: jugadas animadas",r:"Jugadas paso a paso con carreras, conducciones y pases, para enseñarlas y compartirlas.",a:[
   ["Crear una jugada",`<b>+ Nueva jugada</b>, o abre una de <b>Para empezar</b> (córner, falta, salida de balón, presión) o <b>Del club</b> y cámbiala a tu gusto. Arriba, <b>toca el título</b> para ponerle nombre. El campo (entero, medio campo, área o F7) se cambia con el botón <b>⛶</b> que hay encima del dibujo, arriba a la izquierda. Arriba a la derecha, a la altura de «← Pizarra»: <b>📅</b> para decir para qué partido es (sale «J6» en el icono), <b>💾</b> para guardar (el punto se pone verde cuando está guardada; también se guarda sola) y <b>🗑</b> para borrar la jugada (pregunta antes).`],
-  ["Poner y mover fichas",`<ul><li>Elige <b>Nuestro</b>, <b>Portero</b>, <b>Rival</b>, <b>Portero rival</b> o <b>Balón</b> en la fila de encima del campo y toca el campo.</li><li>Con <b>Mover</b>, arrastra con un dedo. Si sueltas el balón encima de un jugador, se le pega.</li><li><b>Subir y bajar la pantalla:</b> con <b>Mover</b>, desliza empezando en el césped (no encima de una ficha). Con las demás fichas elegidas, el campo se queda quieto para que no se te escape nada.</li><li><b>Toca una ficha</b> sin arrastrarla: sale su menú justo encima, con su número, los jugadores de tu plantilla para elegir con un toque, <b>🗑</b> para quitarla y <b>✓</b> para cerrar.</li></ul>`],
-  ["Los pasos",`Una jugada es una serie de pasos. Debajo del campo está el reproductor (⏮ ◀ ▶ ▶) y la <b>línea de pasos</b>: toca un número para ir a ese paso, <b>+</b> copia el paso actual (luego arrastras las fichas a donde van) y <b>🗑</b> borra el paso en el que estás. <b>⛶</b> pone el campo a pantalla completa para la charla. La app dibuja sola lo que pasa entre un paso y otro:<ul><li><b>Línea amarilla:</b> carrera sin balón.</li><li><b>Línea azul ondulada:</b> conducción (se mueve con el balón).</li><li><b>Línea blanca discontinua:</b> pase.</li></ul>En el cuadro de abajo escribes qué pasa en ese paso: sale en la charla y al compartir.`],
+  ["Poner y mover fichas",`<ul><li>Elige <b>Nuestro</b>, <b>Portero</b>, <b>Rival</b>, <b>Portero rival</b> o <b>Balón</b> en la fila de encima del campo y toca el campo.</li><li>Con <b>Mover</b>, arrastra con un dedo. Si sueltas el balón encima de un jugador, se le pega.</li><li><b>Subir y bajar la pantalla:</b> con <b>Mover</b>, desliza empezando en el césped (no encima de una ficha). Con las demás fichas elegidas, el campo se queda quieto para que no se te escape nada.</li><li><b>Toca una ficha</b> sin arrastrarla: sale su menú justo encima, con su número, los jugadores de tu plantilla para elegir con un toque, <b>🗑</b> para quitarla y <b>✓</b> para cerrar.</li><li><b>Sin dorsales repetidos:</b> en cada equipo no puede haber dos fichas con el mismo número. Los jugadores que ya están en el campo salen apagados («en el campo») y una ficha nueva coge el primer número libre.</li></ul>`],
+  ["Los pasos",`Una jugada es una serie de pasos. Debajo del campo está el reproductor (⏮ ◀ ▶ ▶) y la <b>línea de pasos</b>: toca un número para ir a ese paso (con muchos pasos, la línea se desliza con el dedo y se centra sola en el paso en el que estás), <b>+</b> copia el paso actual (luego arrastras las fichas a donde van) y <b>🗑</b> borra el paso en el que estás. <b>⛶</b> pone el campo a pantalla completa para la charla. La app dibuja sola lo que pasa entre un paso y otro:<ul><li><b>Línea amarilla:</b> carrera sin balón.</li><li><b>Línea azul ondulada:</b> conducción (se mueve con el balón).</li><li><b>Línea blanca discontinua:</b> pase.</li></ul>En el cuadro de abajo escribes qué pasa en ese paso: sale en la charla y al compartir.`],
   ["🎤 Solo la explicación, moviendo a mano",`La forma más rápida si prefieres mover tú las fichas:<ol><li>Coloca las fichas del paso 1 arrastrándolas.</li><li>Pestaña <b>✨ Este paso</b> → <b>🎤</b> y di lo que pasa. Se guarda solo como explicación del paso: <b>no mueve nada</b>. Sale en la charla y al compartir.</li><li><b>+</b> en la línea de pasos, arrastra las fichas a donde van y vuelve a dictar.</li></ol>Si dictas otra vez, la explicación se cambia por la nueva (↶ la recupera).`],
   ["🗣️ Palabras para colocar las fichas",`Sirven en <b>✨ Este paso</b> con <b>Generar este paso</b>, sobre todo en el paso 1. Dorsal + dónde, separados por comas o «y»:<ul><li><b>Hacia delante o atrás:</b> arriba, en punta, en ataque · en el medio, centro del campo · atrás, en defensa (arriba = cerca de la portería rival).</li><li><b>De lado:</b> banda derecha, banda izquierda, por dentro, en el centro, carril derecho.</li><li><b>Sitios:</b> en el área, en la frontal, en el punto de penalti, primer palo, segundo palo, en el córner.</li><li><b>Junto a otro:</b> junto al 9, al lado del 4, detrás del 4, delante del 6, a la altura del 8.</li><li><b>Varios a la vez:</b> «el 8 y el 7 arriba», «el 8 y el 10 se ponen en la frontal».</li><li><b>Con balón:</b> «el 4 tiene el balón», «el 4 en el centro del campo con el balón».</li><li><b>Movimientos</b> (van al paso siguiente): avanza, sube, baja, retrocede, se desmarca, ataca el espacio, se mete, presiona.</li></ul>`],
   ["👉 Cómo se hace una jugada (el proceso)",`<ol><li><b>Paso 1 = cómo empieza.</b> En el cuadro de abajo, pestaña <b>✨ Este paso</b>, escribe o dicta con 🎤 «el 4 tiene el balón, el 8 y el 7 arriba» y pulsa <b>Generar este paso</b>. O colócalos a mano con las fichas de encima del campo.</li><li><b>Lo siguiente.</b> El cuadro cambia solo a <b>➕ Lo siguiente</b>: escribe o dicta lo que pasa después («el 4 la da al 8») y pulsa <b>Añadir paso</b>. Al dictar, el paso se añade solo al terminar de hablar.</li><li>Para cambiar un paso ya hecho, tócalo en la línea de pasos, pestaña <b>✨ Este paso</b>, cambia el texto y <b>Generar este paso</b>.</li><li>Repite para cada cosa que pase. Si una frase tiene dos acciones con balón, salen dos pasos.</li><li>Retoca arrastrando si quieres, <b>Reproducir</b> y <b>Compartir</b>.</li></ol>`],
