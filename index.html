@@ -602,8 +602,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.21";
+const VERSION="1.21.1";
 const NOVEDADES=[
+  ["1.21.1","31-oct-2026",["Las versiones nuevas entran solas también al volver a la app desde segundo plano, y aunque salgan dos el mismo día."]],
   ["1.21","31-oct-2026",["Editor de jugadas reordenado: las fichas y deshacer/rehacer, encima del campo; el reproductor, pegado debajo.","Los pasos son una línea de tiempo: toca un número para ir a ese paso, + para copiarlo y 🗑 para borrarlo.","Un solo cuadro para escribir o dictar, con dos pestañas: ✨ Este paso (lo genera) y ➕ Lo siguiente (añade el paso que viene). Cambia solo a «Lo siguiente» cuando generas un paso."]],
   ["1.20.1","31-oct-2026",["«✨ Generar este paso» vuelve con su nombre y bien a la vista, en su propio cuadro encima de «¿Qué pasa después?».","🎤 Dictar también para el paso en el que estás: lo dices y se genera solo."]],
   ["1.20","31-oct-2026",["Manual y novedades salen de Mi club: ahora están en el botón ? de arriba a la derecha, en cualquier pestaña.","Se abren en una hoja que sube desde abajo, con Manual y Novedades a un toque. Se cierra con ✕, tocando fuera, arrastrando hacia abajo o con el botón atrás.","Un punto amarillo en el ? avisa cuando hay una versión nueva sin ver."]],
@@ -2004,10 +2005,13 @@ $("#ayuda").addEventListener("input",ev=>{if(ev.target.id!=="manQ")return;S.manQ
   db.collection("sesiones").onSnapshot(snap=>{S.se={};snap.docs.forEach(d=>S.se[d.id]=d.data());if(llegados<2)listo();else if(S.view!=="edit"&&S.view!=="sesion")render()});
   if("serviceWorker" in navigator){const habia=!!navigator.serviceWorker.controller;
     const editando=()=>["jugEdit","edit","sesion","jugador"].includes(S.view);
-    const recargar=()=>{if(!sessionStorage.getItem("pizarra.recargada")){sessionStorage.setItem("pizarra.recargada","1");guardarJgYa();location.reload()}};
+    // una recarga por versión nueva (antes solo una por sesión: la 2ª versión del día ya no entraba)
+    const recargar=()=>{const ult=+sessionStorage.getItem("pizarra.recargada")||0;if(Date.now()-ult<15000)return;sessionStorage.setItem("pizarra.recargada",String(Date.now()));guardarJgYa();location.reload()};
     navigator.serviceWorker.addEventListener("controllerchange",()=>{if(!habia)return;if(!editando())return recargar();
       const espera=setInterval(()=>{if(!editando()){clearInterval(espera);recargar()}},2000)});
-    navigator.serviceWorker.register("sw.js").then(r=>r.update()).catch(()=>{})}
+    navigator.serviceWorker.register("sw.js").then(r=>{r.update();
+      // al volver a la app desde segundo plano, mira si hay versión nueva
+      document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")r.update().catch(()=>{})})}).catch(()=>{})}
   sincronizar();
   const vista=LS.get("pizarra.version",null);
   if(vista!==VERSION){LS.set("pizarra.version",VERSION);if(vista)setTimeout(()=>toast("Versión "+VERSION+": toca el ? de arriba para ver lo nuevo"),800);else LS.set("pizarra.novVista",VERSION)}

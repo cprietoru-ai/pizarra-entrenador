@@ -2,6 +2,9 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.21.1 · 31-oct-2026
+- Las versiones nuevas entran solas también al volver a la app desde segundo plano, y aunque salgan dos el mismo día.
+
 ## 1.21 · 31-oct-2026
 - Editor de jugadas reordenado: las fichas y deshacer/rehacer, encima del campo; el reproductor, pegado debajo.
 - Los pasos son una línea de tiempo: toca un número para ir a ese paso, + para copiarlo y 🗑 para borrarlo.
