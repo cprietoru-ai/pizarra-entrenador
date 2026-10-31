@@ -351,6 +351,15 @@ details.grp[open]>summary{border-bottom:1.5px solid var(--line);background:linea
 .ejtools{grid-template-columns:repeat(6,1fr)!important}.jtsym{font-size:17px;line-height:1}
 .jgtitv{font-family:var(--display);font-weight:400;font-size:32px;line-height:1.05;letter-spacing:.5px;margin:4px 0 10px}
 .sesvbar{height:86px;border-radius:16px;overflow:hidden;margin-bottom:14px}.sesvbar .sesth{border-radius:16px}
+.lbdict{display:flex;align-items:center;justify-content:space-between;gap:8px}.ib.mic2{width:32px;height:32px;font-size:15px}.ib.mic2.on{background:var(--rojo);color:#fff;border-color:var(--rojo);animation:halo 1.2s ease-in-out infinite}
+.sescharlabtn{width:100%;margin:0 0 12px;padding:12px;border-radius:14px;font-size:16px}
+.sesch{position:fixed;inset:0;z-index:50;background:#0b2e17;color:#fff;display:flex;flex-direction:column;gap:8px;padding:max(14px,env(safe-area-inset-top)) 16px max(14px,env(safe-area-inset-bottom));overflow:auto}
+.seschhd{display:flex;align-items:center;gap:10px}.seschhd .ib{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)}
+.seschcat{font-family:var(--label);font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:#cfe9d6;font-size:14px}
+.seschtit{font-family:var(--display);font-weight:400;font-size:clamp(28px,7vw,46px);line-height:1.02;margin:0}
+.seschdg{width:100%;max-width:900px;margin:0 auto}.seschdg svg{width:100%;height:auto;max-height:52vh;display:block;border-radius:14px}
+.seschobj{font-size:18px;font-weight:600;margin:4px 0 0}.seschcon{margin:0;padding-left:20px;font-size:16px;color:#e7f3ea}.seschcon li{margin:3px 0}
+.seschnav{display:flex;gap:8px;margin-top:auto;padding-top:8px}.seschnav .btn{flex:1}.seschnav .btn:not(.pri){background:rgba(255,255,255,.12);color:#fff}
 .btn.gen{background:var(--surface);color:var(--club);border:2px solid var(--club)}
 .jgtools{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding:2px}
 .jgtools::-webkit-scrollbar{display:none}
@@ -603,7 +612,7 @@ function vistaEjercicios(){
   const objs=OBJ_GEN.filter(([k])=>todos.some(([,e])=>objetivosDe([e.nombre,e.objetivo].join(" ")).includes(k)));
   const tarjeta=([id,e])=>tarjeta_({abrir:`data-open="${esc(id)}"`,thumb:e.diagrama?miniEj(id,e):`<span class="nodg">${esc((CAT_INFO[e.categoria]||["📋"])[0])}</span>`,titulo:e.nombre,
     meta:`⏱ ${esc(e.tiempo||"—")}${e.jugadores?" · "+esc(e.jugadores.split("·")[0].slice(0,34)):""}`,badge:/^fifa-|^fifa11/.test(id)?"FIFA":"",
-    menuId:S.canWrite?"ej:"+id:"",menu:`<button data-ejdup="${esc(id)}">⧉ Duplicar</button>`});
+    menuId:S.canWrite?"ej:"+id:"",menu:`<button data-ejanim="${esc(id)}">🎬 ${Object.values(S.jug).some(j=>j.ejercicio===id)?"Ver la animación":"Animar en la Pizarra"}</button><button data-ejdup="${esc(id)}">⧉ Duplicar</button>`});
   return `<div class="jlhd"><div class="grow"><h2 class="h2" style="margin:0">Ejercicios</h2><div class="note">${todos.length} en tu biblioteca</div></div>${S.canWrite?`<button class="btn pri" id="nuevo">+ Nuevo</button>`:""}</div>
     <div class="jlfiltros"><input type="search" id="q" placeholder="🔍 Buscar ejercicio u objetivo" value="${esc(S.q||"")}">
       ${objs.length?`<div class="chips jlchips"><button class="chip" data-ejobj="" aria-pressed="${!fo}">Todo</button>${objs.map(([k,n])=>`<button class="chip" data-ejobj="${k}" aria-pressed="${fo===k}">${n}</button>`).join("")}</div>`:""}</div>
@@ -617,6 +626,7 @@ app.addEventListener("click",ev=>{
   const t=ev.target.closest("button"); if(!t) return;
   if(t.dataset.f){S.filtro=t.dataset.f;render();return}
   if(t.dataset.ejobj!=null&&S.view==="ej"){S.ejObj=t.dataset.ejobj;render();return}
+  if(t.dataset.ejanim){S.tMenu=null;if(S.view==="edit")leerForm();animarEjercicio(t.dataset.ejanim);return}
   if(t.dataset.ejdup){const o=S.ej[t.dataset.ejdup];if(o){const id="ej-"+Date.now().toString(36);S.db.doc("ejercicios/"+id).set({...structuredClone(o),nombre:o.nombre+" (copia)",actualizado:ahora()});S.tMenu=null;toast("Ejercicio duplicado")}return}
   if(t.dataset.plegtodo){const v=t.dataset.v==="1";document.querySelectorAll(`details[data-pleg^="${t.dataset.plegtodo}:"]`).forEach(d=>{d.open=v;PLEG[d.dataset.pleg]=v});try{localStorage.setItem(PLEG_KEY,JSON.stringify(PLEG))}catch(e){}return}
   if(t.id==="nuevo"){abrirEditor(null);return}
@@ -637,7 +647,7 @@ function vistaEditor(){
   const campo=Object.entries(CAMPOS).map(([k,v])=>`<option value="${k}" ${d.diagrama.tipo===k?"selected":""}>${v.n} (${v.w}×${v.h} m)</option>`).join("");
   const cat=CAT_INFO[d.categoria]||["📋"];
   return `<div class="jghead"><button class="back" id="volver">← Ejercicios</button>
-    ${ro?"":`<div class="jgicons">${S.editId?`<button class="hic" id="duplicar" aria-label="Duplicar" title="Duplicar">${IC2.duplicar}</button><button class="hic" id="compEj" aria-label="Compartir" title="Compartir">${IC2.compartir}</button>`:""}
+    ${ro?"":`<div class="jgicons">${S.editId?`<button class="hic${Object.values(S.jug).some(j=>j.ejercicio===S.editId)?" on":""}" data-ejanim="${esc(S.editId)}" aria-label="Animar en la Pizarra" title="Animar">🎬</button><button class="hic" id="duplicar" aria-label="Duplicar" title="Duplicar">${IC2.duplicar}</button><button class="hic" id="compEj" aria-label="Compartir" title="Compartir">${IC2.compartir}</button>`:""}
       <button class="hic" id="guardar" aria-label="Guardar ejercicio" title="Guardar">${IC.guardar}<i class="hdot${S.editId?" ok":""}"></i></button>
       ${S.editId?`<button class="hic dan" id="borrar" aria-label="Borrar ejercicio" title="Borrar">${IC.borrar}</button>`:""}</div>`}</div>
   ${S.delConfirm===S.editId&&S.editId?`<div class="jgconf"><span>¿Borrar <b>${esc(d.nombre||"el ejercicio")}</b>? También se quita de las sesiones.</span><button class="btn dan sm" id="borrarSi">Sí, borrar</button><button class="btn sm" id="borrarNo">No</button></div>`:""}
@@ -660,8 +670,8 @@ function vistaEditor(){
       <label>Espacio<input type="text" id="f-espacio" value="${esc(d.espacio)}" placeholder="Campo de F7 transversal" ${ro?"disabled":""}></label>
       <label>Jugadores<input type="text" id="f-jugadores" value="${esc(d.jugadores)}" placeholder="8v8 + 2 porteros" ${ro?"disabled":""}></label>
       <label>Objetivo<input type="text" id="f-objetivo" value="${esc(d.objetivo)}" placeholder="Qué se trabaja, en una línea" ${ro?"disabled":""}></label>
-      <label>Desarrollo y reglas<textarea id="f-descripcion" ${ro?"disabled":""}>${esc(d.descripcion)}</textarea></label>
-      <label>Consignas (una por línea)<textarea id="f-consignas" ${ro?"disabled":""}>${esc((d.consignas||[]).join("\n"))}</textarea></label>
+      <label><span class="lbdict">Desarrollo y reglas ${ro?"":`<button type="button" class="ib mic2${S.dictEj==="f-descripcion"?" on":""}" data-dictej="f-descripcion" aria-label="Dictar">🎤</button>`}</span><textarea id="f-descripcion" ${ro?"disabled":""}>${esc(d.descripcion)}</textarea></label>
+      <label><span class="lbdict">Consignas (una por línea) ${ro?"":`<button type="button" class="ib mic2${S.dictEj==="f-consignas"?" on":""}" data-dictej="f-consignas" aria-label="Dictar">🎤</button>`}</span><textarea id="f-consignas" ${ro?"disabled":""}>${esc((d.consignas||[]).join("\n"))}</textarea></label>
       <label>Variantes (16 / 20 jugadores)<input type="text" id="f-variantes" value="${esc(d.variantes)}" ${ro?"disabled":""}></label>
       <label>Fuente o fundamento<input type="text" id="f-fuente" value="${esc(d.fuente)}" placeholder="FIFA 11+, juegos reducidos…" ${ro?"disabled":""}></label>
     </form>
@@ -704,8 +714,18 @@ function enlazarSvg(){
   wrap.onpointerup=ev=>{if(drag&&drag.flecha){const [x,y]=punto(ev);if(Math.hypot(x-drag.x,y-drag.y)>=1.5){guardarHist();S.draft.diagrama.el.push([drag.flecha,drag.x,drag.y,x,y])}redibujar()}drag=null};
   wrap.onpointercancel=()=>{if(drag){drag=null;redibujar()}};
 }
+// 🎤 en el ejercicio (1.38): lo dictado se añade al final del cuadro (en consignas, como una línea nueva)
+let recoEj=null;
+function dictarEn(idTa){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast("Este navegador no deja dictar dentro de la app: usa el micrófono del teclado");$("#"+idTa)?.focus();return}
+  if(recoEj){recoEj.stop();return}const ta=$("#"+idTa);if(!ta)return;const base=ta.value;recoEj=new SR();recoEj.lang="es-ES";recoEj.interimResults=true;recoEj.continuous=false;let fin="";
+  const unir=t=>!base.trim()?t:idTa==="f-consignas"?base.replace(/\s*$/,"")+"\n"+t:base.replace(/[\s.]*$/,". ")+t;
+  recoEj.onresult=e=>{let x="";for(const r of e.results){x+=r[0].transcript;if(r.isFinal)fin=x}const t=$("#"+idTa);if(t)t.value=unir(x.charAt(0).toUpperCase()+x.slice(1))};
+  recoEj.onerror=e=>{toast(e.error==="not-allowed"?"Da permiso al micrófono (o usa el del teclado)":"No te he oído bien: prueba otra vez")};
+  recoEj.onend=()=>{recoEj=null;S.dictEj=null;const t=$("#"+idTa);if(t&&fin.trim())t.value=unir(fin.trim().charAt(0).toUpperCase()+fin.trim().slice(1));leerForm();render()};
+  try{recoEj.start();S.dictEj=idTa;leerForm();render()}catch(e){recoEj=null;toast("No se pudo usar el micrófono")}}
 function montarEditor(){
   enlazarSvg();
+  document.querySelectorAll("[data-dictej]").forEach(b=>b.onclick=()=>dictarEn(b.dataset.dictej));
   $("#volver").onclick=()=>{S.view="ej";render()};
   document.querySelectorAll("[data-tool]").forEach(b=>b.onclick=()=>{leerForm();S.tool=b.dataset.tool;render()});
   const tt=$("#textoTool"); if(tt) tt.oninput=()=>S.textoTool=tt.value;
@@ -770,15 +790,36 @@ app.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t)retu
   if(t.dataset.ses){S.sesId=t.dataset.ses;S.view="vista";render();window.scrollTo(0,0);return}
 });
 function tareasDe(s){return (s.tareas||[]).map(id=>[id,S.ej[id]]).filter(x=>x[1])}
+// Charla de la sesión (1.38): los ejercicios uno a uno a pantalla completa; si tienen animación, se reproduce sola
+function htmlCharlaSes(s){const ts=tareasDe(s),i=Math.min(S.sesCh.i,ts.length-1),[id,e]=ts[i],an=Object.entries(S.jug).find(([,j])=>j.ejercicio===id);
+  return `<div class="sesch" role="dialog" aria-label="Charla de la sesión"><div class="seschhd"><span class="grpn">${i+1}/${ts.length}</span><b class="grow">${esc(s.nombre||"Sesión")}</b><button class="ib" id="sesChX" aria-label="Cerrar">✕</button></div>
+    <div class="seschcat">${(CAT_INFO[e.categoria]||["📋"])[0]} ${esc(e.categoria||"")} · ⏱ ${esc(e.tiempo||"")}${e.jugadores?" · "+esc(e.jugadores.split("·")[0]):""}</div>
+    <h2 class="seschtit">${esc(e.nombre)}</h2>
+    <div class="seschdg" id="seschdg" ${an?`data-an="${esc(an[0])}"`:""}>${an?svgJugada(an[1],0,{uid:"ch"}):e.diagrama?svgDiagrama(e.diagrama,{uid:"ch"+i}):""}</div>
+    ${e.objetivo?`<p class="seschobj">${esc(e.objetivo)}</p>`:""}
+    ${(e.consignas||[]).length?`<ul class="seschcon">${e.consignas.slice(0,4).map(c=>`<li>${esc(c)}</li>`).join("")}</ul>`:""}
+    <div class="seschnav"><button class="btn" id="sesChAnt" ${i===0?"disabled":""}>◀ Anterior</button>${an?`<button class="btn" id="sesChAn">🎬 Otra vez</button>`:""}<button class="btn pri" id="sesChSig">${i===ts.length-1?"Terminar":"Siguiente ▶"}</button></div></div>`}
+let chAnim=null;
+function animarCharla(){cancelAnimationFrame(chAnim);const w=$("#seschdg");if(!w||!w.dataset.an)return;const j=S.jug[w.dataset.an];if(!j||j.pasos.length<2)return;
+  let k=0,t0=null;const T=JG_T*velJg();const tick=ts=>{if(!$("#seschdg"))return;if(t0==null)t0=ts;const a=Math.min(1,(ts-t0)/T);w.innerHTML=svgJugada(j,k,{uid:"ch",anim:a});
+    if(a>=1){k++;t0=null;if(k>=j.pasos.length-1){w.innerHTML=svgJugada(j,j.pasos.length-1,{uid:"ch"});return}return setTimeout(()=>chAnim=requestAnimationFrame(tick),400*velJg())}chAnim=requestAnimationFrame(tick)};
+  setTimeout(()=>chAnim=requestAnimationFrame(tick),500)}
+app.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t||S.view!=="vista")return;const s=S.se[S.sesId];if(!s)return;
+  if(t.id==="sesCharla"){S.sesCh={i:0};render();animarCharla();return}
+  if(t.id==="sesChX"){S.sesCh=null;render();return}
+  if(t.id==="sesChAnt"){S.sesCh.i=Math.max(0,S.sesCh.i-1);render();animarCharla();return}
+  if(t.id==="sesChSig"){const n=tareasDe(s).length;if(S.sesCh.i>=n-1){S.sesCh=null;render();toast("¡A entrenar!");return}S.sesCh.i++;render();animarCharla();return}
+  if(t.id==="sesChAn"){animarCharla();return}});
 function vistaSesion(){
   const s=S.se[S.sesId]; if(!s) return `<button class="back" id="volverSes">← Entrenos</button><div class="empty"><b>Esta sesión ya no existe</b></div>`;
   const ts=tareasDe(s),tot=ts.reduce((a,[,e])=>a+minutos(e.tiempo),0);
   return `<div class="jghead"><button class="back" id="volverSes">← Entrenos</button><div class="jgicons">
     <button class="hic" id="copiar" aria-label="Copiar el texto" title="Copiar texto">${IC2.copiar}</button><button class="hic" id="compSes" aria-label="Compartir" title="Compartir">${IC2.compartir}</button><button class="hic" id="imprimir" aria-label="Imprimir" title="Imprimir">${IC2.imprimir}</button>
     ${S.canWrite?`<button class="hic on" id="editarSes" aria-label="Editar sesión" title="Editar">${IC2.editar}</button>`:""}</div></div>
+  ${ts.length?`<button class="btn pri sescharlabtn" id="sesCharla">▶ Enseñar en la charla</button>`:""}
   <span class="jgpartido">📅 ${esc(fmtFecha(s.fecha))} · ⏱ ${tot}' de trabajo${s.carga?" · "+esc(s.carga):""}</span>
   <h2 class="jgtitv" style="font-size:${tamTit(s.nombre)}px">${esc(s.nombre||"Sesión")}</h2>
-  <div class="sesvbar">${miniSes(s)}</div>
+  <div class="sesvbar">${miniSes(s)}</div>${S.sesCh&&ts.length?htmlCharlaSes(s):""}
   <div class="vista">
     ${s.idea?`<div class="idea">«${esc(s.idea)}»</div>`:""}
     ${s.notas?`<p class="note">${esc(s.notas)}</p>`:""}
@@ -843,8 +884,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.37";
+const VERSION="1.38";
 const NOVEDADES=[
+  ["1.38","31-oct-2026",["🎬 Animar un ejercicio: lo pasa a la Pizarra con sus fichas, conos y zonas; si el dibujo tiene flechas, ya sale con 2 pasos. Lo sigues con +, arrastrando o dictando, y lo compartes como cualquier jugada. Está en el ⋯ de cada ejercicio y arriba al abrirlo.","🎤 Dictar la descripción y las consignas del ejercicio.","▶ Enseñar la sesión en la charla: sus ejercicios uno a uno a pantalla completa, con su dibujo o su animación, el objetivo y las consignas."]],
   ["1.37","31-oct-2026",["Ejercicios y sesiones, por dentro, como la Pizarra: «←» y los iconos arriba (💾 guardar, ⧉ duplicar, 📤 compartir, 🗑 borrar…), el nombre como título que se toca para cambiarlo y las herramientas en una rejilla con su icono.","En el ejercicio, el campo se cambia con el botón de la esquina del dibujo, y ↶ y 🧹 (vaciar) van debajo del campo.","La sesión se ve con su día y la tira de colores de sus ejercicios arriba."]],
   ["1.36","31-oct-2026",["Pizarra, Ejercicios y Sesiones con el mismo aspecto: las mismas tarjetas, la misma cabecera, los mismos grupos que se abren y se cierran y los mismos filtros.","Pizarra por tipos (balón parado, salida de balón, presión, transiciones, ataque), igual que los ejercicios y las sesiones.","Arriba, destacado, el próximo partido (cambia solo cuando pasa el partido) con sus jugadas; y aparte, «En preparación», las que aún tienen un paso o no tienen nombre. Filtro por partido para ver las de cualquier otro.","Las sesiones se ven con su día y una tira de colores con sus ejercicios (el largo es el tiempo). En cada tarjeta, ⋯ para duplicar."]],
   ["1.35","31-oct-2026",["Logo nuevo: un escudo de los de siempre, con franjas verdes, tres estrellas y el balón clásico. Se ve bien en la pantalla del móvil, también en Android con iconos redondos."]],
@@ -1685,7 +1727,7 @@ const JV=["jug","jugEdit"];
 const JUG_KEY="pizarra.jugadas";
 S.jug=(()=>{try{return JSON.parse(localStorage.getItem(JUG_KEY))||{}}catch(e){return {}}})();
 function jugGuardar(){try{localStorage.setItem(JUG_KEY,JSON.stringify(S.jug));return true}catch(e){toast("No cabe en este móvil");return false}}
-const CAMPOS_JUG={completo:"Campo entero",medio:"Medio campo",area:"Área",f7:"Campo F7"};
+const CAMPOS_JUG={completo:"Campo entero",medio:"Medio campo",area:"Área",f7:"Campo F7",rect:"Espacio libre"};
 const FICHA_COL={A:["#fff","#0b4a20","#0b3a19"],B:["#e0322b","#fff","#fff"],PT:["#ffd84a","#0b4a20","#0b3a19"],PR:["#111","#e0322b","#fff"]};
 // Plantillas para empezar (metros: medio campo 64x50 con la portería abajo; campo entero 100x64 atacando a la derecha)
 function jugPlantillas(){
@@ -1788,9 +1830,36 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false,som
   const vb=[-pad,-pad,w+2*pad,h+2*pad];
   return `<svg viewBox="${vb.join(" ")}" ${editable?'id="jgsvg"':""} xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Jugada"><defs>${defs}</defs>
     <rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="${plano?"#27914a":`url(#${uid}cesped)`}"/>${rayas}
-    <g stroke="#fff" stroke-opacity=".8" stroke-width="${sw*1.4}" fill="none">${lineasCampo(j.campo,w,h)}</g>
+    <g stroke="#fff" stroke-opacity=".8" stroke-width="${sw*1.4}" fill="none">${lineasCampo(j.campo,w,h)}</g>${decoJug(j,r,sw)}
     ${plano?"":`<rect x="${-pad}" y="${-pad}" width="${w+2*pad}" height="${h+2*pad}" fill="url(#${uid}vin)"/>`}${tr}${fl}${gh}${pl}${fx}</svg>`}
 
+// Decorado fijo de una jugada (1.38): conos, zonas y textos que trae un ejercicio animado
+function decoJug(j,r,sw){if(!j.deco||!j.deco.length)return "";const fs=Math.max(1.1,jugDims(j)[0]*.024);let o="";
+  for(const el of j.deco){const k=el[0];
+    if(k==="zona"){o+=`<rect x="${el[1]}" y="${el[2]}" width="${el[3]}" height="${el[4]}" fill="#ffd84a" fill-opacity=".14" stroke="#ffd84a" stroke-opacity=".7" stroke-width="${sw}" stroke-dasharray="${r*.7} ${r*.5}"/>`;
+      if(el[5])o+=`<text x="${el[1]+el[3]/2}" y="${el[2]+fs*1.3}" font-size="${fs}" fill="#ffd84a" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700">${esc(el[5])}</text>`}
+    else if(k==="cono"){const c=r*.55;o+=`<polygon points="${el[1]},${el[2]-c} ${el[1]-c*.85},${el[2]+c*.6} ${el[1]+c*.85},${el[2]+c*.6}" fill="#ff8a1f" stroke="#7a3a00" stroke-width="${sw*.6}"/>`}
+    else if(k==="texto")o+=`<text x="${el[1]}" y="${el[2]}" font-size="${fs}" fill="#fff" text-anchor="middle" font-family="Barlow Condensed,Arial Narrow,sans-serif" font-weight="700" paint-order="stroke" stroke="#0b3a19" stroke-width="${fs*.2}">${esc(el[3])}</text>`}
+  return o}
+// Ejercicio → jugada animada: el dibujo es el paso 1 y las flechas (carrera, conducción, pase) se hacen paso 2
+function ejAJugada(eid){const e=S.ej[eid];if(!e||!e.diagrama)return null;const dg=e.diagrama,campo=CAMPOS_JUG[dg.tipo]?dg.tipo:"rect";
+  const fichas=[],pos={},deco=[],cont={A:1,B:1};let balon=null;const cerca=(x,y,lim=2.6)=>{let m=null,bd=lim;for(const f of fichas){const q=pos[f.id],d=Math.hypot(q[0]-x,q[1]-y);if(d<bd){bd=d;m=f.id}}return m};
+  dg.el.forEach((el,i)=>{const k=el[0];
+    if(k==="A"||k==="B"||k==="C"){const t=k==="B"?"B":"A",id="e"+i;fichas.push({id,t,lab:k==="C"?"C":String(t==="A"?(cont.A+=1)-1+1:cont.B++)});pos[id]=[el[1],el[2]]}
+    else if(k==="PT"){const id="e"+i,t=el[1]>dg.w/2?"PR":"PT";fichas.push({id,t,lab:t==="PT"?"1":""});pos[id]=[el[1],el[2]]}
+    else if(k==="cono"||k==="zona"||k==="texto"||k==="porteria_cono")deco.push(k==="porteria_cono"?["cono",el[1],el[2]]:el)});
+  fichas.filter(f=>f.t==="A"&&f.lab!=="C").forEach((f,n)=>f.lab=String(n+2));
+  const b=dg.el.find(el=>el[0]==="balon");if(b){const c=cerca(b[1],b[2]);balon=c?{con:c}:{xy:[b[1],b[2]]}}
+  const p1={texto:e.objetivo||e.nombre,pos:structuredClone(pos),balon},p2={texto:(e.consignas||[])[0]||e.descripcion?.split(/[.:]/)[0]||"",pos:structuredClone(pos),balon:balon&&structuredClone(balon)};let hay=false;
+  for(const el of dg.el){if(!["carrera","conduccion","pase"].includes(el[0]))continue;const de=cerca(el[1],el[2],3.5);
+    if(el[0]==="pase"){const a=cerca(el[3],el[4],3);p2.balon=a?{con:a}:{xy:[el[3],el[4]]};hay=true}
+    else if(de){p2.pos[de]=[el[3],el[4]];if(el[0]==="conduccion")p2.balon={con:de};hay=true}}
+  return {nombre:e.nombre,campo,fichas,deco,pasos:hay?[p1,p2]:[p1],partido:null,ejercicio:eid}}
+function animarEjercicio(eid){const e=S.ej[eid];if(!e)return;
+  const ya=Object.entries(S.jug).find(([,j])=>j.ejercicio===eid);if(ya){abrirJugada(ya[0]);toast("Animación del ejercicio: añade pasos y compártela");return}
+  const j=ejAJugada(eid);if(!j){toast("Este ejercicio no tiene dibujo: dibújalo primero");return}
+  const id="jg-"+Date.now().toString(36);S.jug[id]={...j,actualizado:ahora()};jugGuardar();abrirJugada(id);
+  toast(j.pasos.length>1?"Hecha con 2 pasos desde el dibujo: añade más con + o dictando":"Paso 1 listo con el dibujo: añade pasos con + o dictando")}
 // ---------- Describir jugadas y pasos con frases (1.11, rehecho en la 1.15) ----------
 // Sin IA: frases sencillas con dorsales («el 3 la da al 8», «el 7 se desmarca a la espalda»,
 // «el 9 remata al primer palo»). Quién (dorsal), qué (pasar, conducir, desmarcarse, centrar,
@@ -2012,14 +2081,14 @@ function generarPaso(j,k,texto){
 const MINI=new Map();
 function mini(clave,j){const k=clave+"|"+(j.actualizado||"")+"|"+j.campo+"|"+j.pasos.length;let v=MINI.get(k);
   if(!v){v=svgJugada(j,j.pasos.length-1,{uid:"m"+clave.replace(/\W/g,"").slice(-16)});MINI.set(k,v);if(MINI.size>200)MINI.delete(MINI.keys().next().value)}return v}
-const CAMPO_CORTO={completo:"F11",medio:"½ campo",area:"Área",f7:"F7"};
+const CAMPO_CORTO={completo:"F11",medio:"½ campo",area:"Área",f7:"F7",rect:"Libre"};
 function proxPartido(){const hoy=hoyISO();return partidosOrden().find(([id,p])=>p.fecha&&p.fecha>=hoy)}
 const TIPOS_JUG=[["parado","🚩","Balón parado","Córners, faltas, saques y penaltis.",/corner|falta|saque|penalti|barrera|balon parado/],
   ["salida","🧱","Salida de balón","Sacar el balón jugado desde el portero y la defensa.",/salida|salir jugando|desde atras|saque de puerta|inicio/],
   ["presion","⚡","Presión y defensa","Robar arriba, presión tras pérdida y defender juntos.",/presi|robo|roba|repliegue|defens|marcaje|vigilan/],
   ["transicion","↔️","Transiciones y contras","Los segundos después de robar o de perder.",/contra|transici|tras robo|al robar/],
   ["ataque","⚽","Ataque y finalización","Llegar al área y acabar: centros, desmarques y remates.",/centr|remat|desmarc|finaliz|tiro|banda|espalda|gol|ataque/]];
-function tipoJug(j){const t=nrm([j.nombre,...(j.pasos||[]).map(p=>p.texto||"")].join(" "));const x=TIPOS_JUG.find(([,,,,re])=>re.test(t));return x?x[0]:"otras"}
+function tipoJug(j){if(j.ejercicio)return "ejanim";const t=nrm([j.nombre,...(j.pasos||[]).map(p=>p.texto||"")].join(" "));const x=TIPOS_JUG.find(([,,,,re])=>re.test(t));return x?x[0]:"otras"}
 // «En preparación»: la jugada aún tiene un paso o el nombre que pone la app
 const enPrep=j=>(j.pasos||[]).length<2||!j.nombre||/^Jugada del /.test(j.nombre);
 function tarjetaJug(id,j,{tipo="mia"}={}){const P=j.partido&&S.eq.partidos[j.partido];
@@ -2053,7 +2122,7 @@ function vistaJugadas(){
     ${todas.length?(l.length?`
       ${prep.length?grupo("jg:prep","🛠","En preparación","Con un solo paso o sin nombre todavía. Cuando tengan dos pasos y nombre, pasan a su tipo.",prep.length,"",G(prep),{forzar:filtrando}):""}
       ${resto.length?`<div class="bar grpbar"><span class="note grow">${filtrando?`${l.length} con ese filtro`:"Por tipo de jugada"}</span>${botonesPleg("jg")}</div>`:""}
-      ${[...TIPOS_JUG,["otras","📋","Otras","Jugadas que no encajan en un tipo."]].filter(([k])=>porTipo[k]).map(([k,ic,n,d])=>grupo("jg:"+k,ic,n,d,porTipo[k].length,"",G(porTipo[k]),{forzar:filtrando})).join("")}`
+      ${[["ejanim","🎬","Ejercicios animados","Ejercicios de la biblioteca hechos animación para enseñarlos en el entreno."],...TIPOS_JUG,["otras","📋","Otras","Jugadas que no encajan en un tipo."]].filter(([k])=>porTipo[k]).map(([k,ic,n,d])=>grupo("jg:"+k,ic,n,d,porTipo[k].length,"",G(porTipo[k]),{forzar:filtrando})).join("")}`
         :`<div class="empty"><b>Nada con ese filtro</b>Prueba con otra palabra o toca «Todas».</div>`)
       :`<div class="jlvacio"><b>Tu primera jugada</b><span>Tres formas de empezar:</span><ol><li><b>+ Nueva</b>: colocas las fichas y vas paso a paso.</li><li><b>✨ Describir</b>: la escribes y la app la dibuja.</li><li>Una de <b>Para empezar</b>, aquí abajo, y la cambias.</li></ol></div>`}
     ${club.length?grupo("jg:club","🏟️","Del club","Jugadas que comparte el club.",club.length,"",`<div class="jcarr">${club.map(([id,j])=>tarjetaJug(id,j,{tipo:"club"})).join("")}</div>`):""}
@@ -2093,7 +2162,7 @@ function vistaJugEdit(){
       ${ro||S.jgCharla?"":`<div class="jgtools" role="toolbar" aria-label="Fichas">${JT_BAR.map(([t,ic,l])=>`<button class="jt" data-jt="${t}" aria-pressed="${S.jgTool===t}"><span class="jtic">${ic}</span><span>${l}</span></button>`).join("")}</div>
         <p class="jghint">${{mover:"Arrastra para mover · toca una ficha para su menú",balon:"Toca el campo o un jugador para poner el balón"}[S.jgTool]||"Toca el campo para poner la ficha (sale en todos los pasos)"}</p>`}
       <div class="jgfield" style="--ar:${(jugDims(j)[0]/jugDims(j)[1]).toFixed(3)}"><div id="jgwrap" class="${S.jgTool!=="mover"&&!S.jgPlay?"fijo":""}">${svgJugada(j,k,{uid:"e",sel:S.jgSel,editable:true})}</div>
-        ${ro||S.jgCharla?"":`<label class="jgesq izq" title="Campo: ${esc(CAMPOS_JUG[j.campo]||"")}" aria-label="Cambiar el campo">${IC.campo}<b>${{completo:"F11",medio:"½",area:"Área",f7:"F7"}[j.campo]||""}</b><select id="jg-campo" aria-label="Campo">${Object.entries(CAMPOS_JUG).map(([c,t])=>`<option value="${c}" ${j.campo===c?"selected":""}>${t}</option>`).join("")}</select></label>
+        ${ro||S.jgCharla?"":`<label class="jgesq izq" title="Campo: ${esc(CAMPOS_JUG[j.campo]||"")}" aria-label="Cambiar el campo">${IC.campo}<b>${{completo:"F11",medio:"½",area:"Área",f7:"F7",rect:"Libre"}[j.campo]||""}</b><select id="jg-campo" aria-label="Campo">${Object.entries(CAMPOS_JUG).map(([c,t])=>`<option value="${c}" ${j.campo===c?"selected":""}>${t}</option>`).join("")}</select></label>
           <button class="jgesq der${S.jgColMenu?" on":""}" id="jgColBtn" aria-label="Colocar equipos" title="Colocar equipos">${IC.colocar}</button>`}
         ${S.jgColMenu&&!ro&&!S.jgCharla?htmlColocar(j):""}
         ${f&&!ro&&!S.jgCharla?htmlPopFicha(f):""}</div>
@@ -2444,6 +2513,9 @@ const MANUAL=[
  {ic:"📋",t:"Ejercicios",r:"Tu biblioteca de ejercicios dibujados en la pizarra.",a:[
   ["Crear un ejercicio",`<b>+ Nuevo ejercicio</b>: nombre, categoría, tiempo, espacio, jugadores, objetivo, desarrollo, consignas, variantes y fuente.`],
   ["Dibujarlo",`Elige el campo y usa las herramientas: jugadores blancos, rojos, portero y comodín, conos, balón, pase, carrera, conducción y texto. Arrastra con un dedo; <b>Deshacer</b> y <b>Vaciar pizarra</b> debajo.`],
+  ["🎬 Animar un ejercicio",`En el <b>⋯</b> de cada ejercicio, o con el <b>🎬</b> de arriba al abrirlo: <b>Animar en la Pizarra</b>. Pasa el dibujo a una jugada con sus fichas, conos, zonas y textos; si el dibujo tiene flechas de carrera, conducción o pase, ya sale con 2 pasos. Desde ahí la sigues como cualquier jugada (+, arrastrar, dictar) y la compartes en GIF. Sale en la Pizarra en «🎬 Ejercicios animados», y la próxima vez el 🎬 abre la misma.`],
+  ["🎤 Dictar en el ejercicio",`Al lado de «Desarrollo y reglas» y de «Consignas» hay un <b>🎤</b>: dices el texto y se añade al final (en consignas, como una línea nueva).`],
+  ["▶ Enseñar la sesión en la charla",`Dentro de una sesión, <b>▶ Enseñar en la charla</b>: los ejercicios uno a uno a pantalla completa, con su dibujo (o su animación, que se reproduce sola), el objetivo y las consignas. ◀ y ▶ para pasar; ✕ para salir.`],
   ["Buscar y filtrar",`Los ejercicios van <b>por tipo</b> (calentamiento, técnica, táctica, finalización…), cada uno en un grupo que se abre y se cierra tocándolo, con una línea de criterio debajo del nombre. La app recuerda cuáles dejas abiertos; <b>Abrir todo</b> y <b>Cerrar todo</b> los cambian de golpe. Arriba, el buscador y los filtros por lo que trabaja (presión, posesión, salida de balón…). <b>Duplicar</b> para hacer una variante, <b>Compartir</b> para pasarlo a otro entrenador.`],
   ["Las sesiones",`En <b>Entrenos → 📚 Sesiones</b> van agrupadas por lo que trabajan (presión, posesión, finalización…), según su nombre, su idea y sus ejercicios. Se filtran por <b>próximas</b> o <b>pasadas</b> y por <b>carga</b>, y el buscador mira también dentro de sus ejercicios.`]]},
  {ic:"📅",t:"Sesiones y entrenos",r:"El calendario de entrenos y las sesiones con sus ejercicios.",a:[

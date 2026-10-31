@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.38 · 31-oct-2026
+- 🎬 Animar un ejercicio: lo pasa a la Pizarra con sus fichas, conos y zonas; si el dibujo tiene flechas, ya sale con 2 pasos. Lo sigues con +, arrastrando o dictando, y lo compartes como cualquier jugada. Está en el ⋯ de cada ejercicio y arriba al abrirlo.
+- 🎤 Dictar la descripción y las consignas del ejercicio.
+- ▶ Enseñar la sesión en la charla: sus ejercicios uno a uno a pantalla completa, con su dibujo o su animación, el objetivo y las consignas.
+
 ## 1.37 · 31-oct-2026
 - Ejercicios y sesiones, por dentro, como la Pizarra: «←» y los iconos arriba (💾 guardar, ⧉ duplicar, 📤 compartir, 🗑 borrar…), el nombre como título que se toca para cambiarlo y las herramientas en una rejilla con su icono.
 - En el ejercicio, el campo se cambia con el botón de la esquina del dibujo, y ↶ y 🧹 (vaciar) van debajo del campo.
