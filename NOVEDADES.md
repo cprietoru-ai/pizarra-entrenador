@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.25 · 31-oct-2026
+- Botón ☀️/🌙 arriba, al lado de la ayuda, para cambiar entre modo claro y oscuro. Se queda guardado.
+- Reproductor a la izquierda y, a la derecha, velocidad (menú 🐢 · 1× · ⚡), pantalla completa y compartir, todo junto.
+- El aviso de Mover cabe entero.
+
 ## 1.24 · 31-oct-2026
 - En la jugada, arriba a la derecha: 📅 partido para el que es, 💾 guardar y 🗑 borrar, como iconos.
 - Colores más claros, en modo claro y en oscuro.

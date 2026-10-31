@@ -261,12 +261,23 @@ ul{margin:4px 0 4px 18px;padding:0}
 .jgur{display:flex;gap:4px;flex:0 0 auto}
 .ib{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--line);background:var(--surface);display:inline-flex;align-items:center;justify-content:center;font-size:16px;padding:0;flex:0 0 auto;color:var(--ink);transition:transform .12s}
 .ib:active{transform:scale(.9)}.ib:disabled{opacity:.35}.ib.dan{color:var(--rojo);border-color:color-mix(in srgb,var(--rojo) 40%,var(--line))}
-.jghint{margin:0 0 6px;font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.jghint{margin:0 0 6px;font-size:12.5px;line-height:1.3;color:var(--muted);text-align:center}
 .board .jgprog{height:4px;margin:8px 2px 0}
-.jgplayer{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px}
-.jgplay{width:54px;height:54px;border-radius:50%;border:0;background:radial-gradient(circle at 30% 25%,#3ad673,var(--club) 70%);color:#fff;font-size:20px;box-shadow:0 6px 16px color-mix(in srgb,var(--club) 45%,transparent);transition:transform .12s}
+.jgplayer{display:flex;align-items:center;gap:6px;margin-top:8px}
+.jgplayer .ib{width:36px;height:36px}
+.jgder{margin-left:auto;display:flex;gap:6px;align-items:center}
+.ib.share{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}.ib.share svg{width:19px;height:19px}
+.ib.cargando{animation:halo 1s ease-in-out infinite}
+.ib.vel{font-family:var(--label);font-weight:700;font-size:15px}.ib.vel.on{border-color:var(--acc);color:var(--acc)}
+.velw{position:relative}
+.velmenu{position:absolute;right:-6px;bottom:calc(100% + 8px);z-index:6;display:flex;flex-direction:column;gap:2px;min-width:170px;padding:8px;border-radius:14px;background:var(--surface);border:1.5px solid color-mix(in srgb,var(--acc) 45%,var(--line));box-shadow:0 12px 30px rgba(0,0,0,.3);animation:popin .16s ease}
+.velmenu b{font-family:var(--label);font-size:12px;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);padding:2px 8px 4px}
+.velmenu button{border:0;background:none;text-align:left;padding:9px 10px;border-radius:10px;font-weight:600;color:var(--ink)}
+.velmenu button[aria-checked="true"]{background:var(--acc);color:var(--acc-ink)}
+.velmenu small{color:var(--muted);padding:4px 8px 0;font-size:11.5px}
+.jgplay{width:50px;height:50px;border-radius:50%;border:0;background:radial-gradient(circle at 30% 25%,#3ad673,var(--club) 70%);color:#fff;font-size:20px;box-shadow:0 6px 16px color-mix(in srgb,var(--club) 45%,transparent);transition:transform .12s}
 .jgplay:active{transform:scale(.92)}.jgplay.on{background:radial-gradient(circle at 30% 25%,#ffd84a,#e0a400 70%);color:#3a2c00}
-.jgcont{font-family:var(--label);font-size:15px;color:var(--muted);min-width:42px;text-align:center}.jgcont b{font-size:20px;color:var(--ink)}
+.jgcont{font-family:var(--label);font-size:15px;color:var(--muted);min-width:34px;text-align:center}.jgcont b{font-size:20px;color:var(--ink)}
 .jgsteps{display:flex;align-items:center;gap:8px;margin-top:10px}
 .jgline{flex:1;min-width:0;display:flex;align-items:center;gap:14px;overflow-x:auto;scrollbar-width:none;padding:4px 2px;position:relative}
 .jgline::-webkit-scrollbar{display:none}
@@ -295,6 +306,9 @@ ul{margin:4px 0 4px 18px;padding:0}
 .imgbox img{width:100%;height:auto;display:block;border-radius:8px}
 /* ==== /PARTIDOS ==== */
 /* ==== AYUDA (manual y novedades en hoja) ==== */
+.hd .ayb.tema{margin-left:auto}.hd .ayb.tema+.ayb{margin-left:0}
+.hd .ayb .luna{display:none}:root[data-theme="dark"] .hd .ayb .sol{display:none}:root[data-theme="dark"] .hd .ayb .luna{display:block}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hd .ayb .sol{display:none}:root:not([data-theme="light"]) .hd .ayb .luna{display:block}}
 .hd .ayb{margin-left:auto;position:relative;width:42px;height:42px;border-radius:50%;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.14);color:var(--club-ink);display:flex;align-items:center;justify-content:center;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);transition:transform .15s,background .15s;flex:0 0 auto}
 .hd .ayb:active{transform:scale(.92);background:rgba(255,255,255,.26)}
 .hd .ayb svg{width:22px;height:22px}
@@ -337,6 +351,7 @@ ul{margin:4px 0 4px 18px;padding:0}
   <div class="wrap hd">
     <img id="clubImg" alt="Pizarra del Entrenador" src="icons/icon-192.png">
     <div><h1 id="clubName">Pizarra del Entrenador</h1><div class="sub" id="clubSub">Entrenos y partidos</div></div>
+    <button class="ayb tema" id="temaBtn" aria-label="Cambiar entre modo claro y oscuro"><svg class="sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg><svg class="luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
     <button class="ayb" id="ayudaBtn" aria-label="Manual y novedades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><circle cx="12" cy="17.4" r=".6" fill="currentColor"/></svg><span class="punto" id="ayudaPunto" hidden></span></button>
   </div>
   <nav class="wrap tabs" role="tablist">
@@ -648,8 +663,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.24";
+const VERSION="1.25";
 const NOVEDADES=[
+  ["1.25","31-oct-2026",["Botón ☀️/🌙 arriba, al lado de la ayuda, para cambiar entre modo claro y oscuro. Se queda guardado.","Reproductor a la izquierda y, a la derecha, velocidad (menú 🐢 · 1× · ⚡), pantalla completa y compartir, todo junto.","El aviso de Mover cabe entero."]],
   ["1.24","31-oct-2026",["En la jugada, arriba a la derecha: 📅 partido para el que es, 💾 guardar y 🗑 borrar, como iconos.","Colores más claros, en modo claro y en oscuro.","Lo que tienes elegido (ficha, paso, pestaña, velocidad) se marca con un verde vivo que se ve bien."]],
   ["1.23","31-oct-2026",["El nombre de la jugada es el título de arriba: tócalo y escribe.","El campo se cambia con el botón que hay encima del dibujo, arriba a la izquierda.","Al tocar una ficha sale su menú justo encima: número, jugadores de la plantilla para elegir con un toque, 🗑 para quitarla y ✓.","Velocidad de la animación: 🐢 Lenta, Normal o ⚡ Rápida, para reproducir y para compartir. Por defecto ahora va más despacio que antes."]],
   ["1.22","31-oct-2026",["Fichas en una fila de seis que se ven todas a la vez, con su color.","↶ Deshacer y ↷ Rehacer junto a la 🗑, en la línea de pasos.","🎤 En «Este paso», dictar solo guarda la explicación, sin mover nada: mueves las fichas a mano y dictas lo que pasa. «✨ Generar este paso» sigue ahí si quieres que la app las coloque.","Cambiar de pestaña ya no abre el teclado.","Entiende mucho más para colocar: «el 8 y el 7 arriba», «el 2 avanza», «el 9 en el área», «el 7 en la banda derecha», «el 10 junto al 9», «el 5 detrás del 4», «el 6 en el centro del campo», «el 3 atrás», «el 7 en el córner»."]],
@@ -1788,7 +1804,7 @@ function vistaJugEdit(){
   <div class="ed">
     <div class="board${S.jgCharla?" charla":""}" id="jgboard">
       ${ro||S.jgCharla?"":`<div class="jgtools" role="toolbar" aria-label="Fichas">${JT_BAR.map(([t,ic,l])=>`<button class="jt" data-jt="${t}" aria-pressed="${S.jgTool===t}"><span class="jtic">${ic}</span><span>${l}</span></button>`).join("")}</div>
-        <p class="jghint">${{mover:"Arrastra una ficha para moverla · tócala para cambiarle el número o quitarla",balon:"Toca el campo o un jugador para poner el balón"}[S.jgTool]||"Toca el campo para poner la ficha (sale en todos los pasos)"}</p>`}
+        <p class="jghint">${{mover:"Arrastra para mover · toca una ficha para su menú",balon:"Toca el campo o un jugador para poner el balón"}[S.jgTool]||"Toca el campo para poner la ficha (sale en todos los pasos)"}</p>`}
       <div class="jgfield"><div id="jgwrap">${svgJugada(j,k,{uid:"e",sel:S.jgSel,editable:true})}</div>
         ${S.jgCharla?"":`<label class="jgcampo" title="Cambiar el campo"><span>⛶ ${esc(CAMPOS_JUG[j.campo]||"Campo")} ▾</span><select id="jg-campo" ${ro?"disabled":""} aria-label="Campo">${Object.entries(CAMPOS_JUG).map(([c,t])=>`<option value="${c}" ${j.campo===c?"selected":""}>${t}</option>`).join("")}</select></label>`}
         ${f&&!ro&&!S.jgCharla?htmlPopFicha(f):""}</div>
@@ -1798,7 +1814,11 @@ function vistaJugEdit(){
         <button class="jgplay${S.jgPlay?" on":""}" id="jgPlay" aria-label="${S.jgPlay?"Pausa":"Reproducir"}">${S.jgPlay?"❚❚":"▶"}</button>
         <button class="ib" id="jgNext" aria-label="Paso siguiente">▶</button>
         <span class="jgcont"><b>${k+1}</b>/${n}</span>
-        <button class="ib" id="jgCharla" aria-label="${S.jgCharla?"Salir de la charla":"Pantalla completa para la charla"}">${S.jgCharla?"✕":"⛶"}</button></div>
+        <span class="jgder">
+          <span class="velw"><button class="ib vel${S.jgVelMenu?" on":""}" id="jgVelBtn" aria-label="Velocidad" aria-expanded="${!!S.jgVelMenu}">${{lenta:"🐢",normal:"1×",rapida:"⚡"}[LS.get("pizarra.jgVel","normal")]||"1×"}</button>
+            ${S.jgVelMenu?`<span class="velmenu" role="menu"><b>Velocidad</b>${Object.entries(JG_VEL).map(([v,[l]])=>`<button role="menuitemradio" data-jvel="${v}" aria-checked="${LS.get("pizarra.jgVel","normal")===v}">${l}${LS.get("pizarra.jgVel","normal")===v?" ✓":""}</button>`).join("")}<small>Al reproducir y al compartir</small></span>`:""}</span>
+          <button class="ib" id="jgCharla" aria-label="${S.jgCharla?"Salir de la charla":"Pantalla completa para la charla"}">${S.jgCharla?"✕":"⛶"}</button>
+          ${ro?"":`<button class="ib share" id="jgGif" aria-label="Compartir la animación"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3M7 8l5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/></svg></button>`}</span></div>
       ${S.jgCharla?"":`<div class="jgsteps"><div class="jgline">${j.pasos.map((p,i)=>`<button class="jgst${i===k?" on":""}${i<k?" hecho":""}" data-jpaso="${i}" aria-pressed="${i===k}" title="${esc(p.texto||"")}">${i+1}</button>`).join("")}${ro?"":`<button class="jgst mas" id="jgMasPaso" aria-label="Paso nuevo copiando este">+</button>`}</div>
         ${ro?"":`<div class="jgacts"><button class="ib" id="jgDeshacer" aria-label="Deshacer" ${(S.jgHist||[]).length?"":"disabled"}>↶</button><button class="ib" id="jgRehacer" aria-label="Rehacer" ${(S.jgRedo||[]).length?"":"disabled"}>↷</button>${n<2?"":`<button class="ib dan" id="jgBorrarPaso" aria-label="Borrar el paso ${k+1}">🗑</button>`}</div>`}</div>`}
       ${!ro&&!S.jgCharla?(()=>{const m=S.jgIA&&S.jgIAk===k?S.jgIA:"este",este=m==="este",esc_=S.jgEscucha===m;
@@ -1812,9 +1832,7 @@ function vistaJugEdit(){
         :`<div class="jgtexto" id="jgtexto">${esc(j.pasos[k].texto||"")}</div>`}
     </div>
     <form class="form" onsubmit="return false">
-      ${ro?"":`<div class="bar"><span class="note" id="jgEstado">${S.jgId&&S.jug[S.jgId]?"✓ Guardada automáticamente":"Se guarda sola en cuanto la cambies"}</span></div>
-        <div class="jgshare"><div class="seg jgvelseg">${Object.entries(JG_VEL).map(([v,[l]])=>`<button data-jvel="${v}" aria-selected="${LS.get("pizarra.jgVel","normal")===v}">${l}</button>`).join("")}</div>
-          <button class="btn pri" id="jgGif">📤 Compartir</button><span class="note">La velocidad vale para reproducir y para compartir.</span></div><div class="bar"></div>`}
+      ${ro?"":`<div class="bar"><span class="note" id="jgEstado">${S.jgId&&S.jug[S.jgId]?"✓ Guardada automáticamente":"Se guarda sola en cuanto la cambies"}</span></div>`}
     </form>
   </div>
   ${S.img?`<div class="imgov" role="dialog" aria-label="Archivo"><div class="imgbox"><img src="${S.img.url}" alt="">
@@ -1994,13 +2012,14 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   if(t.id==="jgQuitar"){jgSnap();const id=S.jgSel;j.fichas=j.fichas.filter(f=>f.id!==id);for(const p of j.pasos){delete p.pos[id];if(p.balon?.con===id){const q=bPos(j,0);p.balon=null}}S.jgSel=null;render();return}
   if(t.id==="jgDesel"){leerJg();S.jgSel=null;render();return}
   if(t.dataset.jglab!=null){const f=j.fichas.find(x=>x.id===S.jgSel);if(f){jgSnap();f.lab=t.dataset.jglab;S.jgSel=null;render()}return}
-  if(t.dataset.jvel){LS.set("pizarra.jgVel",t.dataset.jvel);render();toast("Velocidad: "+JG_VEL[t.dataset.jvel][0].replace(/^\S+ /,"").toLowerCase()+" (al reproducir y al compartir)");return}
+  if(t.id==="jgVelBtn"){leerJg();S.jgVelMenu=!S.jgVelMenu;render();return}
+  if(t.dataset.jvel){LS.set("pizarra.jgVel",t.dataset.jvel);S.jgVelMenu=false;render();toast("Velocidad: "+JG_VEL[t.dataset.jvel][0].replace(/^\S+ /,"").toLowerCase()+" (al reproducir y al compartir)");return}
   if(t.id==="jgGuardar"){leerJg();if(!j.nombre){toast("Ponle nombre a la jugada");$("#jg-nombre")?.focus();return}
     S.jgOrig=null;guardarJgYa();toast("Jugada guardada");render();return}
   if(t.id==="jgBorrar"){S.delConfirm="jg";render();return}
   if(t.id==="jgBorrarNo"){S.delConfirm=null;render();return}
   if(t.id==="jgBorrarSi"){S.jgEd=false;clearTimeout(jgTimer);delete S.jug[S.jgId];jugGuardar();S.delConfirm=null;S.view="jug";render();toast("Jugada borrada");return}
-  if(t.id==="jgGif"){leerJg();t.disabled=true;t.textContent="Preparando…";
+  if(t.id==="jgGif"){leerJg();S.jgVelMenu=false;t.disabled=true;t.classList.add("cargando");toast("Preparando la animación…");
     try{const blob=await grabarGif();if(!blob){render();return}
       const nombre=slugPA(j.nombre||"jugada")+".gif",f=new File([blob],nombre,{type:"image/gif"});
       if(navigator.canShare&&navigator.canShare({files:[f]})){try{await navigator.share({files:[f],title:j.nombre||"Jugada"});render();return}catch(e){if(e&&e.name==="AbortError"){render();return}}}
@@ -2030,6 +2049,7 @@ const MANUAL=[
   ["Instalarla en el móvil",`<ul><li><b>Android (Chrome):</b> menú ⋮ → «Instalar aplicación».</li><li><b>iPhone:</b> ábrela en <b>Safari</b> (no en Brave ni dentro de WhatsApp) → botón Compartir (cuadrado con flecha) → «Añadir a pantalla de inicio».</li><li>Queda un icono como cualquier app y funciona sin cobertura en el campo.</li></ul>`],
   ["Conectar tu equipo",`En <b>Mi club → Mi equipo</b> pon el <b>código del equipo</b> y la <b>contraseña</b> que te ha dado el club. Una sola vez: desde entonces te llegan solos la plantilla con fotos, el calendario, los resultados, los goleadores y la clasificación.`],
   ["Qué versión tengo y qué hay de nuevo",`Arriba, debajo del nombre, pone <b>v1.x</b>. Toca el botón <b>?</b> de arriba a la derecha → <b>✨ Novedades</b>: ahí está lo nuevo de cada versión (sale un punto amarillo cuando hay algo sin ver). Las versiones nuevas llegan solas al abrir la app con cobertura; si no la ves, ciérrala y ábrela otra vez.`],
+  ["Modo claro y oscuro",`Toca el <b>☀️/🌙</b> de arriba, al lado del <b>?</b>, para cambiar entre claro y oscuro. Se queda guardado en el móvil.`],
   ["Las pestañas",`<ul><li><b>Pizarra:</b> jugadas animadas para la charla.</li><li><b>Ejercicios:</b> tu biblioteca de ejercicios dibujados.</li><li><b>Sesiones:</b> calendario de entrenos y sesiones.</li><li><b>Partidos:</b> convocatoria, alineación, resultado, informe del rival, clasificación y estadísticas.</li><li><b>Mi club:</b> tu club, tu equipo, copias e instalar.</li><li><b>Botón ? (arriba a la derecha):</b> este manual y las novedades, desde cualquier pestaña.</li></ul>`]]},
  {ic:"🎬",t:"Pizarra: jugadas animadas",r:"Jugadas paso a paso con carreras, conducciones y pases, para enseñarlas y compartirlas.",a:[
   ["Crear una jugada",`<b>+ Nueva jugada</b>, o abre una de <b>Para empezar</b> (córner, falta, salida de balón, presión) o <b>Del club</b> y cámbiala a tu gusto. Arriba, <b>toca el título</b> para ponerle nombre. El campo (entero, medio campo, área o F7) se cambia con el botón <b>⛶</b> que hay encima del dibujo, arriba a la izquierda. Arriba a la derecha, a la altura de «← Pizarra»: <b>📅</b> para decir para qué partido es (sale «J6» en el icono), <b>💾</b> para guardar (el punto se pone verde cuando está guardada; también se guarda sola) y <b>🗑</b> para borrar la jugada (pregunta antes).`],
@@ -2043,7 +2063,7 @@ const MANUAL=[
   ["Qué palabras entiende",`<ul><li><b>Acciones:</b> la da, pasa, abre, descarga, cambia de juego, mete, prolonga, conduce, regatea, se desmarca, ataca, baja a recibir, centra, remata, dispara, saca.</li><li><b>Sitios:</b> banda derecha/izquierda, a la espalda, hacia dentro, entre líneas, frontal, primer y segundo palo, punto de penalti, en apoyo, al espacio.</li><li>Mejor frases cortas: <b>dorsal + acción + adónde</b>. Lo que no entiende te lo dice.</li></ul>`],
   ["Deshacer, rehacer y borrar",`En la línea de pasos, junto a la 🗑: <b>↶ Deshacer</b> (hasta 50 cambios: mover fichas, poner o quitar, generar, añadir o borrar pasos), y <b>↷ Rehacer</b>. La <b>🗑</b> borra el paso en el que estás.`],
   ["Reproducir y modo charla",`<b>▶ Reproducir</b> la anima entera: primero corren y luego sale el balón; los pases largos van por el aire. <b>◀ ▶</b> avanzan paso a paso mientras lo explicas. <b>Charla</b> la pone a pantalla completa con el texto en grande.`],
-  ["Compartir",`<b>📤 Compartir</b> hace la animación (un GIF que WhatsApp acepta en Android y iPhone) y abre el menú del móvil para mandarla al grupo. Cada paso lleva su texto en grande. Al lado eliges la velocidad: <b>🐢 Lenta</b>, <b>Normal</b> o <b>⚡ Rápida</b>; vale también para Reproducir y se queda guardada.`],
+  ["Compartir",`El botón <b>compartir</b> (verde, a la derecha del reproductor, junto a ⛶) hace la animación (un GIF que WhatsApp acepta en Android y iPhone) y abre el menú del móvil para mandarla al grupo. Cada paso lleva su texto en grande. El botón de al lado (<b>1×</b>, 🐢 o ⚡) abre el menú de velocidad: <b>🐢 Lenta</b>, <b>Normal</b> o <b>⚡ Rápida</b>; vale también para Reproducir y se queda guardada.`],
   ["Se guarda sola",`Cada cambio se guarda solo en medio segundo (pone «✓ Guardada automáticamente»). Si la app se cierra o se recarga, vuelve a la jugada y al paso donde estabas. Las plantillas que solo abres para mirar no se guardan hasta que cambias algo.`],
   ["Jugadas para un partido",`En <b>Para el partido</b> la asignas a un partido y saldrá dentro de ese partido, para tenerla a mano en la charla.`]]},
  {ic:"📋",t:"Ejercicios",r:"Tu biblioteca de ejercicios dibujados en la pizarra.",a:[
@@ -2084,6 +2104,12 @@ function htmlManual(){
   return `<section class="form ses manual"><div class="bar" style="justify-content:flex-end;margin-bottom:0"><button class="btn sm" id="manTodo">Abrir todo</button><button class="btn sm" id="manNada">Cerrar todo</button></div>
     <input type="search" id="manQ" placeholder="Buscar en el manual (p. ej. compartir, convocatoria…)" value="${esc(S.manQ||"")}">
     ${secc||`<div class="note">No hay nada con «${esc(S.manQ)}».</div>`}</section>`}
+// ---------- Modo claro / oscuro (1.25): el botón de la cabecera; sin elegir, el del móvil ----------
+function aplicarTema(){const t=LS.get("pizarra.tema",null);if(t)document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme;
+  const osc=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;$('meta[name="theme-color"]')?.setAttribute("content",osc?"#1a261e":"#15763a")}
+aplicarTema();
+$("#temaBtn").addEventListener("click",()=>{const osc=document.documentElement.dataset.theme?document.documentElement.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
+  LS.set("pizarra.tema",osc?"light":"dark");aplicarTema();toast(osc?"☀️ Modo claro":"🌙 Modo oscuro")});
 // ---------- Hoja de ayuda: manual y novedades ----------
 function pintarAyuda(){const t=S.ayuda||"man";$("#ayudaSeg").dataset.t=t;
   document.querySelectorAll("#ayudaSeg button").forEach(b=>b.setAttribute("aria-selected",b.dataset.at===t));
