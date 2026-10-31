@@ -1303,7 +1303,7 @@ function svgJugada(j,k,{anim=null,uid="j",ghost=true,sel=null,editable=false}={}
     if(m.id){const f=j.fichas.find(x=>x.id===m.id),[c1,c2]=FICHA_COL[f.t];gh+=`<circle cx="${m.p[0]}" cy="${m.p[1]}" r="${r}" fill="${c1}" stroke="${c2}" stroke-width="${sw*1.4}" opacity=".3"/>`}}
   if(anim!=null) for(const m of movimientos(j,k2)) fl+=flecha(m,.35+.6*e);
   // Rivales debajo y los nuestros encima, para que siempre se lean nuestros dorsales
-  for(const f of [...j.fichas].sort((a,b)=>("BPR".includes(b.t)?0:1)-("BPR".includes(a.t)?0:1)).reverse().sort((a,b)=>(a.t==="B"||a.t==="PR"?0:1)-(b.t==="B"||b.t==="PR"?0:1))){const q=pos(f.id);if(!q)continue;const [c1,c2,c3]=FICHA_COL[f.t];
+  for(const f of [...j.fichas].sort((a,b)=>"B PR".includes(b.t)-"B PR".includes(a.t))){const q=pos(f.id);if(!q)continue;const [c1,c2,c3]=FICHA_COL[f.t];
     pl+=`<g data-f="${f.id}"><circle cx="${q[0]}" cy="${q[1]}" r="${r}" fill="${c1}" stroke="${sel===f.id?"#ffd84a":c2}" stroke-width="${sel===f.id?sw*3.5:sw*1.6}"/>${f.lab?`<text x="${q[0]}" y="${q[1]+r*.38}" font-size="${fs*(String(f.lab).length>2?.62:1)}" fill="${c3}" text-anchor="middle" font-family="Bebas Neue,Impact,sans-serif">${esc(f.lab)}</text>`:""}</g>`}
   // Balón: en un pase viaja de un sitio a otro; si no, va con su jugador
   let b=bPos(j,k);if(anim!=null){const b2=bPos(j,k2),a=j.pasos[k].balon,c=j.pasos[k2].balon;
