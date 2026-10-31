@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.19 · 31-oct-2026
+- «¿Qué pasa después?»: escribe o dicta lo siguiente y la app crea el paso siguiente sola.
+- 🎤 Dictar dentro de la app: hablas y al terminar se añade el paso. Entiende los números dichos («el cuatro la da al ocho»).
+- Manual: cómo se hace una jugada paso a paso.
+
 ## 1.18 · 31-oct-2026
 - Deshacer, rehacer y borrar paso en la Pizarra, al lado del campo.
 - «Generar este paso» arreglado: usa las fichas que ya tengas puestas, en el primer paso crea la posición inicial y el movimiento, y entiende los nombres de la plantilla.
