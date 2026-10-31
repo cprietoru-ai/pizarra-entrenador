@@ -2,6 +2,12 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.10 · 31-oct-2026
+- La Pizarra pasa a ser la primera pestaña y la app abre en ella.
+- Jugadas «Del club»: las que prepara el club llegan solas a la Pizarra.
+- Un solo botón «Compartir» que manda la animación directamente.
+- Jugadas más rápidas y con un aspecto nuevo: césped con degradado, fichas con relieve, halo en el que lleva el balón, estela del pase y barra de progreso.
+
 ## 1.9.1 · 31-oct-2026
 - La pizarra de jugadas tiene su propia pestaña, «Pizarra».
 - «Animación para WhatsApp»: la jugada en GIF, que se envía y se ve bien en Android y en iPhone.
