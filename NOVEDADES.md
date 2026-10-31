@@ -2,6 +2,10 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.29 · 31-oct-2026
+- El campo y «Colocar» pasan a ser dos iconos arriba, junto a 📅 💾 🗑: el campo queda limpio.
+- Fichas más grandes y más fáciles de tocar y arrastrar, sobre todo en campo entero.
+
 ## 1.28 · 31-oct-2026
 - Botón «👥 Colocar» encima del campo, al lado del de campo: pone a los 11 de nuestro equipo o del rival con el sistema que elijas (4-4-2, 4-3-3, 4-2-3-1, 4-1-4-1, 3-5-2; en F7, 2-3-1, 3-2-1...).
 - Si la jugada es para un partido con el once hecho en Partidos, sale «⭐ Once de la J…» con los dorsales de verdad.
