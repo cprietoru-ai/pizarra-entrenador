@@ -2,6 +2,13 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.30 · 31-oct-2026
+- Pizarra renovada: tarjetas más pequeñas, de dos en dos en el móvil, con su campo, pasos y partido.
+- Arriba, las jugadas del próximo partido; buscador y filtros (con partido, campo entero, medio campo...) cuando tienes más de tres.
+- En cada jugada, ⋯ para duplicarla o borrarla sin abrirla.
+- «Del club» y «Para empezar» en filas que se deslizan, con su dibujo.
+- Más rápida: los dibujos de la lista se guardan y no se rehacen cada vez.
+
 ## 1.29 · 31-oct-2026
 - El campo y «Colocar» pasan a ser dos iconos arriba, junto a 📅 💾 🗑: el campo queda limpio.
 - Fichas más grandes y más fáciles de tocar y arrastrar, sobre todo en campo entero.
