@@ -180,7 +180,10 @@ ul{margin:4px 0 4px 18px;padding:0}
 .fG{background:#2f8f50}.fE{background:#b98a00}.fP{background:var(--rojo)}
 .semcab{margin:12px 0 2px;font-family:var(--label);letter-spacing:.5px}.pcard.dia{grid-template-columns:52px minmax(0,1fr) auto}.pcard.pasado{opacity:.6}
 .pcard .acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}.lnk{background:none;border:0;padding:0;color:var(--club);font-weight:700;text-decoration:underline;text-align:left}
-#jgwrap{touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
+#jgwrap,#jgwrap svg{touch-action:pan-y!important}
+.board .ib svg,.board .jt svg,.board .hic svg{background:none!important;border-radius:0!important;box-shadow:none!important;width:20px;height:20px}
+#jgwrap.fijo,#jgwrap.fijo svg{touch-action:none!important}
+#jgwrap{user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 #jgwrap svg{width:100%;height:auto;display:block;border-radius:8px}
 .jgpasos{margin-top:8px;align-items:center}
 .jgacc{margin:8px 0 0;gap:6px}.jgacc .btn:disabled{opacity:.45}
@@ -266,7 +269,7 @@ ul{margin:4px 0 4px 18px;padding:0}
 .jgplayer{display:flex;align-items:center;gap:6px;margin-top:8px}
 .jgplayer .ib{width:36px;height:36px}
 .jgder{margin-left:auto;display:flex;gap:6px;align-items:center}
-.ib.share{background:var(--acc);color:var(--acc-ink);border-color:var(--acc)}.ib.share svg{width:19px;height:19px}
+.ib.share{color:var(--acc);border-color:color-mix(in srgb,var(--acc) 55%,var(--line))}.ib.share svg{width:19px;height:19px}
 .ib.cargando{animation:halo 1s ease-in-out infinite}
 .ib.vel{font-family:var(--label);font-weight:700;font-size:15px}.ib.vel.on{border-color:var(--acc);color:var(--acc)}
 .velw{position:relative}
@@ -289,6 +292,9 @@ ul{margin:4px 0 4px 18px;padding:0}
 .jgia{margin-top:12px;padding:10px;border-radius:16px;background:color-mix(in srgb,#2fbf63 9%,var(--surface));border:1.5px solid color-mix(in srgb,#2fbf63 45%,var(--line))}
 .jgia .seg{margin:0 0 8px;background:color-mix(in srgb,var(--chip) 80%,var(--surface))}
 .jgia .seg button{font-size:14px;padding:8px 4px}
+.jgia textarea:focus,.jgia textarea:focus-visible,.jgtit input:focus-visible,.jgpop input:focus-visible{outline:none}
+.jgia textarea:focus{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+:root.tecleando header{position:relative;top:0}
 .jgia textarea{width:100%;font-family:var(--label);font-weight:700;font-size:18px;line-height:1.25;border:2px solid #2fbf63;border-radius:12px;padding:9px 11px;min-height:0;background:var(--surface)}
 .jgiabar{display:flex;gap:8px;margin-top:8px}.jgiabar .grow{flex:1}
 .jgiabar .btn.mic{min-width:52px;font-size:20px;padding:8px 12px}
@@ -663,8 +669,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.25";
+const VERSION="1.26";
 const NOVEDADES=[
+  ["1.26","31-oct-2026",["Puedes subir y bajar la pantalla deslizando el dedo sobre el campo, si empiezas en el césped con «Mover». Si empiezas encima de una ficha o del balón, se arrastra la ficha como siempre.","Al escribir, la cabecera de arriba ya no se queda fija y deja sitio al teclado; y sin el marco raro alrededor del cuadro de texto.","El botón de compartir, con el mismo estilo que los de al lado."]],
   ["1.25","31-oct-2026",["Botón ☀️/🌙 arriba, al lado de la ayuda, para cambiar entre modo claro y oscuro. Se queda guardado.","Reproductor a la izquierda y, a la derecha, velocidad (menú 🐢 · 1× · ⚡), pantalla completa y compartir, todo junto.","El aviso de Mover cabe entero."]],
   ["1.24","31-oct-2026",["En la jugada, arriba a la derecha: 📅 partido para el que es, 💾 guardar y 🗑 borrar, como iconos.","Colores más claros, en modo claro y en oscuro.","Lo que tienes elegido (ficha, paso, pestaña, velocidad) se marca con un verde vivo que se ve bien."]],
   ["1.23","31-oct-2026",["El nombre de la jugada es el título de arriba: tócalo y escribe.","El campo se cambia con el botón que hay encima del dibujo, arriba a la izquierda.","Al tocar una ficha sale su menú justo encima: número, jugadores de la plantilla para elegir con un toque, 🗑 para quitarla y ✓.","Velocidad de la animación: 🐢 Lenta, Normal o ⚡ Rápida, para reproducir y para compartir. Por defecto ahora va más despacio que antes."]],
@@ -1805,7 +1812,7 @@ function vistaJugEdit(){
     <div class="board${S.jgCharla?" charla":""}" id="jgboard">
       ${ro||S.jgCharla?"":`<div class="jgtools" role="toolbar" aria-label="Fichas">${JT_BAR.map(([t,ic,l])=>`<button class="jt" data-jt="${t}" aria-pressed="${S.jgTool===t}"><span class="jtic">${ic}</span><span>${l}</span></button>`).join("")}</div>
         <p class="jghint">${{mover:"Arrastra para mover · toca una ficha para su menú",balon:"Toca el campo o un jugador para poner el balón"}[S.jgTool]||"Toca el campo para poner la ficha (sale en todos los pasos)"}</p>`}
-      <div class="jgfield"><div id="jgwrap">${svgJugada(j,k,{uid:"e",sel:S.jgSel,editable:true})}</div>
+      <div class="jgfield"><div id="jgwrap" class="${S.jgTool!=="mover"&&!S.jgPlay?"fijo":""}">${svgJugada(j,k,{uid:"e",sel:S.jgSel,editable:true})}</div>
         ${S.jgCharla?"":`<label class="jgcampo" title="Cambiar el campo"><span>⛶ ${esc(CAMPOS_JUG[j.campo]||"Campo")} ▾</span><select id="jg-campo" ${ro?"disabled":""} aria-label="Campo">${Object.entries(CAMPOS_JUG).map(([c,t])=>`<option value="${c}" ${j.campo===c?"selected":""}>${t}</option>`).join("")}</select></label>`}
         ${f&&!ro&&!S.jgCharla?htmlPopFicha(f):""}</div>
       ${S.jgCharla?"":`<div class="jgprog" id="jgprog" style="--p:${n>1?(k/(n-1)*100).toFixed(1):0}%"><i></i></div>`}
@@ -1888,13 +1895,18 @@ function colocarPop(){const pop=$("#jgpop"),svg=$("#jgsvg"),cont=$(".jgfield");i
 let jgDrag=null;
 function montarJug(){
   const wrap=$("#jgwrap");if(!wrap||!S.canWrite)return;colocarPop();
-  const quieto=e=>{if(e.cancelable)e.preventDefault()};
-  wrap.addEventListener("touchstart",quieto,{passive:false});wrap.addEventListener("touchmove",quieto,{passive:false});
   const pto=ev=>{const svg=$("#jgsvg"),p=svg.createSVGPoint();p.x=ev.clientX;p.y=ev.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse()),[w,h]=jugDims(S.jgDraft);
     return [Math.min(w+1.5,Math.max(-1.5,Math.round(q.x*2)/2)),Math.min(h+1.5,Math.max(-1.5,Math.round(q.y*2)/2))]};
   const cerca=(x,y)=>{const P=S.jgDraft.pasos[S.jgPaso],lim=Math.max(2.2,jugDims(S.jgDraft)[0]*.035);let best=null,bd=1e9;
     const b=bPos(S.jgDraft,S.jgPaso);if(b){const d=Math.hypot(x-b[0],y-b[1]);if(d<bd&&d<=lim*.8){bd=d;best="balon"}}
     for(const f of S.jgDraft.fichas){const q=P.pos[f.id];if(!q)continue;const d=Math.hypot(x-q[0],y-q[1]);if(d<bd&&d<=lim){bd=d;best=f.id}}return best};
+  // Desplazar la pantalla con el dedo sobre el campo (1.26): solo con «Mover» y empezando en césped vacío.
+  // Si el dedo empieza en una ficha o en el balón, o con otra herramienta, el campo se queda quieto y se arrastra la ficha.
+  let rueda=false;
+  wrap.addEventListener("touchstart",e=>{const t=e.touches[0];rueda=false;
+    if(e.touches.length===1&&t&&$("#jgsvg")){const [x,y]=pto(t);rueda=S.jgPlay||(S.jgTool==="mover"&&!cerca(x,y))}
+    if(!rueda&&e.cancelable)e.preventDefault()},{passive:false});
+  wrap.addEventListener("touchmove",e=>{if(!rueda&&e.cancelable)e.preventDefault()},{passive:false});
   wrap.onpointerdown=ev=>{if(S.jgPlay||!$("#jgsvg"))return;ev.preventDefault();try{wrap.setPointerCapture(ev.pointerId)}catch(e){}
     const [x,y]=pto(ev),t=S.jgTool,j=S.jgDraft,P=j.pasos[S.jgPaso];jgDrag=null;
     if(t==="mover"){const c=cerca(x,y);if(c){jgDrag={id:c,x0:x,y0:y,movido:false}}else{S.jgSel=null;redibujarJg()}}
@@ -2053,7 +2065,7 @@ const MANUAL=[
   ["Las pestañas",`<ul><li><b>Pizarra:</b> jugadas animadas para la charla.</li><li><b>Ejercicios:</b> tu biblioteca de ejercicios dibujados.</li><li><b>Sesiones:</b> calendario de entrenos y sesiones.</li><li><b>Partidos:</b> convocatoria, alineación, resultado, informe del rival, clasificación y estadísticas.</li><li><b>Mi club:</b> tu club, tu equipo, copias e instalar.</li><li><b>Botón ? (arriba a la derecha):</b> este manual y las novedades, desde cualquier pestaña.</li></ul>`]]},
  {ic:"🎬",t:"Pizarra: jugadas animadas",r:"Jugadas paso a paso con carreras, conducciones y pases, para enseñarlas y compartirlas.",a:[
   ["Crear una jugada",`<b>+ Nueva jugada</b>, o abre una de <b>Para empezar</b> (córner, falta, salida de balón, presión) o <b>Del club</b> y cámbiala a tu gusto. Arriba, <b>toca el título</b> para ponerle nombre. El campo (entero, medio campo, área o F7) se cambia con el botón <b>⛶</b> que hay encima del dibujo, arriba a la izquierda. Arriba a la derecha, a la altura de «← Pizarra»: <b>📅</b> para decir para qué partido es (sale «J6» en el icono), <b>💾</b> para guardar (el punto se pone verde cuando está guardada; también se guarda sola) y <b>🗑</b> para borrar la jugada (pregunta antes).`],
-  ["Poner y mover fichas",`<ul><li>Elige <b>Nuestro</b>, <b>Portero</b>, <b>Rival</b>, <b>Portero rival</b> o <b>Balón</b> en la fila de encima del campo y toca el campo.</li><li>Con <b>Mover</b>, arrastra con un dedo. Si sueltas el balón encima de un jugador, se le pega.</li><li><b>Toca una ficha</b> sin arrastrarla: sale su menú justo encima, con su número, los jugadores de tu plantilla para elegir con un toque, <b>🗑</b> para quitarla y <b>✓</b> para cerrar.</li></ul>`],
+  ["Poner y mover fichas",`<ul><li>Elige <b>Nuestro</b>, <b>Portero</b>, <b>Rival</b>, <b>Portero rival</b> o <b>Balón</b> en la fila de encima del campo y toca el campo.</li><li>Con <b>Mover</b>, arrastra con un dedo. Si sueltas el balón encima de un jugador, se le pega.</li><li><b>Subir y bajar la pantalla:</b> con <b>Mover</b>, desliza empezando en el césped (no encima de una ficha). Con las demás fichas elegidas, el campo se queda quieto para que no se te escape nada.</li><li><b>Toca una ficha</b> sin arrastrarla: sale su menú justo encima, con su número, los jugadores de tu plantilla para elegir con un toque, <b>🗑</b> para quitarla y <b>✓</b> para cerrar.</li></ul>`],
   ["Los pasos",`Una jugada es una serie de pasos. Debajo del campo está el reproductor (⏮ ◀ ▶ ▶) y la <b>línea de pasos</b>: toca un número para ir a ese paso, <b>+</b> copia el paso actual (luego arrastras las fichas a donde van) y <b>🗑</b> borra el paso en el que estás. <b>⛶</b> pone el campo a pantalla completa para la charla. La app dibuja sola lo que pasa entre un paso y otro:<ul><li><b>Línea amarilla:</b> carrera sin balón.</li><li><b>Línea azul ondulada:</b> conducción (se mueve con el balón).</li><li><b>Línea blanca discontinua:</b> pase.</li></ul>En el cuadro de abajo escribes qué pasa en ese paso: sale en la charla y al compartir.`],
   ["🎤 Solo la explicación, moviendo a mano",`La forma más rápida si prefieres mover tú las fichas:<ol><li>Coloca las fichas del paso 1 arrastrándolas.</li><li>Pestaña <b>✨ Este paso</b> → <b>🎤</b> y di lo que pasa. Se guarda solo como explicación del paso: <b>no mueve nada</b>. Sale en la charla y al compartir.</li><li><b>+</b> en la línea de pasos, arrastra las fichas a donde van y vuelve a dictar.</li></ol>Si dictas otra vez, la explicación se cambia por la nueva (↶ la recupera).`],
   ["🗣️ Palabras para colocar las fichas",`Sirven en <b>✨ Este paso</b> con <b>Generar este paso</b>, sobre todo en el paso 1. Dorsal + dónde, separados por comas o «y»:<ul><li><b>Hacia delante o atrás:</b> arriba, en punta, en ataque · en el medio, centro del campo · atrás, en defensa (arriba = cerca de la portería rival).</li><li><b>De lado:</b> banda derecha, banda izquierda, por dentro, en el centro, carril derecho.</li><li><b>Sitios:</b> en el área, en la frontal, en el punto de penalti, primer palo, segundo palo, en el córner.</li><li><b>Junto a otro:</b> junto al 9, al lado del 4, detrás del 4, delante del 6, a la altura del 8.</li><li><b>Varios a la vez:</b> «el 8 y el 7 arriba», «el 8 y el 10 se ponen en la frontal».</li><li><b>Con balón:</b> «el 4 tiene el balón», «el 4 en el centro del campo con el balón».</li><li><b>Movimientos</b> (van al paso siguiente): avanza, sube, baja, retrocede, se desmarca, ataca el espacio, se mete, presiona.</li></ul>`],
@@ -2104,6 +2116,8 @@ function htmlManual(){
   return `<section class="form ses manual"><div class="bar" style="justify-content:flex-end;margin-bottom:0"><button class="btn sm" id="manTodo">Abrir todo</button><button class="btn sm" id="manNada">Cerrar todo</button></div>
     <input type="search" id="manQ" placeholder="Buscar en el manual (p. ej. compartir, convocatoria…)" value="${esc(S.manQ||"")}">
     ${secc||`<div class="note">No hay nada con «${esc(S.manQ)}».</div>`}</section>`}
+document.addEventListener("focusin",e=>{if(e.target.matches("textarea,input[type=text],input[type=search]"))document.documentElement.classList.add("tecleando")});
+document.addEventListener("focusout",()=>setTimeout(()=>{if(!document.activeElement?.matches?.("textarea,input[type=text],input[type=search]"))document.documentElement.classList.remove("tecleando")},50));
 // ---------- Modo claro / oscuro (1.25): el botón de la cabecera; sin elegir, el del móvil ----------
 function aplicarTema(){const t=LS.get("pizarra.tema",null);if(t)document.documentElement.dataset.theme=t;else delete document.documentElement.dataset.theme;
   const osc=t?t==="dark":matchMedia("(prefers-color-scheme: dark)").matches;$('meta[name="theme-color"]')?.setAttribute("content",osc?"#1a261e":"#15763a")}

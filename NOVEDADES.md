@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.26 · 31-oct-2026
+- Puedes subir y bajar la pantalla deslizando el dedo sobre el campo, si empiezas en el césped con «Mover». Si empiezas encima de una ficha o del balón, se arrastra la ficha como siempre.
+- Al escribir, la cabecera de arriba ya no se queda fija y deja sitio al teclado; y sin el marco raro alrededor del cuadro de texto.
+- El botón de compartir, con el mismo estilo que los de al lado.
+
 ## 1.25 · 31-oct-2026
 - Botón ☀️/🌙 arriba, al lado de la ayuda, para cambiar entre modo claro y oscuro. Se queda guardado.
 - Reproductor a la izquierda y, a la derecha, velocidad (menú 🐢 · 1× · ⚡), pantalla completa y compartir, todo junto.
