@@ -39,6 +39,7 @@ button{cursor:pointer}
 header{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--club);color:var(--club-ink)}
 .hd{display:flex;align-items:center;gap:12px;padding-block:10px}
 .hd img{width:40px;height:40px;object-fit:contain;background:#fff;border-radius:50%;padding:3px}
+.hd img.logo{background:none;border-radius:0;padding:0;width:46px;height:46px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.35))}
 .hd h1{font-family:var(--display);font-weight:400;font-size:30px;letter-spacing:1px;margin:0;line-height:1}
 .hd .sub{font-family:var(--label);font-size:13px;letter-spacing:1.5px;opacity:.85;text-transform:uppercase}
 .tabs{display:flex;gap:4px}
@@ -443,7 +444,7 @@ details.grp[open]>summary{border-bottom:1.5px solid var(--line);background:linea
 </head><body>
 <header>
   <div class="wrap hd">
-    <img id="clubImg" alt="Pizarra del Entrenador" src="icons/icon-192.png">
+    <img id="clubImg" alt="Pizarra del Entrenador" src="icons/escudo-256.png" class="logo">
     <div><h1 id="clubName">Pizarra del Entrenador</h1><div class="sub" id="clubSub">Entrenos y partidos</div></div>
     <button class="ayb tema" id="temaBtn" aria-label="Cambiar entre modo claro y oscuro"><svg class="sol" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.2M12 19.3v2.2M2.5 12h2.2M19.3 12h2.2M5.3 5.3l1.6 1.6M17.1 17.1l1.6 1.6M5.3 18.7l1.6-1.6M17.1 6.9l1.6-1.6"/></svg><svg class="luna" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/></svg></button>
     <button class="ayb" id="ayudaBtn" aria-label="Manual y novedades"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9.5"/><path d="M9.3 9.2a2.8 2.8 0 0 1 5.4 1c0 1.9-2.7 2.4-2.7 4"/><circle cx="12" cy="17.4" r=".6" fill="currentColor"/></svg><span class="punto" id="ayudaPunto" hidden></span></button>
@@ -808,8 +809,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.34";
+const VERSION="1.35";
 const NOVEDADES=[
+  ["1.35","31-oct-2026",["Logo nuevo: un escudo de los de siempre, con franjas verdes, tres estrellas y el balón clásico. Se ve bien en la pantalla del móvil, también en Android con iconos redondos."]],
   ["1.34","31-oct-2026",["20 ejercicios nuevos del FIFA Training Centre: sesiones de la selección sub-15 de México (posesión, salida de balón, presión tras pérdida, víspera de partido y balón parado) y de fútbol base de 12 a 15 años.","Cada uno con su dibujo, consignas, variantes y la fuente exacta. Donde la FIFA no da tiempos, se indica que son una propuesta para cadetes.","Se añaden solos a tu biblioteca, sin tocar tus ejercicios. ✨ Generar ya tiene más donde elegir."]],
   ["1.33","31-oct-2026",["Ejercicios por tipo (calentamiento, técnica, táctica…) en grupos que se abren y se cierran, cada uno con su criterio en una línea. Se recuerda cuáles dejas abiertos.","Filtro por lo que trabaja (presión, posesión, finalización…) y buscador; «Abrir todo» y «Cerrar todo».","Sesiones agrupadas por lo que trabajan, con filtros de próximas o pasadas y de carga, y buscador (también busca en sus ejercicios)."]],
   ["1.32","31-oct-2026",["En la jugada, el campo y 👥 Colocar van en las dos esquinas de arriba del campo, a la vista.","La 🗑 vuelve a estar siempre arriba (si la jugada no está guardada, la descarta).","Calendario: los días fijos son siete círculos L M X J V S D; el entreno extra se añade con «＋ Extra» en la semana que toca, eligiendo el día."]],
@@ -874,7 +876,7 @@ function crearDB(){
 // ---------- Mi club ----------
 S.club=LS.get("pizarra.club",{nombre:"",sub:"",escudo:""});
 function aplicarClub(){
-  $("#clubImg").src=S.club.escudo||"icons/icon-192.png";
+  $("#clubImg").src=S.club.escudo||"icons/escudo-256.png";$("#clubImg").classList.toggle("logo",!S.club.escudo);
   $("#clubImg").alt=S.club.nombre?"Escudo de "+S.club.nombre:"Pizarra del Entrenador";
   $("#clubName").textContent=S.club.nombre?"Pizarra "+S.club.nombre:"Pizarra del Entrenador";
   $("#clubSub").textContent=(S.club.sub||"Entrenos y partidos")+" · v"+VERSION;

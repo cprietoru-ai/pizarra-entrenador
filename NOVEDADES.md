@@ -2,6 +2,9 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.35 · 31-oct-2026
+- Logo nuevo: un escudo de los de siempre, con franjas verdes, tres estrellas y el balón clásico. Se ve bien en la pantalla del móvil, también en Android con iconos redondos.
+
 ## 1.34 · 31-oct-2026
 - 20 ejercicios nuevos del FIFA Training Centre: sesiones de la selección sub-15 de México (posesión, salida de balón, presión tras pérdida, víspera de partido y balón parado) y de fútbol base de 12 a 15 años.
 - Cada uno con su dibujo, consignas, variantes y la fuente exacta. Donde la FIFA no da tiempos, se indica que son una propuesta para cadetes.
