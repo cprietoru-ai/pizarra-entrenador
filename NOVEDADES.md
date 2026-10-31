@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.32 · 31-oct-2026
+- En la jugada, el campo y 👥 Colocar van en las dos esquinas de arriba del campo, a la vista.
+- La 🗑 vuelve a estar siempre arriba (si la jugada no está guardada, la descarta).
+- Calendario: los días fijos son siete círculos L M X J V S D; el entreno extra se añade con «＋ Extra» en la semana que toca, eligiendo el día.
+
 ## 1.31 · 31-oct-2026
 - La pestaña Sesiones pasa a llamarse Entrenos, con 📅 Calendario y 📚 Sesiones dentro.
 - ✨ Generar con opciones: qué trabajar (presión, posesión, salida de balón, finalización…), duración, carga y cuántos jugadores. Elige los ejercicios de tu biblioteca según eso.
