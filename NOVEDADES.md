@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app y en «Mi club».
 
+## 1.18 · 31-oct-2026
+- Deshacer, rehacer y borrar paso en la Pizarra, al lado del campo.
+- «Generar este paso» arreglado: usa las fichas que ya tengas puestas, en el primer paso crea la posición inicial y el movimiento, y entiende los nombres de la plantilla.
+- Manual de uso en Mi club, por secciones que se abren y cierran, con buscador.
+
 ## 1.17 · 31-oct-2026
 - Las jugadas se guardan solas mientras las haces: ya no se pierden.
 - Si la app se cierra o se recarga con una jugada abierta, vuelve a ella y al mismo paso.
