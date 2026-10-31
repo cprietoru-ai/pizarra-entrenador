@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.21 · 31-oct-2026
+- Editor de jugadas reordenado: las fichas y deshacer/rehacer, encima del campo; el reproductor, pegado debajo.
+- Los pasos son una línea de tiempo: toca un número para ir a ese paso, + para copiarlo y 🗑 para borrarlo.
+- Un solo cuadro para escribir o dictar, con dos pestañas: ✨ Este paso (lo genera) y ➕ Lo siguiente (añade el paso que viene). Cambia solo a «Lo siguiente» cuando generas un paso.
+
 ## 1.20.1 · 31-oct-2026
 - «✨ Generar este paso» vuelve con su nombre y bien a la vista, en su propio cuadro encima de «¿Qué pasa después?».
 - 🎤 Dictar también para el paso en el que estás: lo dices y se genera solo.
