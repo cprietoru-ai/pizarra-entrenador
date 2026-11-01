@@ -1,6 +1,6 @@
 // Modo sin conexión: guarda la app y sirve primero lo guardado; si hay red,
 // se actualiza en segundo plano para la próxima vez que se abra.
-const CACHE = "pizarra-v50";
+const CACHE = "pizarra-v51";
 const BASE = ["./", "index.html", "ejemplos.json", "manifest.webmanifest", "icons/escudo-icon-192.png", "icons/escudo-icon-512.png", "icons/escudo-icon-180.png", "icons/logo.svg", "icons/escudo-256.png", "icons/maskable-192.png", "lib/gifenc.esm.js"];
 // cache: "reload" para no guardar una copia vieja de la caché del navegador
 self.addEventListener("install", e => { e.waitUntil(caches.open(CACHE).then(c => c.addAll(BASE.map(u => new Request(u, { cache: "reload" }))))); self.skipWaiting(); });
@@ -16,6 +16,8 @@ self.addEventListener("fetch", e => {
       .catch(() => c.match("index.html").then(g => g || c.match("./")))));
     return;
   }
+  // Vídeos de ayuda: directos de la red, sin guardarlos (pesan y el móvil los pide a trozos)
+  if (new URL(e.request.url).pathname.includes("/videos/")) return;
   // Datos del equipo: primero la red (para tenerlos al día) y, sin cobertura, lo guardado
   if (new URL(e.request.url).pathname.includes("/equipos/")) {
     e.respondWith(caches.open(CACHE).then(c => fetch(e.request).then(r => { if (r.ok) c.put(e.request, r.clone()); return r; })

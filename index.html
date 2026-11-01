@@ -335,6 +335,8 @@ button.jgcampo{cursor:pointer}
 .jlvacio{border:2px dashed var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:4px}.jlvacio b{font-family:var(--display);font-weight:400;font-size:24px}.jlvacio ol{margin:6px 0 0;padding-left:20px}
 @media (min-width:1000px){.jlgrid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}.jcarr .jcard{flex-basis:190px}}
 .pcard.dia.quitado{opacity:.55;border-style:dashed}.pcard.dia.quitado .pj{text-decoration:line-through}
+/* 1.42: con 📋 Lista hay tres o cuatro botones; pasan a una segunda fila para no aplastar la fecha */
+.pcard.dia .acts:has(> .lista + * + *){grid-column:2/-1;justify-content:flex-start;margin-top:-2px}
 .pcard.dia.extra{border-color:var(--acc)}.tagx{display:inline-block;background:var(--acc);color:var(--acc-ink);font-family:var(--label);font-weight:700;font-size:11px;border-radius:6px;padding:1px 6px;vertical-align:2px}
 .ib.sm2{width:30px;height:30px;font-size:13px;color:var(--muted)}
 .genopt .row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}.genopt .row label{min-width:0}
@@ -460,6 +462,19 @@ details.grp[open]>summary{border-bottom:1.5px solid var(--line);background:linea
 .seg button[aria-selected="true"]{color:var(--ink)}
 .seg .pill{position:absolute;top:4px;bottom:4px;left:4px;width:calc(50% - 4px);border-radius:10px;background:var(--surface);box-shadow:0 2px 8px rgba(0,0,0,.12);transition:transform .25s cubic-bezier(.2,.9,.25,1)}
 .seg[data-t="nov"] .pill{transform:translateX(100%)}
+#ayudaSeg .pill{width:calc(33.333% - 2.667px)}#ayudaSeg[data-t="vid"] .pill{transform:translateX(100%)}#ayudaSeg[data-t="nov"] .pill{transform:translateX(200%)}
+#ayudaSeg button{font-size:15px;padding:9px 2px;letter-spacing:.2px}
+.vids{display:grid;gap:12px}.vid{border:1.5px solid var(--line);border-radius:16px;background:var(--surface);overflow:hidden}
+.vid.esta{border-color:var(--acc);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 30%,transparent)}
+.vidcab{display:flex;gap:12px;align-items:center;width:100%;padding:12px 14px;border:0;background:none;text-align:left;color:var(--ink);font:inherit;cursor:pointer}
+.vidic{flex:0 0 52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:linear-gradient(150deg,#0b3d1c,#2a9a52);position:relative}
+.vidic::after{content:"";position:absolute;right:-4px;bottom:-4px;width:22px;height:22px;border-radius:50%;background:#ffcf33 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M9 7l9 5-9 5z' fill='%233a2c00'/%3E%3C/svg%3E") center/16px no-repeat;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.vid[data-abierto] .vidic::after{display:none}
+.vidcab b{display:block;font-size:16px}.vidcab .note{display:block}.vidcab .dur{margin-left:auto;font-size:13px;color:var(--muted);white-space:nowrap}
+.videsta{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:var(--acc);color:var(--acc-ink);font-size:11px;vertical-align:2px}
+.vid video{display:block;width:100%;max-height:70vh;background:#0b3d1c;aspect-ratio:720/1558;object-fit:contain}
+.vidpie{padding:8px 14px 12px;font-size:14px;color:var(--muted)}
+.manvid{display:flex;align-items:center;gap:8px;width:100%;margin:2px 0 6px;padding:9px 12px;border:1.5px dashed var(--acc);border-radius:12px;background:color-mix(in srgb,var(--acc) 8%,var(--surface));color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
 .seg .nuevo{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;background:#ffcf33;color:#3a2c00;font-size:11px;letter-spacing:.5px;vertical-align:2px}
 .sheet .sbody{flex:1;overflow:auto;overscroll-behavior:contain;padding:2px 16px 24px}
 .sheet .sbody>*{animation:entra .25s ease}
@@ -503,7 +518,7 @@ details.grp[open]>summary{border-bottom:1.5px solid var(--line);background:linea
 <section class="sheet" id="ayuda" role="dialog" aria-modal="true" aria-labelledby="ayudaTit" hidden>
   <div class="asa"></div>
   <div class="shd"><h2 id="ayudaTit">Ayuda</h2><button class="x" id="ayudaX" aria-label="Cerrar">✕</button></div>
-  <div class="seg" id="ayudaSeg" role="tablist"><span class="pill"></span><button role="tab" data-at="man">📖 Manual</button><button role="tab" data-at="nov">✨ Novedades</button></div>
+  <div class="seg" id="ayudaSeg" role="tablist"><span class="pill"></span><button role="tab" data-at="man">📖 Manual</button><button role="tab" data-at="vid">🎥 Vídeos</button><button role="tab" data-at="nov">✨ Novedades</button></div>
   <div class="sbody" id="ayudaBody"></div>
 </section>
 
@@ -907,8 +922,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.41";
+const VERSION="1.42";
 const NOVEDADES=[
+  ["1.42","1-nov-2026",["🎥 Vídeos en la ayuda: en el botón ? hay una pestaña nueva, «Vídeos», con uno por sección (crear una jugada, colocar los equipos, Ejercicios, Entrenos y Partidos). Son la app de verdad con un círculo que hace de dedo y frases que explican cada paso. El de la pestaña en la que estás sale el primero.","Cada sección del manual tiene arriba su «🎥 Ver el vídeo».","Necesitan cobertura: no se guardan en el móvil para no ocupar espacio."]],
   ["1.41","1-nov-2026",["📋 Pasar lista en cada entreno, desde el calendario: un toque por jugador (✓ presente, ✗ falta, J justificada) o «Todos presentes» y tocar a los que faltan. Cada jugador lleva su % de asistencia en la plantilla, la convocatoria y su ficha.","No disponibles: en la ficha de cada jugador, 🤕 lesionado, 🟥 sancionado u otro motivo, con fecha de vuelta y nota. Salen avisados en la convocatoria, la alineación y la lista; y al volver la fecha, vuelven a estar disponibles solos.","El generador de sesiones propone el número de jugadores disponibles.","Arreglado: las fichas de la plantilla se veían deformadas desde la 1.36."]],
   ["1.40","31-oct-2026",["La Pizarra se abre directamente en el campo, lista para dibujar.","Arriba a la izquierda, «📂 Jugadas» abre tus jugadas en un panel lateral, igual de organizadas que antes (próximo partido, en preparación, por tipos, por partido y «Para empezar»): toca una y se abre en la pizarra.","«＋» para una pizarra nueva (la anterior se guarda sola) y «⭐ J…» para ir directo a las del próximo partido. La pizarra nueva usa el último campo que elegiste."]],
   ["1.39","31-oct-2026",["11 ejercicios más (ya son 41): el FIFA 11+ en sus tres partes (también en Físico), presión en bloque y 2 contra 1, 4 contra 4 en dos zonas, patrón de ataque con centro, córners con carreras señuelo, falta lateral con bloqueos y un 11 contra 11 de presión alta. Todos del FIFA Training Centre y de FIFA Medical, con su fuente.","7 sesiones tipo listas para usar: presión tras pérdida, salir jugando, posesión y cambio de orientación, finalización, defender juntos, víspera de partido y prevención con el FIFA 11+. Salen como «Plantilla» en 📚 Sesiones; en el calendario, «Elegir» las copia al día que quieras."]],
@@ -2562,6 +2578,7 @@ const MANUAL=[
  {ic:"🚀",t:"Primeros pasos",r:"Instalar la app, conectar tu equipo y saber qué versión tienes.",a:[
   ["Instalarla en el móvil",`<ul><li><b>Android (Chrome):</b> menú ⋮ → «Instalar aplicación».</li><li><b>iPhone:</b> ábrela en <b>Safari</b> (no en Brave ni dentro de WhatsApp) → botón Compartir (cuadrado con flecha) → «Añadir a pantalla de inicio».</li><li>Queda un icono como cualquier app y funciona sin cobertura en el campo.</li></ul>`],
   ["Conectar tu equipo",`En <b>Mi club → Mi equipo</b> pon el <b>código del equipo</b> y la <b>contraseña</b> que te ha dado el club. Una sola vez: desde entonces te llegan solos la plantilla con fotos, el calendario, los resultados, los goleadores y la clasificación.`],
+  ["🎥 Vídeos de cada sección",`Toca el <b>?</b> de arriba → <b>🎥 Vídeos</b>: uno corto por sección (crear una jugada, colocar los equipos, Ejercicios, Entrenos y Partidos), con la app de verdad y un círculo que hace de dedo. El de la pestaña en la que estás sale el primero. También hay un <b>🎥 Ver el vídeo</b> arriba de cada sección de este manual. Necesitan cobertura.`],
   ["Qué versión tengo y qué hay de nuevo",`Arriba, debajo del nombre, pone <b>v1.x</b>. Toca el botón <b>?</b> de arriba a la derecha → <b>✨ Novedades</b>: ahí está lo nuevo de cada versión (sale un punto amarillo cuando hay algo sin ver). Las versiones nuevas llegan solas al abrir la app con cobertura; si no la ves, ciérrala y ábrela otra vez.`],
   ["En el ordenador",`En una pantalla grande la jugada se ve en dos columnas: el campo a la izquierda, entero sin bajar, y a la derecha las fichas, los pasos y el cuadro de texto. La rueda del ratón mueve la línea de pasos y la lista de jugadores.`],
   ["Modo claro y oscuro",`Toca el <b>☀️/🌙</b> de arriba, al lado del <b>?</b>, para cambiar entre claro y oscuro. Se queda guardado en el móvil.`],
@@ -2624,7 +2641,7 @@ function htmlManual(){
   const q=nrm(S.manQ||""),ok=(a,b)=>!q||nrm(a+" "+b.replace(/<[^>]+>/g," ")).includes(q);
   const secc=MANUAL.map((s,i)=>{const items=s.a.filter(([t,h])=>ok(s.t+" "+t,h));if(q&&!items.length)return "";
     return `<details class="man" ${q||S.manAbierto==="todo"?"open":""}><summary><span class="manic">${s.ic}</span><span class="grow"><b>${esc(s.t)}</b><br><span class="note">${esc(s.r)}</span></span><span class="chev">›</span></summary>
-      <div class="manin">${items.map(([t,h])=>`<details class="mani" ${q?"open":""}><summary>${esc(t)}<span class="chev">›</span></summary><div class="manbody">${h}</div></details>`).join("")}</div></details>`}).join("");
+      <div class="manin">${VIDEOS.filter(v=>s.t.includes(v.man)).map(v=>`<button class="manvid" data-vidir="${v.k}">🎥 Ver el vídeo: ${esc(v.t)} <span class="note" style="margin-left:auto">${v.d}</span></button>`).join("")}${items.map(([t,h])=>`<details class="mani" ${q?"open":""}><summary>${esc(t)}<span class="chev">›</span></summary><div class="manbody">${h}</div></details>`).join("")}</div></details>`}).join("");
   return `<section class="form ses manual"><div class="bar" style="justify-content:flex-end;margin-bottom:0"><button class="btn sm" id="manTodo">Abrir todo</button><button class="btn sm" id="manNada">Cerrar todo</button></div>
     <input type="search" id="manQ" placeholder="Buscar en el manual (p. ej. compartir, convocatoria…)" value="${esc(S.manQ||"")}">
     ${secc||`<div class="note">No hay nada con «${esc(S.manQ)}».</div>`}</section>`}
@@ -2637,16 +2654,29 @@ aplicarTema();
 $("#temaBtn").addEventListener("click",()=>{const osc=document.documentElement.dataset.theme?document.documentElement.dataset.theme==="dark":matchMedia("(prefers-color-scheme: dark)").matches;
   LS.set("pizarra.tema",osc?"light":"dark");aplicarTema();toast(osc?"☀️ Modo claro":"🌙 Modo oscuro")});
 // ---------- Hoja de ayuda: manual y novedades ----------
+// ---------- Vídeos de ayuda (1.42): grabados con la app de verdad, con jugadores inventados ----------
+const VIDEOS=[
+  {k:"pizarra",ic:"🎬",t:"Pizarra: crear una jugada",r:"Escribir o dictar los pasos, mover fichas, reproducir y compartir.",d:"1:11",tab:"tab-jg",man:"Pizarra"},
+  {k:"colocar",ic:"👥",t:"Pizarra: colocar los equipos",r:"Campo entero, un sistema para cada equipo, balón y guardar la colocación.",d:"0:35",tab:"tab-jg",man:"Pizarra"},
+  {k:"ejercicios",ic:"📋",t:"Ejercicios",r:"Filtrar y buscar, la ficha del ejercicio y animarlo en la Pizarra.",d:"0:39",tab:"tab-ej",man:"Ejercicios"},
+  {k:"entrenos",ic:"📅",t:"Entrenos",r:"Calendario, generar la sesión, enseñarla en la charla y pasar lista.",d:"0:48",tab:"tab-se",man:"Sesiones"},
+  {k:"partidos",ic:"⚽",t:"Partidos",r:"Bajas con fecha de vuelta, convocatoria y alineación.",d:"0:48",tab:"tab-pa",man:"Partidos"}];
+const tabActual=()=>document.querySelector(".tabs button[aria-selected=true]")?.id;
+function htmlVideos(){const ta=tabActual(),orden=[...VIDEOS.filter(v=>v.tab===ta),...VIDEOS.filter(v=>v.tab!==ta)];
+  return `<section class="form ses"><p class="note" style="margin:0">Vídeos cortos con la app de verdad: el círculo es el dedo. ${navigator.onLine?"":"<b>Necesitan cobertura.</b>"}</p>
+    <div class="vids">${orden.map(v=>{const ab=S.vidAbierto===v.k;return `<div class="vid${v.tab===ta?" esta":""}" ${ab?"data-abierto":""}>
+      <button class="vidcab" data-vid="${v.k}" aria-expanded="${ab}"><span class="vidic">${v.ic}</span><span class="grow"><b>${esc(v.t)}${v.tab===ta?'<span class="videsta">ESTA PESTAÑA</span>':""}</b><span class="note">${esc(v.r)}</span></span><span class="dur">${v.d}</span></button>
+      ${ab?`<video src="videos/${v.k}.mp4#t=0.1" controls playsinline preload="metadata" autoplay></video><div class="vidpie">Toca el vídeo para pausarlo. Las barras de abajo lo adelantan o lo atrasan.</div>`:""}</div>`}).join("")}</div></section>`}
 function pintarAyuda(){const t=S.ayuda||"man";$("#ayudaSeg").dataset.t=t;
   document.querySelectorAll("#ayudaSeg button").forEach(b=>b.setAttribute("aria-selected",b.dataset.at===t));
   const nb=$('#ayudaSeg [data-at="nov"]');nb.innerHTML="✨ Novedades"+(LS.get("pizarra.novVista",null)!==VERSION?'<span class="nuevo">NUEVO</span>':"");
-  $("#ayudaBody").innerHTML=t==="nov"?htmlNovedades():htmlManual();$("#ayudaBody").scrollTop=0;
+  $("#ayudaBody").innerHTML=t==="nov"?htmlNovedades():t==="vid"?htmlVideos():htmlManual();$("#ayudaBody").scrollTop=0;
   if(t==="nov"){LS.set("pizarra.novVista",VERSION);marcarAyuda()}}
 function marcarAyuda(){const p=$("#ayudaPunto");if(p)p.hidden=LS.get("pizarra.novVista",null)===VERSION}
 function abrirAyuda(t){S.ayuda=t||S.ayuda||"man";const h=$("#ayuda"),f=$("#ayudaFondo");pintarAyuda();h.hidden=f.hidden=false;
   document.documentElement.style.overflow="hidden";requestAnimationFrame(()=>requestAnimationFrame(()=>{h.classList.add("on");f.classList.add("on")}));
   try{history.pushState({ayuda:1},"")}catch(e){}}
-function cerrarAyuda(desdeAtras){const h=$("#ayuda"),f=$("#ayudaFondo");if(h.hidden)return;h.classList.remove("on");f.classList.remove("on");
+function cerrarAyuda(desdeAtras){const h=$("#ayuda"),f=$("#ayudaFondo");if(h.hidden)return;$("#ayudaBody video")?.pause();h.classList.remove("on");f.classList.remove("on");
   document.documentElement.style.overflow="";setTimeout(()=>{h.hidden=f.hidden=true},320);if(!desdeAtras&&history.state&&history.state.ayuda)history.back()}
 $("#ayudaBtn").addEventListener("click",()=>abrirAyuda(LS.get("pizarra.novVista",null)!==VERSION?"nov":S.ayuda));
 $("#ayudaX").addEventListener("click",()=>cerrarAyuda());$("#ayudaFondo").addEventListener("click",()=>cerrarAyuda());
@@ -2655,12 +2685,15 @@ addEventListener("keydown",e=>{if(e.key==="Escape")cerrarAyuda()});
 $("#ayudaSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;S.ayuda=b.dataset.at;pintarAyuda()});
 app.addEventListener("click",e=>{const b=e.target.closest("[data-ayuda]");if(b)abrirAyuda(b.dataset.ayuda)});
 $("#ayuda").addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t)return;
+  if(t.dataset.vid){const k=t.dataset.vid;S.vidAbierto=S.vidAbierto===k?null:k;const y=$("#ayudaBody").scrollTop;pintarAyuda();$("#ayudaBody").scrollTop=y;
+    if(S.vidAbierto)setTimeout(()=>{const v=$("#ayudaBody video");if(v){v.closest(".vid").scrollIntoView({behavior:"smooth",block:"start"});v.play?.().catch(()=>{})}},60);return}
+  if(t.dataset.vidir){S.ayuda="vid";S.vidAbierto=t.dataset.vidir;pintarAyuda();setTimeout(()=>{const v=$("#ayudaBody video");if(v)v.closest(".vid").scrollIntoView({block:"start"})},60);return}
   if(t.id==="manTodo"){document.querySelectorAll("details.man,details.mani").forEach(d=>d.open=true)}
   if(t.id==="manNada"){document.querySelectorAll("details.man,details.mani").forEach(d=>d.open=false)}});
 $("#ayuda").addEventListener("input",ev=>{if(ev.target.id!=="manQ")return;S.manQ=ev.target.value;const pos=ev.target.selectionStart;pintarAyuda();const i=$("#manQ");if(i){i.focus();i.setSelectionRange(pos,pos)}});
 // arrastrar la hoja hacia abajo la cierra
 (()=>{let y0=null;const h=$("#ayuda");
-  h.addEventListener("touchstart",e=>{const enCab=e.target.closest(".asa,.shd");if(enCab||$("#ayudaBody").scrollTop<=0)y0=e.touches[0].clientY;else y0=null},{passive:true});
+  h.addEventListener("touchstart",e=>{if(e.target.closest("video")){y0=null;return}const enCab=e.target.closest(".asa,.shd");if(enCab||$("#ayudaBody").scrollTop<=0)y0=e.touches[0].clientY;else y0=null},{passive:true});
   h.addEventListener("touchmove",e=>{if(y0==null)return;const d=e.touches[0].clientY-y0;if(d>0){h.style.transition="none";h.style.transform=`translateY(${d}px)`}},{passive:true});
   h.addEventListener("touchend",e=>{if(y0==null)return;const d=e.changedTouches[0].clientY-y0;y0=null;h.style.transition="";h.style.transform="";if(d>110)cerrarAyuda()})})();
 

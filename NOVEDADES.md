@@ -2,6 +2,11 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.42 · 1-nov-2026
+- 🎥 Vídeos en la ayuda: en el botón ? hay una pestaña nueva, «Vídeos», con uno por sección (crear una jugada, colocar los equipos, Ejercicios, Entrenos y Partidos). Son la app de verdad con un círculo que hace de dedo y frases que explican cada paso. El de la pestaña en la que estás sale el primero.
+- Cada sección del manual tiene arriba su «🎥 Ver el vídeo».
+- Necesitan cobertura: no se guardan en el móvil para no ocupar espacio.
+
 ## 1.41 · 1-nov-2026
 - 📋 Pasar lista en cada entreno, desde el calendario: un toque por jugador (✓ presente, ✗ falta, J justificada) o «Todos presentes» y tocar a los que faltan. Cada jugador lleva su % de asistencia en la plantilla, la convocatoria y su ficha.
 - No disponibles: en la ficha de cada jugador, 🤕 lesionado, 🟥 sancionado u otro motivo, con fecha de vuelta y nota. Salen avisados en la convocatoria, la alineación y la lista; y al volver la fecha, vuelven a estar disponibles solos.
