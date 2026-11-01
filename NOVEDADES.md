@@ -2,6 +2,12 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.41 · 1-nov-2026
+- 📋 Pasar lista en cada entreno, desde el calendario: un toque por jugador (✓ presente, ✗ falta, J justificada) o «Todos presentes» y tocar a los que faltan. Cada jugador lleva su % de asistencia en la plantilla, la convocatoria y su ficha.
+- No disponibles: en la ficha de cada jugador, 🤕 lesionado, 🟥 sancionado u otro motivo, con fecha de vuelta y nota. Salen avisados en la convocatoria, la alineación y la lista; y al volver la fecha, vuelven a estar disponibles solos.
+- El generador de sesiones propone el número de jugadores disponibles.
+- Arreglado: las fichas de la plantilla se veían deformadas desde la 1.36.
+
 ## 1.40 · 31-oct-2026
 - La Pizarra se abre directamente en el campo, lista para dibujar.
 - Arriba a la izquierda, «📂 Jugadas» abre tus jugadas en un panel lateral, igual de organizadas que antes (próximo partido, en preparación, por tipos, por partido y «Para empezar»): toca una y se abre en la pizarra.

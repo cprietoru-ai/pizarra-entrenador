@@ -175,7 +175,7 @@ ul{margin:4px 0 4px 18px;padding:0}
 .ph.sm{width:38px;height:38px;font-size:17px}
 .ph.big{width:96px;height:96px;font-size:36px}
 .jgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:8px}
-.jcard{display:flex;gap:10px;align-items:center;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:8px 10px;min-width:0}
+.pjug{display:flex;gap:10px;align-items:center;text-align:left;background:var(--surface);border:1.5px solid var(--line);border-radius:12px;padding:8px 10px;min-width:0;color:var(--ink)}.pjug.nd{border-color:color-mix(in srgb,var(--rojo) 50%,var(--line))}
 .convgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:6px;margin-top:8px}
 .cj{display:flex;gap:8px;align-items:center;text-align:left;border:1.5px solid var(--line);background:var(--surface);border-radius:999px;padding:4px 10px 4px 4px;font-family:var(--label);font-weight:700;font-size:15px;min-width:0}
 .cj span:last-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -371,6 +371,14 @@ details.grp[open]>summary{border-bottom:1.5px solid var(--line);background:linea
 @keyframes cajin{from{transform:translateX(-100%)}to{transform:none}}
 .cajhd{position:sticky;top:-14px;z-index:2;background:var(--bg);padding-top:4px;margin-top:-4px}
 .cajbtns{margin-bottom:10px}.cajbtns .btn{flex:1}
+.ndb{display:inline-block;margin-left:5px;padding:0 6px;border-radius:6px;background:color-mix(in srgb,var(--rojo) 16%,var(--surface));color:var(--rojo);font-size:11.5px;font-weight:700;vertical-align:1px;white-space:nowrap}
+.asb{display:inline-block;margin-left:5px;padding:0 6px;border-radius:6px;background:var(--chip);color:var(--muted);font-size:11.5px;font-weight:700;vertical-align:1px}.asb.baja{color:#b86e00}
+.cj.nd{border-style:dashed;border-color:color-mix(in srgb,var(--rojo) 60%,var(--line))}.cj.nd:not([aria-pressed="true"]){opacity:.7}
+.ndaviso{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}.ndaviso span{padding:4px 9px;border-radius:10px;background:color-mix(in srgb,var(--rojo) 12%,var(--surface));color:var(--ink);font-size:13px}
+.ndset{border:1.5px solid var(--line);border-radius:14px;padding:8px 12px 12px;margin:4px 0}.ndset legend{font-family:var(--label);font-weight:700;padding:0 6px}
+.asis .cj{position:relative;padding-right:34px}.asest{position:absolute;right:6px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;background:var(--chip);color:var(--muted)}
+.cj.a-p{border-color:var(--acc)}.cj.a-p .asest{background:var(--acc);color:var(--acc-ink)}.cj.a-f{border-color:var(--rojo)}.cj.a-f .asest{background:var(--rojo);color:#fff}.cj.a-j .asest{background:#f2c94c;color:#3a2c00}.cj.a-nd{opacity:.65}
+.btn.lista{background:var(--surface);border:1.5px dashed var(--line)}.btn.lista.hecha{border-style:solid;border-color:var(--acc);color:var(--acc)}.btn.lista.on{background:var(--acc);color:var(--acc-ink)}
 .btn.gen{background:var(--surface);color:var(--club);border:2px solid var(--club)}
 .jgtools{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding:2px}
 .jgtools::-webkit-scrollbar{display:none}
@@ -899,8 +907,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.40";
+const VERSION="1.41";
 const NOVEDADES=[
+  ["1.41","1-nov-2026",["📋 Pasar lista en cada entreno, desde el calendario: un toque por jugador (✓ presente, ✗ falta, J justificada) o «Todos presentes» y tocar a los que faltan. Cada jugador lleva su % de asistencia en la plantilla, la convocatoria y su ficha.","No disponibles: en la ficha de cada jugador, 🤕 lesionado, 🟥 sancionado u otro motivo, con fecha de vuelta y nota. Salen avisados en la convocatoria, la alineación y la lista; y al volver la fecha, vuelven a estar disponibles solos.","El generador de sesiones propone el número de jugadores disponibles.","Arreglado: las fichas de la plantilla se veían deformadas desde la 1.36."]],
   ["1.40","31-oct-2026",["La Pizarra se abre directamente en el campo, lista para dibujar.","Arriba a la izquierda, «📂 Jugadas» abre tus jugadas en un panel lateral, igual de organizadas que antes (próximo partido, en preparación, por tipos, por partido y «Para empezar»): toca una y se abre en la pizarra.","«＋» para una pizarra nueva (la anterior se guarda sola) y «⭐ J…» para ir directo a las del próximo partido. La pizarra nueva usa el último campo que elegiste."]],
   ["1.39","31-oct-2026",["11 ejercicios más (ya son 41): el FIFA 11+ en sus tres partes (también en Físico), presión en bloque y 2 contra 1, 4 contra 4 en dos zonas, patrón de ataque con centro, córners con carreras señuelo, falta lateral con bloqueos y un 11 contra 11 de presión alta. Todos del FIFA Training Centre y de FIFA Medical, con su fuente.","7 sesiones tipo listas para usar: presión tras pérdida, salir jugando, posesión y cambio de orientación, finalización, defender juntos, víspera de partido y prevención con el FIFA 11+. Salen como «Plantilla» en 📚 Sesiones; en el calendario, «Elegir» las copia al día que quieras."]],
   ["1.38.1","31-oct-2026",["Entreno extra con un solo botón, debajo de los días fijos: eliges cualquier día y entra en su semana como uno más (por ejemplo, para tener tres esa semana).","Iconos del logo renovados con otro nombre para que el móvil y el ordenador cojan el escudo nuevo."]],
@@ -1055,7 +1064,17 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 // base de datos compartida: son datos de menores (nombres y fotos).
 const PA_VISTAS=["pa","plantilla","jugador","partido","stats","clasif","equipo","informe"];
 const EQ_KEY="pizarra.equipo";
-const EQ_VACIO={club:"",categoria:"",lema:"",escudo:"",jugadores:{},partidos:{},campos:{}};
+const EQ_VACIO={club:"",categoria:"",lema:"",escudo:"",jugadores:{},partidos:{},campos:{},asistencia:{}};
+// 1.41: no disponibles (lesión, sanción…) con fecha de vuelta, y asistencia a los entrenos
+const fmtDM=f=>{const d=new Date(f+"T12:00:00");return d.getDate()+"/"+(d.getMonth()+1)};
+const ND_TIPO={lesion:["🤕","Lesionado"],sancion:["🟥","Sancionado"],otro:["⛔","No disponible"]};
+function ndDe(j,fecha){const n=j&&j.nd;if(!n||!n.tipo)return null;const f=fecha||hoyISO();if(n.desde&&f<n.desde)return null;if(n.hasta&&f>n.hasta)return null;return n}
+function ndTxt(n){if(!n)return "";const [ic,t]=ND_TIPO[n.tipo]||ND_TIPO.otro;return `${ic} ${t}${n.hasta?" hasta el "+fmtCorta(n.hasta):""}`}
+function ndBadge(j,fecha){const n=ndDe(j,fecha);return n?`<span class="ndb" title="${esc(ndTxt(n))}">${(ND_TIPO[n.tipo]||ND_TIPO.otro)[0]}${n.hasta?" "+esc(fmtDM(n.hasta)):""}</span>`:""}
+const ASIS={p:["✓","Presente"],f:["✗","Falta"],j:["J","Justificada"]};
+// asistencia de un jugador: presentes / días marcados (lo justificado y los no disponibles no cuentan como falta)
+function asisDe(id){const A=S.eq.asistencia||{};let pr=0,tot=0,fal=0;for(const d of Object.values(A)){const v=d[id];if(!v||v==="nd"||v==="j")continue;tot++;if(v==="p")pr++;else if(v==="f")fal++}return {pr,tot,fal,pct:tot?Math.round(pr*100/tot):null}}
+const pctTxt=a=>a.pct==null?"":`<span class="asb${a.pct<70?" baja":""}" title="Asistencia: ${a.pr} de ${a.tot}">${a.pct}%</span>`;
 function eqLeer(){try{const v=localStorage.getItem(EQ_KEY);return v?{...EQ_VACIO,...JSON.parse(v)}:structuredClone(EQ_VACIO)}catch(e){return structuredClone(EQ_VACIO)}}
 function eqGuardar(){try{localStorage.setItem(EQ_KEY,JSON.stringify(S.eq));return true}catch(e){toast("No cabe en este móvil: quita alguna foto");return false}}
 S.eq=eqLeer(); S.paId=null; S.juId=null; S.slot=null; S.img=null;
@@ -1105,7 +1124,7 @@ function vistaPlantilla(){
   const l=Object.entries(S.eq.jugadores).sort((a,b)=>(!!a[1].baja-!!b[1].baja)||jugOrden(a,b));
   return `<button class="back" id="paVolver">← Partidos</button>
   <div class="bar"><div class="grow"><h2 class="h2">Plantilla</h2><div class="note">${l.length} jugadores · toca uno para editarlo</div></div><button class="btn pri" id="juNuevo">+ Jugador</button></div>
-  ${l.length?`<div class="jgrid">${l.map(([id,j])=>`<button class="jcard" data-ju="${esc(id)}">${fotoHtml(j)}<span><b>${j.dorsal!=null?esc(j.dorsal)+" · ":""}${esc(nomJ(j))}</b>${j.capitan?' <span class="tag">C</span>':""}${j.pos?` <span class="tag">${esc(j.pos)}</span>`:j.portero?' <span class="tag">POR</span>':""}${j.nuevo?' <span class="tag rojo">Nuevo</span>':""}${j.baja?' <span class="tag">Baja</span>':""}<br><span class="note">${esc(j.nombre||"")}</span></span></button>`).join("")}</div>`
+  ${l.length?`<div class="jgrid">${l.map(([id,j])=>`<button class="pjug${ndDe(j)?" nd":""}" data-ju="${esc(id)}">${fotoHtml(j)}<span><b>${j.dorsal!=null?esc(j.dorsal)+" · ":""}${esc(nomJ(j))}</b>${j.capitan?' <span class="tag">C</span>':""}${j.pos?` <span class="tag">${esc(j.pos)}</span>`:j.portero?' <span class="tag">POR</span>':""}${j.nuevo?' <span class="tag rojo">Nuevo</span>':""}${j.baja?' <span class="tag">Baja</span>':""}${ndBadge(j)}${pctTxt(asisDe(id))}<br><span class="note">${esc(j.nombre||"")}</span></span></button>`).join("")}</div>`
   :`<div class="empty"><b>Plantilla vacía</b>Añade a los jugadores con su dorsal y, si quieres, una foto.</div>`}`;
 }
 function vistaJugador(){
@@ -1118,6 +1137,11 @@ function vistaJugador(){
     <div class="row"><label>Posición<select id="j-pos"><option value="">—</option>${POSICIONES.map(([k,n])=>`<option value="${k}" ${j.pos===k?"selected":""}>${n}</option>`).join("")}</select></label>
       <div class="bar" style="align-self:end"><label class="chk"><input type="checkbox" id="j-capitan" ${j.capitan?"checked":""}> Capitán</label><label class="chk"><input type="checkbox" id="j-baja" ${j.baja?"checked":""}> Baja</label></div></div>
     ${j.nuevo?`<p class="note">Ficha nueva que ha llegado de la federación: ponle el dorsal y, si quieres, la foto.</p>`:""}
+    <fieldset class="ndset"><legend>¿Disponible?</legend>
+      <div class="chips">${[["","✅ Disponible"],...Object.entries(ND_TIPO).map(([k,[ic,t]])=>[k,ic+" "+t])].map(([k,t])=>`<button type="button" class="chip" data-ndtipo="${k}" aria-pressed="${(j.nd?.tipo||"")===k}">${t}</button>`).join("")}</div>
+      ${j.nd?.tipo?`<div class="row" style="margin-top:8px"><label>Hasta (incluido)<input type="date" id="j-nd-hasta" value="${esc(j.nd.hasta||"")}"></label><label>Nota<input type="text" id="j-nd-nota" value="${esc(j.nd.nota||"")}" placeholder="p. ej. esguince de tobillo"></label></div>
+        <p class="note" style="margin:4px 0 0">Sale avisado en la convocatoria, la alineación y al pasar lista. Sin fecha, hasta que lo quites.</p>`:""}</fieldset>
+    ${(()=>{const a=asisDe(S.juId);return a.tot?`<p class="note">📋 Asistencia a los entrenos: <b>${a.pr} de ${a.tot}</b> (${a.pct}%)${a.fal?` · ${a.fal} falta${a.fal===1?"":"s"}`:""}</p>`:""})()}
     <div class="bar"><button class="btn pri" id="juGuardar">Guardar</button>
       ${nuevo?"":S.delConfirm===S.juId?`<span class="confirm">¿Quitar de la plantilla? <button class="btn dan sm" id="juBorrarSi">Sí</button><button class="btn sm" id="juBorrarNo">No</button></span>`:`<button class="btn dan" id="juBorrar">Quitar</button>`}</div>
   </form>`;
@@ -1147,7 +1171,8 @@ function vistaPartido(){
   ${p.resultado?htmlResultado(p):""}
   <section class="blk"><div class="bar"><div class="grow"><h3 class="h3">Convocatoria <span class="note tot${conv.length>MAX_CONV?" over":""}">${conv.length}/${MAX_CONV}</span></h3>
     <div class="note">Toca a cada jugador para convocarlo o quitarlo.</div></div><button class="btn sm" id="convTodos">Todos</button><button class="btn sm" id="convNadie">Ninguno</button></div>
-    ${todos.length?`<div class="convgrid">${todos.map(([id,j])=>`<button class="cj" data-conv="${esc(id)}" aria-pressed="${conv.includes(id)}">${fotoHtml(j,"ph sm")}<span>${j.dorsal!=null?esc(j.dorsal)+" ":""}${esc(nomJ(j))}</span></button>`).join("")}</div>`
+    ${(()=>{const nds=todos.filter(([,j])=>ndDe(j,p.fecha));return nds.length?`<div class="ndaviso">${nds.map(([id,j])=>`<span>${esc(nomJ(j))}: ${esc(ndTxt(ndDe(j,p.fecha)))}</span>`).join("")}</div>`:""})()}
+    ${todos.length?`<div class="convgrid">${todos.map(([id,j])=>`<button class="cj${ndDe(j,p.fecha)?" nd":""}" data-conv="${esc(id)}" aria-pressed="${conv.includes(id)}">${fotoHtml(j,"ph sm")}<span>${j.dorsal!=null?esc(j.dorsal)+" ":""}${esc(nomJ(j))}${ndBadge(j,p.fecha)}${pctTxt(asisDe(id))}</span></button>`).join("")}</div>`
     :`<div class="empty"><b>No hay plantilla</b>Añade jugadores en «Plantilla» o importa el archivo del equipo.</div>`}
     ${conv.length>MAX_CONV?`<p class="note over">Hay más de ${MAX_CONV}: en el acta solo caben ${MAX_CONV}.</p>`:""}
     <div class="bar" style="margin-top:10px"><button class="btn pri" id="imgConv" ${conv.length?"":"disabled"}>Imagen de la convocatoria</button></div></section>
@@ -1155,7 +1180,7 @@ function vistaPartido(){
     <label style="flex-direction:row;align-items:center;gap:8px">Sistema<select id="paSistema" style="width:auto">${Object.keys(SISTEMAS).map(k=>`<option ${k===sis?"selected":""}>${k}</option>`).join("")}</select></label></div>
     <div class="campo11">${slots}</div>
     ${S.slot!=null&&conv.length?`<div class="picker"><div class="bar"><div class="grow note">¿Quién juega de <b>${SISTEMAS[sis][S.slot][0]}</b>?</div>${once[S.slot]?`<button class="btn sm" id="slotVaciar">Dejar vacío</button>`:""}<button class="btn sm" id="slotCerrar">Cerrar</button></div>
-      <div class="convgrid">${libres.map(id=>`<button class="cj" data-pon="${esc(id)}" aria-pressed="${once[S.slot]===id}">${fotoHtml(J[id],"ph sm")}<span>${J[id].dorsal!=null?esc(J[id].dorsal)+" ":""}${esc(nomJ(J[id]))}</span></button>`).join("")||'<div class="note">Todos los convocados ya están en el once.</div>'}</div></div>`:""}
+      <div class="convgrid">${libres.map(id=>`<button class="cj${ndDe(J[id],p.fecha)?" nd":""}" data-pon="${esc(id)}" aria-pressed="${once[S.slot]===id}">${fotoHtml(J[id],"ph sm")}<span>${J[id].dorsal!=null?esc(J[id].dorsal)+" ":""}${esc(nomJ(J[id]))}${ndBadge(J[id],p.fecha)}</span></button>`).join("")||'<div class="note">Todos los convocados ya están en el once.</div>'}</div></div>`:""}
     <div class="note" style="margin-top:8px"><b>Banquillo (${banq.length}):</b> ${banq.map(id=>esc((J[id].dorsal!=null?J[id].dorsal+" ":"")+nomJ(J[id]))).join(" · ")||"—"}</div>
     <div class="row" style="margin-top:8px"><label>Capitán<select id="paCapitan"><option value="">—</option>${[...enOnce].filter(id=>J[id]).map(id=>`<option value="${esc(id)}" ${capitanDe(p)===id?"selected":""}>${esc(nomJ(J[id]))}</option>`).join("")}</select></label></div>
     <div class="bar" style="margin-top:10px"><button class="btn pri" id="imgOnce" ${enOnce.size?"":"disabled"}>Imagen de la alineación</button><button class="btn" id="copiarOnce" ${enOnce.size?"":"disabled"}>Copiar texto</button></div></section>
@@ -1181,6 +1206,7 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   if(t.id==="juNuevo"){S.juId="ju-"+Date.now().toString(36);S.juDraft={nombre:"",corto:"",dorsal:null};S.delConfirm=null;S.view="jugador";render();return}
   if(t.dataset.ju){S.juId=t.dataset.ju;S.juDraft=structuredClone(S.eq.jugadores[S.juId]);S.delConfirm=null;S.view="jugador";render();return}
   if(t.id==="juVolver"){S.view="plantilla";render();return}
+  if(t.dataset.ndtipo!=null){leerJu();const k=t.dataset.ndtipo;S.juDraft.nd=k?{...(S.juDraft.nd||{}),tipo:k,desde:S.juDraft.nd?.desde||hoyISO()}:null;if(!k)delete S.juDraft.nd;render();return}
   if(t.id==="juSinFoto"){leerJu();delete S.juDraft.foto;render();return}
   if(t.id==="juGuardar"){leerJu();const j=S.juDraft;if(!j.corto&&!j.nombre){toast("Ponle nombre");return}
     if(!j.corto) j.corto=j.nombre.split(" ")[0].toUpperCase();
@@ -1198,6 +1224,7 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
   if(t.id==="paBorrar"){S.delConfirm=S.paId;render();return}
   if(t.id==="paBorrarNo"){S.delConfirm=null;render();return}
   if(t.id==="paBorrarSi"){delete S.eq.partidos[S.paId];pGuardar();S.delConfirm=null;S.view="pa";render();toast("Partido borrado");return}
+  if(t.dataset.conv&&!(P.convocados||[]).includes(t.dataset.conv)){const jj=S.eq.jugadores[t.dataset.conv],n=ndDe(jj,P.fecha);if(n)toast("Ojo: "+nomJ(jj)+" · "+ndTxt(n))}
   if(t.dataset.conv){const c=P.convocados=P.convocados||[],id=t.dataset.conv,i=c.indexOf(id);
     if(i>=0){c.splice(i,1);for(const k in P.once) if(P.once[k]===id) delete P.once[k]} else c.push(id);pGuardar();render();return}
   if(t.id==="convTodos"){P.convocados=Object.keys(S.eq.jugadores);pGuardar();render();return}
@@ -1225,7 +1252,8 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 function bajarBlob(b,nombre){const u=URL.createObjectURL(b),a=document.createElement("a");a.href=u;a.download=nombre;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),3000)}
 function leerJu(){const j=S.juDraft,v=id=>$("#"+id);if(!v("j-corto"))return;
   j.corto=v("j-corto").value.trim().toUpperCase();j.nombre=v("j-nombre").value.trim();const d=v("j-dorsal").value;j.dorsal=d===""?null:+d;
-  j.pos=v("j-pos").value;j.portero=j.pos==="POR";j.capitan=v("j-capitan").checked;j.baja=v("j-baja").checked}
+  j.pos=v("j-pos").value;j.portero=j.pos==="POR";j.capitan=v("j-capitan").checked;j.baja=v("j-baja").checked;
+  if(j.nd&&j.nd.tipo){const h=v("j-nd-hasta"),n=v("j-nd-nota");if(h)j.nd.hasta=h.value||"";if(n)j.nd.nota=n.value.trim()}}
 function reducir(file,lado,tipo="image/jpeg"){return new Promise((ok,ko)=>{const img=new Image();img.onload=()=>{const c=document.createElement("canvas"),k=Math.min(1,lado/Math.max(img.width,img.height));
   c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);c.getContext("2d").drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(img.src);ok(c.toDataURL(tipo,.82))};img.onerror=ko;img.src=URL.createObjectURL(file)})}
 app.addEventListener("click",ev=>{if(S.view!=="clasif")return;const tr=ev.target.closest("tr[data-eqc]");if(!tr)return;S.eqCod=tr.dataset.eqc;S.view="equipo";render();window.scrollTo(0,0)});
@@ -1441,11 +1469,13 @@ function htmlCalendario(){
       <span class="acts">${S.canWrite&&!pasado?`<button class="btn sm" data-calvolver="${f}">↺ Volver a poner</button>`:""}</span></div>`;
     return cab+`<div class="pcard dia${f===hoy?" next":""}${pasado?" pasado":""}${extra?" extra":""}"><span class="pj">${DIAS_N[d.getDay()].slice(0,3)}</span><span class="pmid"><b>${esc(fmtCorta(f))}</b>${extra?' <span class="tagx">Extra</span>':""}
       ${ses.length?ses.map(([id,s])=>`<br><button class="lnk" data-ses="${esc(id)}">${esc(s.nombre||"Sesión")}</button> <span class="carga ${claseCarga(s.carga)}">${esc(s.carga||"")}</span>`).join(""):`<br><span class="note">Sin sesión</span>`}</span>
-      <span class="acts">${S.canWrite&&!ses.length?`<button class="btn sm pri" data-gen="${f}">✨ Generar</button><button class="btn sm" data-elegir="${f}">Elegir</button>`:""}
+      <span class="acts">${f<=hoy&&Object.keys(S.eq.jugadores).length?(()=>{const A=(S.eq.asistencia||{})[f]||{},act=Object.entries(S.eq.jugadores).filter(([,j])=>!j.baja),pr=act.filter(([id])=>A[id]==="p").length,mar=act.filter(([id])=>A[id]).length;
+          return `<button class="btn sm lista${mar?" hecha":""}${S.asisDia===f?" on":""}" data-asis="${f}">📋 ${mar?`${pr}/${act.length}`:"Lista"}</button>`})():""}
+        ${S.canWrite&&!ses.length?`<button class="btn sm pri" data-gen="${f}">✨ Generar</button><button class="btn sm" data-elegir="${f}">Elegir</button>`:""}
         ${S.canWrite&&!pasado?`<button class="ib sm2" data-calquitar="${f}" aria-label="${extra?"Quitar el entreno extra":"No hay entreno este día"}" title="${extra?"Quitar el extra":"Quitar solo este día"}">✕</button>`:""}</span></div>
       ${S.calQuitarConf===f?`<div class="picker"><b>¿Quitar el entreno del ${esc(fmtFecha(f))}?</b><div class="note">${extra?"Se borra este entreno extra.":"Solo este día; los demás "+DIAS_N[d.getDay()]+" siguen igual."}${ses.length?" La sesión no se borra: sigue en 📚 Sesiones.":""}</div>
         <div class="bar" style="margin-top:6px"><button class="btn dan sm" data-calquitarsi="${f}">Sí, quitar</button><button class="btn sm" id="calQuitarNo">No</button></div></div>`:""}
-      ${S.genDia===f?htmlGenerar(f,px):""}${S.elegirDia===f?htmlElegir(f):""}`}).join("")}</div>
+      ${S.asisDia===f?htmlAsistencia(f):""}${S.genDia===f?htmlGenerar(f,px):""}${S.elegirDia===f?htmlElegir(f):""}`}).join("")}</div>
   <div class="bar" style="margin-top:10px"><button class="btn" id="calMas">Ver más semanas</button></div>`;
 }
 const OBJ_GEN=[["presion","Presión",["presi","robo","pressing","recuper"]],["posesion","Posesión",["posesi","rondo","conserv","paciencia"]],["salida","Salida de balón",["salida","salir jugando","desde atras","desde el portero","constru"]],["finalizacion","Finalización",["finaliz","tiro","remat","oleada"]],["transiciones","Transiciones",["transici","contra","repliegue","vigilan"]],["parado","Balón parado",["balon parado","corner","falta","saque"]],["fisico","Físico y prevención",["fuerza","velocidad","resistencia","fisic","prevenc","11+"]]];
@@ -1454,9 +1484,15 @@ function htmlOpcionesGen(pref){const o=S.genOpt||(S.genOpt={obj:[],dur:75,carga:
     <div class="chips">${OBJ_GEN.map(([k,n])=>`<button class="chip" data-genobj="${k}" aria-pressed="${o.obj.includes(k)}">${n}</button>`).join("")}</div>
     <div class="row" style="margin-top:8px"><label>Duración<select id="${pref}Dur">${[60,75,90].map(m=>`<option value="${m}" ${o.dur===m?"selected":""}>${m} min</option>`).join("")}</select></label>
       <label>Carga<select id="${pref}Carga"><option value="auto" ${o.carga==="auto"?"selected":""}>Según el partido</option>${["Alta","Media","Baja"].map(c=>`<option ${o.carga===c?"selected":""}>${c}</option>`).join("")}</select></label>
-      <label>Jugadores<input type="number" id="${pref}Jug" min="4" max="30" placeholder="p. ej. 16" value="${esc(o.jug||"")}"></label></div>
+      <label>Jugadores<input type="number" id="${pref}Jug" min="4" max="30" placeholder="${(()=>{const n=Object.values(S.eq.jugadores||{}).filter(j=>!j.baja&&!ndDe(j)).length;return n?n+" disponibles":"p. ej. 16"})()}" value="${esc(o.jug||"")}"></label></div>
     <label style="margin-top:6px">Algo más (opcional)<textarea id="${pref}Ind" rows="2" placeholder="p. ej. faltará el portero; repasar el córner; poca gente">${esc(S.genInd||"")}</textarea></label></div>`}
 function leerOpcionesGen(pref){const o=S.genOpt||(S.genOpt={obj:[],dur:75,carga:"auto",jug:""});o.dur=+($("#"+pref+"Dur")?.value||75);o.carga=$("#"+pref+"Carga")?.value||"auto";o.jug=$("#"+pref+"Jug")?.value||"";S.genInd=($("#"+pref+"Ind")?.value||"").trim();return o}
+function htmlAsistencia(f){const A=(S.eq.asistencia||{})[f]||{},act=Object.entries(S.eq.jugadores).filter(([,j])=>!j.baja).sort(jugOrden);
+  const est=id=>A[id]||(ndDe(S.eq.jugadores[id],f)?"nd":"");const n=k=>act.filter(([id])=>est(id)===k).length;
+  return `<div class="picker asis"><div class="bar" style="margin-bottom:6px"><b class="grow">📋 Lista del ${esc(fmtFecha(f))}</b><button class="btn sm" data-asistodos="${f}">✓ Todos presentes</button></div>
+    <div class="note" style="margin-bottom:8px">Toca a cada uno: ✓ presente → ✗ falta → J justificada. <b>${n("p")}</b> presentes · <b>${n("f")}</b> faltas · <b>${n("j")}</b> justificadas${n("nd")?` · <b>${n("nd")}</b> no disponibles`:""}</div>
+    <div class="convgrid">${act.map(([id,j])=>{const e=est(id),nd=ndDe(j,f);return `<button class="cj asj a-${e||"no"}" data-asisj="${esc(id)}" data-f="${f}">${fotoHtml(j,"ph sm")}<span>${j.dorsal!=null?esc(j.dorsal)+" ":""}${esc(nomJ(j))}${nd?ndBadge(j,f):""}</span><b class="asest">${e==="nd"?(ND_TIPO[nd?.tipo]||ND_TIPO.otro)[0]:e?ASIS[e][0]:"·"}</b></button>`}).join("")}</div>
+    <div class="bar" style="margin-top:8px"><button class="btn sm" data-asis="${f}">Cerrar</button></div></div>`}
 function htmlGenerar(f,px){const inf=px&&informeRival(px[1]);
   return `<div class="picker"><b>Generar la sesión del ${esc(fmtFecha(f))}</b>
     <div class="note" style="margin:4px 0">${px?`Para el partido contra ${esc(px[1].rival)} (${Math.round((new Date(px[1].fecha)-new Date(f))/864e5)} días después).${inf&&inf.claves.length?" Tendrá en cuenta: "+esc(inf.claves.slice(0,2).join(" ")):""}`:"No hay partido esa semana."}</div>
@@ -1528,6 +1564,11 @@ app.addEventListener("click",ev=>{const t=ev.target.closest("button");if(!t||S.v
     if(S.dias.includes(d.getDay())||calExtra().includes(f)){toast("Ese día ya hay entreno");return}
     LS.set("pizarra.calExtra",[...new Set([...calExtra(),f])].sort());S.calExtraAbierto=false;
     const sem=Math.ceil((d-new Date(hoyISO()+"T12:00:00"))/(7*864e5))+2;if(sem>(S.calSemanas||6))S.calSemanas=sem;render();toast(`Entreno extra el ${fmtFecha(f)}`);return}
+  if(t.dataset.asis){S.asisDia=S.asisDia===t.dataset.asis?null:t.dataset.asis;S.genDia=null;S.elegirDia=null;render();return}
+  if(t.dataset.asistodos){const f=t.dataset.asistodos,A=(S.eq.asistencia=S.eq.asistencia||{})[f]=(S.eq.asistencia[f]||{});
+    for(const [id,j] of Object.entries(S.eq.jugadores)){if(j.baja)continue;A[id]=ndDe(j,f)?"nd":(A[id]&&A[id]!=="nd"?A[id]:"p")}eqGuardar();render();toast("Todos presentes: toca a los que faltan");return}
+  if(t.dataset.asisj){const f=t.dataset.f,id=t.dataset.asisj,A=(S.eq.asistencia=S.eq.asistencia||{})[f]=(S.eq.asistencia[f]||{});
+    const orden=["p","f","j"],cur=A[id]==="nd"?"":A[id]||"";A[id]=orden[(orden.indexOf(cur)+1)%3];eqGuardar();render();return}
   if(t.dataset.calquitar){S.calQuitarConf=S.calQuitarConf===t.dataset.calquitar?null:t.dataset.calquitar;render();return}
   if(t.id==="calQuitarNo"){S.calQuitarConf=null;render();return}
   if(t.dataset.calquitarsi){const f=t.dataset.calquitarsi;S.calQuitarConf=null;
@@ -2553,6 +2594,8 @@ const MANUAL=[
  {ic:"📅",t:"Sesiones y entrenos",r:"El calendario de entrenos y las sesiones con sus ejercicios.",a:[
   ["Calendario",`Salen tus días de entreno (por defecto lunes y miércoles; se cambian con los botones L, M, X…) con el partido de cada semana al lado.`],
   ["Generar sesión",`En cada día, <b>Generar</b> monta una propuesta con tus ejercicios: calentamiento, juegos reducidos, partido y vuelta a la calma. Tiene en cuenta los días que faltan al partido (más carga lejos, menos la víspera), el informe del rival y lo que escribas en las indicaciones. Revísala y guárdala. Antes de generar puedes elegir <b>qué trabajar</b> (presión, posesión, salida de balón, finalización, transiciones, balón parado, físico), la <b>duración</b>, la <b>carga</b> y cuántos <b>jugadores</b> vas a tener, y escribir algo más. También está dentro de <b>Nueva sesión</b>: <b>✨ Generar</b>, al lado de «+ Añadir ejercicio», usa la fecha y la idea que hayas puesto.`],
+  ["📋 Pasar lista",`En el calendario, cada entreno de hoy o de días pasados tiene <b>📋 Lista</b>. Se abre la plantilla: toca a cada uno para ir cambiando entre <b>✓ presente</b>, <b>✗ falta</b> y <b>J justificada</b>, o pulsa <b>✓ Todos presentes</b> y toca solo a los que faltan. El botón pasa a decir cuántos vinieron (por ejemplo 12/14). Cada jugador lleva su <b>% de asistencia</b> en la plantilla, en la convocatoria y en su ficha (lo justificado no cuenta como falta).`],
+  ["🤕 No disponibles",`En la ficha de un jugador (Partidos → Plantilla), <b>¿Disponible?</b>: 🤕 lesionado, 🟥 sancionado u otro motivo, con <b>fecha de vuelta</b> y una nota. Sale avisado arriba de la convocatoria, marcado en la convocatoria, la alineación y la lista, y si lo convocas igualmente te lo recuerda. Pasada la fecha, vuelve a estar disponible solo. Sin fecha, hasta que lo quites con <b>✅ Disponible</b>. El generador de sesiones propone el número de jugadores disponibles.`],
   ["Un día suelto: extra o sin entreno",`Los <b>días fijos</b> (arriba, lu, mi…) son los de siempre. Se eligen arriba tocando los círculos <b>L M X J V S D</b>. Para una semana distinta: <b>＋ Entreno extra</b> (debajo) deja elegir cualquier día: entra en su semana como uno más, solo esa vez (sale marcado «Extra»), y la <b>✕</b> de un día lo quita solo ese día, por ejemplo un festivo («No hay entreno este día», con <b>↺ Volver a poner</b>). Los demás lunes o miércoles no cambian. Si ese día tenía sesión, la sesión no se borra: sigue en 📚 Sesiones.`],
   ["Elegir una sesión",`<b>Elegir</b> copia una sesión que ya tengas en ese día (la original no cambia).`],
   ["Ver y compartir una sesión",`Toca una sesión para verla con sus ejercicios y diagramas; desde ahí <b>Copiar texto</b>, <b>Compartir</b> o <b>Imprimir</b>.`]]},
