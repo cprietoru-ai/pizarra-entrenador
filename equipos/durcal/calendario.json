@@ -41,8 +41,8 @@
    "jornada": 4,
    "rival": "Atlético Salobreña",
    "casa": false,
-   "fecha": "2026-11-08",
-   "hora": "",
+   "fecha": "2026-11-07",
+   "hora": "12:00",
    "campo": "Salobreña - LOS TRANCES ESTADIO MUNICIPAL (F11-F7)",
    "resultado": "",
    "derbi": false,
@@ -583,5 +583,5 @@
    7
   ]
  ],
- "actualizado": "2026-10-25T21:52:48Z"
+ "actualizado": "2026-11-03T14:28:51Z"
 }
