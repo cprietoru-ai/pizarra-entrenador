@@ -3,11 +3,17 @@
 name: Calendario RFAF
 on:
   schedule:
+    # GitHub retrasa mucho los programados (en nov-2026 el de las 6:17 salía
+    # hacia las 14:30 UTC), así que se lanza varias veces al día; solo sube si hay cambios.
     - cron: "17 6 * * *"   # 6:17 UTC: 7:17 u 8:17 en España
+    - cron: "43 2,10,17 * * *"   # madrugada, mediodía y tarde
     - cron: "17 19 * * 6,0"   # sábado y domingo por la tarde, para los resultados del finde
   workflow_dispatch:
 permissions:
   contents: write
+concurrency:
+  group: calendario
+  cancel-in-progress: false
 jobs:
   calendario:
     runs-on: ubuntu-latest
