@@ -44,7 +44,7 @@
    "fecha": "2026-11-07",
    "hora": "12:00",
    "campo": "Salobreña - LOS TRANCES ESTADIO MUNICIPAL (F11-F7)",
-   "resultado": "",
+   "resultado": "1-6",
    "derbi": false,
    "escudo_rival": "equipos/durcal/escudos/556118.png"
   },
@@ -252,25 +252,25 @@
    "pos": 1,
    "equipo": "C.D. Dúrcal",
    "yo": true,
-   "pj": 3,
-   "g": 3,
+   "pj": 4,
+   "g": 4,
    "e": 0,
    "p": 0,
-   "gf": 17,
-   "gc": 3,
-   "pts": 9
+   "gf": 23,
+   "gc": 4,
+   "pts": 12
   },
   {
    "pos": 2,
    "equipo": "Almuñécar C.F.",
    "yo": false,
-   "pj": 3,
-   "g": 3,
+   "pj": 4,
+   "g": 4,
    "e": 0,
    "p": 0,
-   "gf": 14,
-   "gc": 7,
-   "pts": 9
+   "gf": 18,
+   "gc": 9,
+   "pts": 12
   },
   {
    "pos": 3,
@@ -298,18 +298,6 @@
   },
   {
    "pos": 5,
-   "equipo": "Atlético Salobreña",
-   "yo": false,
-   "pj": 3,
-   "g": 1,
-   "e": 1,
-   "p": 1,
-   "gf": 10,
-   "gc": 5,
-   "pts": 4
-  },
-  {
-   "pos": 6,
    "equipo": "Origen Valle de Lecrín",
    "yo": false,
    "pj": 3,
@@ -318,6 +306,18 @@
    "p": 1,
    "gf": 7,
    "gc": 6,
+   "pts": 4
+  },
+  {
+   "pos": 6,
+   "equipo": "Atlético Salobreña",
+   "yo": false,
+   "pj": 4,
+   "g": 1,
+   "e": 1,
+   "p": 2,
+   "gf": 11,
+   "gc": 11,
    "pts": 4
   },
   {
@@ -372,12 +372,12 @@
    "pos": 11,
    "equipo": "Recreativo Cájar 2016",
    "yo": false,
-   "pj": 3,
+   "pj": 4,
    "g": 0,
    "e": 1,
-   "p": 2,
-   "gf": 3,
-   "gc": 10,
+   "p": 3,
+   "gf": 5,
+   "gc": 14,
    "pts": 1
   },
   {
@@ -581,7 +581,21 @@
    "24492801",
    0,
    7
+  ],
+  [
+   4,
+   "38963090",
+   "48515716",
+   4,
+   2
+  ],
+  [
+   4,
+   "556118",
+   "2697461",
+   1,
+   6
   ]
  ],
- "actualizado": "2026-11-03T14:28:51Z"
+ "actualizado": "2026-11-07T13:15:35Z"
 }
