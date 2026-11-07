@@ -288,28 +288,16 @@
    "pos": 4,
    "equipo": "Motril A",
    "yo": false,
-   "pj": 3,
-   "g": 2,
+   "pj": 4,
+   "g": 3,
    "e": 0,
    "p": 1,
-   "gf": 8,
+   "gf": 10,
    "gc": 7,
-   "pts": 6
+   "pts": 9
   },
   {
    "pos": 5,
-   "equipo": "Origen Valle de Lecrín",
-   "yo": false,
-   "pj": 3,
-   "g": 1,
-   "e": 1,
-   "p": 1,
-   "gf": 7,
-   "gc": 6,
-   "pts": 4
-  },
-  {
-   "pos": 6,
    "equipo": "Atlético Salobreña",
    "yo": false,
    "pj": 4,
@@ -321,7 +309,7 @@
    "pts": 4
   },
   {
-   "pos": 7,
+   "pos": 6,
    "equipo": "Alborán",
    "yo": false,
    "pj": 3,
@@ -330,6 +318,18 @@
    "p": 1,
    "gf": 7,
    "gc": 7,
+   "pts": 4
+  },
+  {
+   "pos": 7,
+   "equipo": "Origen Valle de Lecrín",
+   "yo": false,
+   "pj": 4,
+   "g": 1,
+   "e": 1,
+   "p": 2,
+   "gf": 7,
+   "gc": 8,
    "pts": 4
   },
   {
@@ -602,7 +602,14 @@
    "28636816",
    2,
    1
+  ],
+  [
+   4,
+   "30341006",
+   "44822776",
+   0,
+   2
   ]
  ],
- "actualizado": "2026-11-07T21:11:30Z"
+ "actualizado": "2026-11-07T22:50:31Z"
 }
