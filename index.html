@@ -922,8 +922,9 @@ app.addEventListener("click",async ev=>{const t=ev.target.closest("button");if(!
 });
 
 // ---------- Versión y novedades (la más nueva arriba) ----------
-const VERSION="1.42";
+const VERSION="1.42.1";
 const NOVEDADES=[
+  ["1.42.1","7-nov-2026",["Al volver a la app desde segundo plano se bajan solos los datos nuevos del equipo (resultados, clasificación, plantilla). Antes solo se bajaban al abrirla de cero o al tocar Partidos."]],
   ["1.42","1-nov-2026",["🎥 Vídeos en la ayuda: en el botón ? hay una pestaña nueva, «Vídeos», con uno por sección (crear una jugada, colocar los equipos, Ejercicios, Entrenos y Partidos). Son la app de verdad con un círculo que hace de dedo y frases que explican cada paso. El de la pestaña en la que estás sale el primero.","Cada sección del manual tiene arriba su «🎥 Ver el vídeo».","Necesitan cobertura: no se guardan en el móvil para no ocupar espacio."]],
   ["1.41","1-nov-2026",["📋 Pasar lista en cada entreno, desde el calendario: un toque por jugador (✓ presente, ✗ falta, J justificada) o «Todos presentes» y tocar a los que faltan. Cada jugador lleva su % de asistencia en la plantilla, la convocatoria y su ficha.","No disponibles: en la ficha de cada jugador, 🤕 lesionado, 🟥 sancionado u otro motivo, con fecha de vuelta y nota. Salen avisados en la convocatoria, la alineación y la lista; y al volver la fecha, vuelven a estar disponibles solos.","El generador de sesiones propone el número de jugadores disponibles.","Arreglado: las fichas de la plantilla se veían deformadas desde la 1.36."]],
   ["1.40","31-oct-2026",["La Pizarra se abre directamente en el campo, lista para dibujar.","Arriba a la izquierda, «📂 Jugadas» abre tus jugadas en un panel lateral, igual de organizadas que antes (próximo partido, en preparación, por tipos, por partido y «Para empezar»): toca una y se abre en la pizarra.","«＋» para una pizarra nueva (la anterior se guarda sola) y «⭐ J…» para ir directo a las del próximo partido. La pizarra nueva usa el último campo que elegiste."]],
@@ -1650,7 +1651,7 @@ async function sincronizar({forzar=false,avisar=false}={}){
 }
 function htmlConexion(){
   const c=S.conex;
-  if(c&&!c.error) return `<p class="note">Conectado a <b>${esc(S.eq.club||c.equipo)}</b>. La plantilla y el calendario se actualizan solos al abrir la app${c.calendario?` (calendario de la federación del ${esc(new Date(c.calendario).toLocaleDateString("es-ES",{day:"numeric",month:"short"}))})`:""}.</p>
+  if(c&&!c.error) return `<p class="note">Conectado a <b>${esc(S.eq.club||c.equipo)}</b>. La plantilla y el calendario se actualizan solos al abrir la app o volver a ella${c.calendario?` (calendario de la federación del ${esc(new Date(c.calendario).toLocaleDateString("es-ES",{day:"numeric",month:"short"}))})`:""}.</p>
     <div class="bar"><button class="btn" id="cx-act">Actualizar ahora</button>${S.delConfirm==="conex"?`<span class="confirm">¿Desconectar? Se quitan los jugadores del equipo de este móvil. <button class="btn dan sm" id="cx-noSi">Sí</button><button class="btn sm" id="cx-noNo">No</button></span>`:`<button class="btn dan sm" id="cx-no">Desconectar</button>`}</div>`;
   return `<p class="note">Si tu club te ha dado un código de equipo y una contraseña, ponlos aquí una vez: la plantilla con fotos y el calendario llegarán solos y se mantendrán al día.</p>
     ${c&&c.error?`<div class="err">${esc(c.error)}</div>`:""}
@@ -2716,6 +2717,8 @@ $("#ayuda").addEventListener("input",ev=>{if(ev.target.id!=="manQ")return;S.manQ
       // al volver a la app desde segundo plano, mira si hay versión nueva
       document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")r.update().catch(()=>{})})}).catch(()=>{})}
   sincronizar();
+  // Al volver a la app desde segundo plano también se baja lo último (máx. cada 10 min)
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")sincronizar()});
   const vista=LS.get("pizarra.version",null);
   if(vista!==VERSION){LS.set("pizarra.version",VERSION);if(vista)setTimeout(()=>toast("Versión "+VERSION+": toca el ? de arriba para ver lo nuevo"),800);else LS.set("pizarra.novVista",VERSION)}
   marcarAyuda();

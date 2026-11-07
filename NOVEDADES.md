@@ -2,6 +2,9 @@
 
 La versión en uso sale en la cabecera de la app; las novedades, en el botón ? de arriba.
 
+## 1.42.1 · 7-nov-2026
+- Al volver a la app desde segundo plano se bajan solos los datos nuevos del equipo (resultados, clasificación, plantilla). Antes solo se bajaban al abrirla de cero o al tocar Partidos.
+
 ## 1.42 · 1-nov-2026
 - 🎥 Vídeos en la ayuda: en el botón ? hay una pestaña nueva, «Vídeos», con uno por sección (crear una jugada, colocar los equipos, Ejercicios, Entrenos y Partidos). Son la app de verdad con un círculo que hace de dedo y frases que explican cada paso. El de la pestaña en la que estás sale el primero.
 - Cada sección del manual tiene arriba su «🎥 Ver el vídeo».
