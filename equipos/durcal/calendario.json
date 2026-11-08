@@ -298,6 +298,30 @@
   },
   {
    "pos": 5,
+   "equipo": "Unión Órgiva-Alpujarra",
+   "yo": false,
+   "pj": 4,
+   "g": 2,
+   "e": 0,
+   "p": 2,
+   "gf": 12,
+   "gc": 15,
+   "pts": 6
+  },
+  {
+   "pos": 6,
+   "equipo": "Alborán",
+   "yo": false,
+   "pj": 4,
+   "g": 1,
+   "e": 2,
+   "p": 1,
+   "gf": 10,
+   "gc": 10,
+   "pts": 5
+  },
+  {
+   "pos": 7,
    "equipo": "Atlético Salobreña",
    "yo": false,
    "pj": 4,
@@ -309,19 +333,7 @@
    "pts": 4
   },
   {
-   "pos": 6,
-   "equipo": "Alborán",
-   "yo": false,
-   "pj": 3,
-   "g": 1,
-   "e": 1,
-   "p": 1,
-   "gf": 7,
-   "gc": 7,
-   "pts": 4
-  },
-  {
-   "pos": 7,
+   "pos": 8,
    "equipo": "Origen Valle de Lecrín",
    "yo": false,
    "pj": 4,
@@ -333,40 +345,28 @@
    "pts": 4
   },
   {
-   "pos": 8,
+   "pos": 9,
    "equipo": "Puerto de Motril C.F.",
    "yo": false,
-   "pj": 3,
+   "pj": 4,
    "g": 1,
    "e": 1,
-   "p": 1,
-   "gf": 5,
-   "gc": 10,
-   "pts": 4
-  },
-  {
-   "pos": 9,
-   "equipo": "Unión Órgiva-Alpujarra",
-   "yo": false,
-   "pj": 3,
-   "g": 1,
-   "e": 0,
    "p": 2,
-   "gf": 5,
-   "gc": 12,
-   "pts": 3
+   "gf": 8,
+   "gc": 17,
+   "pts": 4
   },
   {
    "pos": 10,
    "equipo": "Padul Balompié B",
    "yo": false,
-   "pj": 3,
+   "pj": 4,
    "g": 0,
-   "e": 1,
+   "e": 2,
    "p": 2,
-   "gf": 5,
-   "gc": 11,
-   "pts": 1
+   "gf": 8,
+   "gc": 14,
+   "pts": 2
   },
   {
    "pos": 11,
@@ -598,6 +598,20 @@
   ],
   [
    4,
+   "17856317",
+   "25517390",
+   3,
+   3
+  ],
+  [
+   4,
+   "561415",
+   "526518",
+   7,
+   3
+  ],
+  [
+   4,
    "24492801",
    "28636816",
    2,
@@ -611,5 +625,5 @@
    2
   ]
  ],
- "actualizado": "2026-11-07T22:50:31Z"
+ "actualizado": "2026-11-08T21:27:39Z"
 }
