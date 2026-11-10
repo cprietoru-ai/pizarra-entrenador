@@ -52,8 +52,8 @@
    "jornada": 5,
    "rival": "Almuñécar C.F.",
    "casa": true,
-   "fecha": "2026-11-15",
-   "hora": "",
+   "fecha": "2026-11-14",
+   "hora": "12:30",
    "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
    "resultado": "",
    "derbi": false,
@@ -625,5 +625,5 @@
    2
   ]
  ],
- "actualizado": "2026-11-08T21:27:39Z"
+ "actualizado": "2026-11-10T15:03:41Z"
 }
