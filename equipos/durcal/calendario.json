@@ -55,7 +55,7 @@
    "fecha": "2026-11-14",
    "hora": "12:30",
    "campo": "Dúrcal - JOSÉ LÓPEZ ESTADIO (F11-F7)",
-   "resultado": "",
+   "resultado": "4-2",
    "derbi": false,
    "escudo_rival": "equipos/durcal/escudos/38963090.png"
   },
@@ -252,24 +252,24 @@
    "pos": 1,
    "equipo": "C.D. Dúrcal",
    "yo": true,
-   "pj": 4,
-   "g": 4,
+   "pj": 5,
+   "g": 5,
    "e": 0,
    "p": 0,
-   "gf": 23,
-   "gc": 4,
-   "pts": 12
+   "gf": 27,
+   "gc": 6,
+   "pts": 15
   },
   {
    "pos": 2,
    "equipo": "Almuñécar C.F.",
    "yo": false,
-   "pj": 4,
+   "pj": 5,
    "g": 4,
    "e": 0,
-   "p": 0,
-   "gf": 18,
-   "gc": 9,
+   "p": 1,
+   "gf": 20,
+   "gc": 13,
    "pts": 12
   },
   {
@@ -322,6 +322,18 @@
   },
   {
    "pos": 7,
+   "equipo": "Puerto de Motril C.F.",
+   "yo": false,
+   "pj": 5,
+   "g": 1,
+   "e": 2,
+   "p": 2,
+   "gf": 9,
+   "gc": 18,
+   "pts": 5
+  },
+  {
+   "pos": 8,
    "equipo": "Atlético Salobreña",
    "yo": false,
    "pj": 4,
@@ -333,7 +345,7 @@
    "pts": 4
   },
   {
-   "pos": 8,
+   "pos": 9,
    "equipo": "Origen Valle de Lecrín",
    "yo": false,
    "pj": 4,
@@ -345,28 +357,16 @@
    "pts": 4
   },
   {
-   "pos": 9,
-   "equipo": "Puerto de Motril C.F.",
-   "yo": false,
-   "pj": 4,
-   "g": 1,
-   "e": 1,
-   "p": 2,
-   "gf": 8,
-   "gc": 17,
-   "pts": 4
-  },
-  {
    "pos": 10,
    "equipo": "Padul Balompié B",
    "yo": false,
-   "pj": 4,
+   "pj": 5,
    "g": 0,
-   "e": 2,
+   "e": 3,
    "p": 2,
-   "gf": 8,
-   "gc": 14,
-   "pts": 2
+   "gf": 9,
+   "gc": 15,
+   "pts": 3
   },
   {
    "pos": 11,
@@ -626,11 +626,25 @@
   ],
   [
    5,
+   "2697461",
+   "38963090",
+   4,
+   2
+  ],
+  [
+   5,
    "24492801",
    "561415",
    3,
    3
+  ],
+  [
+   5,
+   "526518",
+   "17856317",
+   1,
+   1
   ]
  ],
- "actualizado": "2026-11-14T13:42:30Z"
+ "actualizado": "2026-11-14T14:47:27Z"
 }
