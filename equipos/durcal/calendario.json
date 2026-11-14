@@ -322,6 +322,18 @@
   },
   {
    "pos": 7,
+   "equipo": "Origen Valle de Lecrín",
+   "yo": false,
+   "pj": 5,
+   "g": 1,
+   "e": 2,
+   "p": 2,
+   "gf": 9,
+   "gc": 10,
+   "pts": 5
+  },
+  {
+   "pos": 8,
    "equipo": "Puerto de Motril C.F.",
    "yo": false,
    "pj": 5,
@@ -333,7 +345,7 @@
    "pts": 5
   },
   {
-   "pos": 8,
+   "pos": 9,
    "equipo": "Atlético Salobreña",
    "yo": false,
    "pj": 4,
@@ -342,18 +354,6 @@
    "p": 2,
    "gf": 11,
    "gc": 11,
-   "pts": 4
-  },
-  {
-   "pos": 9,
-   "equipo": "Origen Valle de Lecrín",
-   "yo": false,
-   "pj": 4,
-   "g": 1,
-   "e": 1,
-   "p": 2,
-   "gf": 7,
-   "gc": 8,
    "pts": 4
   },
   {
@@ -372,13 +372,13 @@
    "pos": 11,
    "equipo": "Recreativo Cájar 2016",
    "yo": false,
-   "pj": 4,
+   "pj": 5,
    "g": 0,
-   "e": 1,
+   "e": 2,
    "p": 3,
-   "gf": 5,
-   "gc": 14,
-   "pts": 1
+   "gf": 7,
+   "gc": 16,
+   "pts": 2
   },
   {
    "pos": 12,
@@ -633,6 +633,13 @@
   ],
   [
    5,
+   "48515716",
+   "30341006",
+   2,
+   2
+  ],
+  [
+   5,
    "24492801",
    "561415",
    3,
@@ -646,5 +653,5 @@
    1
   ]
  ],
- "actualizado": "2026-11-14T14:47:27Z"
+ "actualizado": "2026-11-14T21:46:06Z"
 }
