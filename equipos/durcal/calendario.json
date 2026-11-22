@@ -298,6 +298,18 @@
   },
   {
    "pos": 5,
+   "equipo": "Unión Órgiva-Alpujarra",
+   "yo": false,
+   "pj": 6,
+   "g": 3,
+   "e": 1,
+   "p": 2,
+   "gf": 18,
+   "gc": 19,
+   "pts": 10
+  },
+  {
+   "pos": 6,
    "equipo": "Alborán",
    "yo": false,
    "pj": 6,
@@ -309,7 +321,7 @@
    "pts": 8
   },
   {
-   "pos": 6,
+   "pos": 7,
    "equipo": "Puerto de Motril C.F.",
    "yo": false,
    "pj": 6,
@@ -319,18 +331,6 @@
    "gf": 12,
    "gc": 20,
    "pts": 8
-  },
-  {
-   "pos": 7,
-   "equipo": "Unión Órgiva-Alpujarra",
-   "yo": false,
-   "pj": 5,
-   "g": 2,
-   "e": 1,
-   "p": 2,
-   "gf": 15,
-   "gc": 18,
-   "pts": 7
   },
   {
    "pos": 8,
@@ -384,12 +384,12 @@
    "pos": 12,
    "equipo": "Costa Tropical",
    "yo": false,
-   "pj": 5,
+   "pj": 6,
    "g": 0,
    "e": 1,
-   "p": 4,
-   "gf": 6,
-   "gc": 16,
+   "p": 5,
+   "gf": 7,
+   "gc": 19,
    "pts": 1
   }
  ],
@@ -689,6 +689,13 @@
   ],
   [
    6,
+   "561415",
+   "28636816",
+   3,
+   1
+  ],
+  [
+   6,
    "44822776",
    "48515716",
    5,
@@ -702,5 +709,5 @@
    6
   ]
  ],
- "actualizado": "2026-11-21T20:57:52Z"
+ "actualizado": "2026-11-22T14:45:35Z"
 }
